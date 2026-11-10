@@ -1,0 +1,204 @@
+{
+  "meta": {
+    "provider": "yfinance",
+    "news": "google-news-rss",
+    "tickers": [
+      "RELIANCE",
+      "TCS",
+      "HDFCBANK",
+      "INFY",
+      "ICICIBANK",
+      "HINDUNILVR",
+      "ITC",
+      "SBIN",
+      "BHARTIARTL",
+      "KOTAKBANK",
+      "LT",
+      "AXISBANK",
+      "ASIANPAINT",
+      "MARUTI",
+      "SUNPHARMA",
+      "TITAN",
+      "BAJFINANCE",
+      "NESTLEIND",
+      "WIPRO",
+      "ULTRACEMCO"
+    ],
+    "generated_at": "2026-11-05T08:20:22.816828+00:00",
+    "synthetic": false,
+    "wall_seconds": 82.1
+  },
+  "calculation_accuracy": {
+    "claims_checked": 325,
+    "agreement_percent": 100.0,
+    "max_abs_error": 1.2212453270876722e-15,
+    "unreferenced": 0,
+    "tolerance": 1e-06,
+    "mismatches": [],
+    "by_function": {
+      "book_value_per_share": {
+        "agreed": 19,
+        "total": 19
+      },
+      "debt_to_equity": {
+        "agreed": 19,
+        "total": 19
+      },
+      "eps": {
+        "agreed": 19,
+        "total": 19
+      },
+      "growth_rate": {
+        "agreed": 19,
+        "total": 19
+      },
+      "historical_volatility": {
+        "agreed": 40,
+        "total": 40
+      },
+      "macd": {
+        "agreed": 20,
+        "total": 20
+      },
+      "margin": {
+        "agreed": 52,
+        "total": 52
+      },
+      "max_drawdown": {
+        "agreed": 20,
+        "total": 20
+      },
+      "pb_ratio": {
+        "agreed": 19,
+        "total": 19
+      },
+      "pe_ratio": {
+        "agreed": 19,
+        "total": 19
+      },
+      "roe": {
+        "agreed": 19,
+        "total": 19
+      },
+      "rsi": {
+        "agreed": 20,
+        "total": 20
+      },
+      "sma": {
+        "agreed": 40,
+        "total": 40
+      }
+    }
+  },
+  "citations": {
+    "claims_total": 620,
+    "claims_verified": 620,
+    "verified_percent": 100.0,
+    "fact_claims": 167,
+    "citation_coverage_percent": 100.0,
+    "citation_correctness_automated_percent": 100.0,
+    "blocked_claims": 0,
+    "by_type": {
+      "FACT": {
+        "verified": 167,
+        "total": 167
+      },
+      "CALCULATED": {
+        "verified": 325,
+        "total": 325
+      },
+      "INTERPRETATION": {
+        "verified": 128,
+        "total": 128
+      }
+    }
+  },
+  "completion_latency": {
+    "tasks": 20,
+    "status_counts": {
+      "completed": 20
+    },
+    "task_completion_rate_percent": 100.0,
+    "usable_report_rate_percent": 100.0,
+    "agent_success_percent": {
+      "fundamental": 100.0,
+      "news": 100.0,
+      "risk": 100.0,
+      "technical": 100.0
+    },
+    "retries_total": 0,
+    "latency_ms": {
+      "p50": 1804.5,
+      "p95": 2703.450000000002,
+      "max": 5657
+    },
+    "agent_latency_p50_ms": {
+      "fundamental": 19.5,
+      "news": 582.0,
+      "risk": 12.5,
+      "technical": 44.0
+    }
+  },
+  "cost": {
+    "tokens_total": 0,
+    "tokens_per_report": 0.0,
+    "usd_per_mtok_assumed": 0.0,
+    "estimated_usd_per_report": 0.0
+  },
+  "completeness": {
+    "reports": 20,
+    "complete_percent": 100.0,
+    "required_sections": [
+      "## Summary",
+      "## Fundamental Analysis",
+      "## Technical Analysis",
+      "## News and Sentiment",
+      "## Risk Assessment",
+      "## Conflicting Findings",
+      "## Data Limitations and Uncertainty",
+      "## Sources"
+    ]
+  },
+  "audit_rows": 40,
+  "drills": [
+    {
+      "name": "News API down for the whole run",
+      "passed": true,
+      "detail": "task=partial, news=unavailable after 3 attempts, news claims=0"
+    },
+    {
+      "name": "News API fails once, then recovers",
+      "passed": true,
+      "detail": "news=success, attempts=2"
+    },
+    {
+      "name": "Market data down, stale snapshot available",
+      "passed": true,
+      "detail": "task=completed, stale-cache warning in report=True"
+    },
+    {
+      "name": "Total outage with no cache",
+      "passed": true,
+      "detail": "task=failed, report produced=False"
+    },
+    {
+      "name": "Dirty price data (duplicates, null price)",
+      "passed": true,
+      "detail": "technical=success, issues reported in limitations=True"
+    }
+  ],
+  "replay": {
+    "signal": "technical",
+    "horizon_days": 30,
+    "windows": 60,
+    "directional_calls": 23,
+    "hits": 10,
+    "hit_rate_percent": 43.5,
+    "hit_rate_ci95": [
+      25.6,
+      63.2
+    ],
+    "base_rate_up_percent": 41.7,
+    "note": "Fundamental signal not scored: financial statements are not point-in-time."
+  }
+}
