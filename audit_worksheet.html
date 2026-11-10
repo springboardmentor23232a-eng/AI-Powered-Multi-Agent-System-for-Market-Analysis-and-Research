@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Veritas Citation Audit Worksheet</title>
+<style>
+  :root { --bg:#f8fafc; --card:#fff; --line:#e2e8f0; --ink:#0f172a; --mute:#64748b; --yes:#047857; --part:#b45309; --no:#b91c1c; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.5 system-ui, -apple-system, Segoe UI, sans-serif; background:var(--bg); color:var(--ink); }
+  header { position:sticky; top:0; z-index:5; background:#fff; border-bottom:1px solid var(--line); padding:10px 16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:16px; margin:0 12px 0 0; }
+  main { max-width:900px; margin:0 auto; padding:16px; }
+  button, .btn { font:inherit; border:1px solid var(--line); background:#fff; padding:6px 12px; border-radius:6px; cursor:pointer; }
+  button:hover { background:#f1f5f9; }
+  .primary { background:#0f172a; color:#fff; border-color:#0f172a; } .primary:hover { background:#1e293b; }
+  .group { margin:24px 0 8px; font-weight:600; font-size:16px; }
+  .gnote { color:var(--mute); font-size:13px; margin:-4px 0 8px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin:10px 0; }
+  .card.done { border-left:4px solid var(--yes); }
+  .top { display:flex; gap:8px; align-items:baseline; flex-wrap:wrap; }
+  .rownum { font-weight:600; } .tag { font-size:12px; padding:1px 8px; border-radius:10px; background:#e2e8f0; }
+  .gem { font-size:12px; padding:1px 8px; border-radius:10px; background:#ede9fe; color:#5b21b6; }
+  .label { margin:6px 0 2px; font-size:13px; color:var(--mute); text-transform:uppercase; letter-spacing:.03em; }
+  .val { word-break:break-word; } a { color:#1d4ed8; word-break:break-all; }
+  .hint { background:#fffbeb; border:1px solid #fde68a; border-radius:6px; padding:6px 10px; font-size:13px; margin:8px 0; }
+  .btns { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 6px; }
+  .btns button.sel[data-label="yes"] { background:var(--yes); color:#fff; border-color:var(--yes); }
+  .btns button.sel[data-label="partial"] { background:var(--part); color:#fff; border-color:var(--part); }
+  .btns button.sel[data-label="no"] { background:var(--no); color:#fff; border-color:var(--no); }
+  .btns button.sel[data-label="skip"] { background:#475569; color:#fff; border-color:#475569; }
+  textarea { width:100%; font:inherit; border:1px solid var(--line); border-radius:6px; padding:6px 8px; min-height:38px; }
+  details { margin-top:6px; font-size:13px; color:var(--mute); } details pre { white-space:pre-wrap; margin:6px 0 0; }
+  #empty { text-align:center; padding:60px 16px; color:var(--mute); }
+  .warn { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; padding:10px 12px; border-radius:6px; margin:12px 0; }
+  label.toggle { font-size:13px; color:var(--mute); display:flex; gap:6px; align-items:center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Citation Audit Worksheet</h1>
+  <input type="file" id="file" accept=".csv,text/csv">
+  <span id="progress"></span>
+  <label class="toggle"><input type="checkbox" id="showGem"> Show Gemini's labels</label>
+  <label class="toggle"><input type="checkbox" id="showAll"> Show all 40 rows</label>
+  <button class="primary" id="download" disabled>Download CSV</button>
+</header>
+<main>
+  <div id="empty">Choose <b>citation_audit_sample.csv</b> (the merged file in <code>backend/eval_output/</code>) to begin.<br>
+  Your progress is saved in this browser automatically. Nothing leaves your computer.</div>
+  <div id="warn"></div>
+  <div id="rows"></div>
+</main>
+<script>
+// CORE-START
+function parseCsv(text) {
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  const rows = []; let row = [], field = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else inQ = false; }
+      else field += c;
+    } else if (c === '"') inQ = true;
+    else if (c === ',') { row.push(field); field = ''; }
+    else if (c === '\n' || c === '\r') {
+      if (c === '\r' && text[i + 1] === '\n') i++;
+      row.push(field); field = ''; rows.push(row); row = [];
+    } else field += c;
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row); }
+  return rows.filter(r => !(r.length === 1 && r[0] === ''));
+}
+function csvEscape(v) { v = v == null ? '' : String(v); return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+function toCsv(fields, rows) {
+  return [fields.map(csvEscape).join(',')].concat(rows.map(r => fields.map(f => csvEscape(r[f])).join(','))).join('\r\n') + '\r\n';
+}
+const GROUPS = [
+  { title: '1. Price rows (do these first)', note: 'Check the Close on Yahoo for the stated date. Any difference, even small, is "partial". Write the Yahoo number in the note.', rows: [35, 36, 37, 38, 39] },
+  { title: '2. Rows Gemini marked "partial"', note: 'Is it a quote/chart page instead of a news article? If so, keep "partial". Change only if you disagree.', rows: [5, 8, 16, 17, 21, 31] },
+  { title: '3. Rows Gemini could not verify', note: 'Open the link and label it yourself. If it will not open, choose "Can\'t verify".', rows: [2, 6, 11, 15, 24, 29] },
+  { title: '4. News and financial spot-checks', note: 'Compare the headline and date (news) or the number (financials) with the source.', rows: [3, 12, 20, 27, 28, 33, 41] },
+];
+// CORE-END
+
+let fields = [], data = [], storeKey = '';
+const $ = id => document.getElementById(id);
+const VALID = ['yes', 'partial', 'no'];
+
+function save() {
+  try {
+    const s = {}; data.forEach((r, i) => { if (r.human_checked || r.human_note) s[i] = { supported: r.supported, human_checked: r.human_checked, human_note: r.human_note }; });
+    localStorage.setItem(storeKey, JSON.stringify(s));
+  } catch (e) { /* storage unavailable: download still works */ }
+}
+function restore() {
+  try {
+    const s = JSON.parse(localStorage.getItem(storeKey) || '{}');
+    Object.keys(s).forEach(i => { if (data[i]) Object.assign(data[i], s[i]); });
+  } catch (e) { /* ignore */ }
+}
+function priorityRows() { return GROUPS.flatMap(g => g.rows); }
+function isDone(r) { return (r.human_checked || '').toLowerCase() === 'yes'; }
+function isSkipped(r) { return (r.human_checked || '') === 'cannot_verify'; }
+
+function hintFor(r) {
+  if (r.source_type === 'price') return 'Open Yahoo Finance history for this ticker (<code>' + (r.ticker || '') + '.NS</code>). Compare the <b>Close</b> column (not Adj Close) for the stated date. Exact match = yes. Any difference = partial.';
+  if (r.source_type === 'financials') return 'Open Yahoo Finance annual financials. Yahoo shows <b>thousands</b>: multiply its number by 1,000 before comparing with the stored value.';
+  return 'Open the link. Does the page show this headline and this date? A live stock-quote or chart page (no article, no real date) is "partial".';
+}
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+function card(i) {
+  const r = data[i], n = i + 2, showGem = $('showGem').checked;
+  const url = r.source_url || '';
+  const link = /^https?:\/\//.test(url) ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(url) + '</a>' : esc(url || '(no link)');
+  const sel = l => (l === 'skip' ? isSkipped(r) : (isDone(r) && (r.supported || '').toLowerCase() === l)) ? ' sel' : '';
+  const gem = showGem && r.gemini_label ? '<span class="gem">Gemini: ' + esc(r.gemini_label) + '</span>' : '';
+  return '<div class="card' + (isDone(r) || isSkipped(r) ? ' done' : '') + '" id="row' + n + '">' +
+    '<div class="top"><span class="rownum">Row ' + n + '</span><span class="tag">' + esc(r.source_type) + '</span><span>' + esc(r.ticker) + '</span>' + gem + '</div>' +
+    '<div class="label">Claim</div><div class="val">' + esc(r.claim_text) + '</div>' +
+    '<div class="label">Quoted source text</div><div class="val">' + esc(r.quote) + '</div>' +
+    '<div class="label">Source</div><div class="val">' + link + '</div>' +
+    '<div class="hint">' + hintFor(r) + '</div>' +
+    '<div class="btns" data-row="' + n + '">' +
+    ['yes', 'partial', 'no'].map(l => '<button data-row="' + n + '" data-label="' + l + '" class="' + sel(l).trim() + '">' + l[0].toUpperCase() + l.slice(1) + '</button>').join('') +
+    '<button data-row="' + n + '" data-label="skip" class="' + sel('skip').trim() + '">Can\'t verify</button></div>' +
+    '<textarea data-note="' + n + '" placeholder="What you saw, e.g. Yahoo close 279.40, difference 0.00">' + esc(r.human_note) + '</textarea>' +
+    (r.source_excerpt ? '<details><summary>Stored source text</summary><pre>' + esc(r.source_excerpt) + '</pre></details>' : '') + '</div>';
+}
+
+function render() {
+  const showAll = $('showAll').checked, pri = priorityRows(), out = [];
+  GROUPS.forEach(g => {
+    out.push('<div class="group">' + g.title + '</div><div class="gnote">' + g.note + '</div>');
+    g.rows.forEach(n => { if (data[n - 2]) out.push(card(n - 2)); });
+  });
+  if (showAll) {
+    out.push('<div class="group">Other rows</div>');
+    data.forEach((_, i) => { if (!pri.includes(i + 2)) out.push(card(i)); });
+  }
+  $('rows').innerHTML = out.join('');
+  const done = pri.filter(n => data[n - 2] && (isDone(data[n - 2]) || isSkipped(data[n - 2]))).length;
+  $('progress').textContent = done + ' of ' + pri.filter(n => data[n - 2]).length + ' checked';
+}
+
+function loadCsvText(text, name) {
+  const rows = parseCsv(text);
+  fields = rows[0].map(f => f.trim());
+  data = rows.slice(1).map(r => { const o = {}; fields.forEach((f, i) => o[f] = r[i] == null ? '' : r[i]); return o; });
+  const missing = ['claim_id', 'supported', 'source_type', 'claim_text'].filter(f => !fields.includes(f));
+  $('warn').innerHTML = '';
+  if (missing.length) { $('warn').innerHTML = '<div class="warn">This file is missing columns: ' + missing.join(', ') + '. Use the CSV from backend/eval_output/.</div>'; data = []; render(); return; }
+  if (!fields.includes('gemini_label') || !fields.includes('human_checked')) {
+    $('warn').innerHTML = '<div class="warn">Run the merge step first (merge_audit_labels.py merge ...). The file has no gemini_label / human_checked columns yet.</div>';
+  }
+  ['human_checked', 'human_note'].forEach(f => { if (!fields.includes(f)) { fields.push(f); data.forEach(r => r[f] = ''); } });
+  storeKey = 'veritas_audit_v1:' + (name || 'csv') + ':' + data.length + ':' + data.map(r => r.claim_id).join('|').length;
+  restore();
+  $('empty').style.display = 'none'; $('download').disabled = false;
+  render();
+}
+function buildCsv() { return toCsv(fields, data); }
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('button[data-label]'); if (!b) return;
+  const r = data[Number(b.dataset.row) - 2], label = b.dataset.label;
+  if (label === 'skip') r.human_checked = 'cannot_verify';   // not counted as a human check; label left unchanged
+  else { r.supported = label; r.human_checked = 'yes'; }
+  save(); render();
+  const el = $('row' + b.dataset.row); if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest' });
+});
+document.addEventListener('input', e => {
+  if (e.target.dataset && e.target.dataset.note) { data[Number(e.target.dataset.note) - 2].human_note = e.target.value; save(); }
+});
+$('file').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  const rd = new FileReader(); rd.onload = () => loadCsvText(rd.result, f.name); rd.readAsText(f);
+});
+$('showGem').addEventListener('change', () => data.length && render());
+$('showAll').addEventListener('change', () => data.length && render());
+$('download').addEventListener('click', () => {
+  const blob = new Blob([buildCsv()], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'citation_audit_sample.csv'; a.click();
+});
+window.loadCsvText = loadCsvText; window.buildCsv = buildCsv; window.parseCsv = parseCsv; window.__data = () => data;
+</script>
+</body>
+</html>
