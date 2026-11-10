@@ -144,3 +144,4 @@
 | **Feedback & Status Visibility** | Clear status pills, disabled button states during API requests, and clear error banners. | **A-** | Form validation feedback needs minor enhancement. |
 | **User Control & Freedom** | Ability to cancel/switch auth modes, unwatch stocks, and log out cleanly. | **B** | Needs direct removal button inside the watchlist sidebar. |
 | **Error Handling & Prevention** | Duplicate emails, invalid inputs, and duplicate watchlist items are cleanly captured and reported. | **A** | Prevents crashes or blank screens. |
+

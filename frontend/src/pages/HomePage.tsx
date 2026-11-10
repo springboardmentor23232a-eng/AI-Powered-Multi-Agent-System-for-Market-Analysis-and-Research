@@ -6,6 +6,13 @@ import { StatusPill } from "../components/Badges";
 import { shortDate } from "../lib/format";
 
 const PERIODS = ["1mo", "3mo", "6mo", "1y", "5y"];
+const PERIOD_LABELS: Record<string, string> = {
+  "1mo": "1 Month (1mo)",
+  "3mo": "3 Months (3mo)",
+  "6mo": "6 Months (6mo)",
+  "1y": "1 Year (1y)",
+  "5y": "5 Years (5y)",
+};
 
 export default function HomePage() {
   const nav = useNavigate();
@@ -15,6 +22,7 @@ export default function HomePage() {
   const [history, setHistory] = useState<TaskSummary[]>([]);
   const [watch, setWatch] = useState<WatchItem[]>([]);
   const [prefs, setPrefs] = useState<Preferences | null>(null);
+  const [prefStatus, setPrefStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
@@ -115,18 +123,31 @@ export default function HomePage() {
         </div>
         {prefs && (
           <div className="rounded-lg border border-slate-200 bg-white p-4">
-            <h2 className="mb-2 text-sm font-semibold text-slate-700">Preferences</h2>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-sm font-semibold text-slate-700">Preferences</h2>
+              {prefStatus && <span className="text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-medium">{prefStatus}</span>}
+            </div>
             <label className="block text-sm">Market
-              <select value={prefs.market} onChange={(e) => run(async () => setPrefs(await api.setPreferences({ ...prefs, market: e.target.value })))}
+              <select value={prefs.market} onChange={(e) => run(async () => {
+                const res = await api.setPreferences({ ...prefs, market: e.target.value });
+                setPrefs(res);
+                setPrefStatus("Saved");
+                setTimeout(() => setPrefStatus(null), 2500);
+              })}
                 className="mt-1 block w-full rounded border border-slate-300 px-2 py-1">
                 <option value="NSE">NSE (National Stock Exchange)</option>
                 <option value="BSE">BSE (Bombay Stock Exchange)</option>
               </select>
             </label>
             <label className="mt-3 block text-sm">Default analysis period
-              <select value={prefs.analysis_period} onChange={(e) => run(async () => setPrefs(await api.setPreferences({ ...prefs, analysis_period: e.target.value })))}
+              <select value={prefs.analysis_period} onChange={(e) => run(async () => {
+                const res = await api.setPreferences({ ...prefs, analysis_period: e.target.value });
+                setPrefs(res);
+                setPrefStatus("Saved");
+                setTimeout(() => setPrefStatus(null), 2500);
+              })}
                 className="mt-1 block w-full rounded border border-slate-300 px-2 py-1">
-                {PERIODS.map((p) => <option key={p} value={p}>{p}</option>)}
+                {PERIODS.map((p) => <option key={p} value={p}>{PERIOD_LABELS[p] ?? p}</option>)}
               </select>
             </label>
           </div>
