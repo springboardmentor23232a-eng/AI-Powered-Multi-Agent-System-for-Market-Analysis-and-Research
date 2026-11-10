@@ -30,7 +30,7 @@ class TechnicalAgent:
         b, ind = ClaimBuilder(self.name), {}
 
         b.fact(f"Latest close was {last['close']:,.2f} on {last['date']}", prices.source.content_hash,
-               md.last_close_line(last["date"], last["close"]), key="price_fact")
+               md.last_close_line(last["date"], last["close"]), url=prices.url, key="price_fact")
         v = {"values": closes}
         ind["sma50"] = b.calc("50-day simple moving average", "sma", {**v, "window": 50}, "sma50")
         ind["sma200"] = b.calc("200-day simple moving average", "sma", {**v, "window": 200}, "sma200")

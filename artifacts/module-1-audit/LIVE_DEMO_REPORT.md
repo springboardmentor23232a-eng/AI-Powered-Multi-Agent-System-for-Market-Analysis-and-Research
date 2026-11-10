@@ -97,3 +97,4 @@ Every single requirement of Module 1 has been implemented, tested against Postgr
 - [x] **Desktop (1280px):** 3-column layout (2 cols main workspace + 1 col sidebar for watchlist & preferences).
 - [x] **Mobile (390px):** Responsive vertical stacking, horizontal table scrolling, touch-friendly tap targets.
 - [x] **Typography & Spacing:** Slate color palette, clear status pills, clean semantic forms.
+

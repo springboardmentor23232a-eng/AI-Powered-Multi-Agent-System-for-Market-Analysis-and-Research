@@ -3,6 +3,7 @@ import json
 import re
 from datetime import date, datetime, timedelta, timezone
 from typing import Callable, Protocol
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 from pydantic import BaseModel
@@ -15,6 +16,7 @@ from app.services.validation import Issue, ValidationReport, validate_financials
 
 DEFAULT_TTL = timedelta(hours=12)
 SUFFIX = {"NSE": ".NS", "BSE": ".BO"}
+IST = ZoneInfo("Asia/Kolkata")
 
 
 class ProviderError(Exception):
@@ -162,7 +164,17 @@ def _cached(db: Session, provider, symbol: str, kind: str, period: str,
     return payload, Source(provider=provider.name, retrieved_at=now, content_hash=h, from_cache=False)
 
 
-def _log_source(db: Session, task_id, source_type: str, title: str, src: Source, excerpt: str):
+def canonical_url(symbol: str, kind: str = "quote") -> str:
+    """Canonical Yahoo Finance URL for quotes, financials, or profile."""
+    base = f"https://finance.yahoo.com/quote/{symbol}"
+    if kind == "financials":
+        return f"{base}/financials"
+    if kind == "profile":
+        return f"{base}/profile"
+    return base
+
+
+def _log_source(db: Session, task_id, source_type: str, title: str, src: Source, excerpt: str, url: str | None = None):
     if task_id is None:
         return
     exists = db.scalar(select(SourceDocument.source_id).where(
@@ -170,7 +182,7 @@ def _log_source(db: Session, task_id, source_type: str, title: str, src: Source,
         SourceDocument.source_type == source_type))
     if exists:
         return
-    db.add(SourceDocument(task_id=task_id, source_type=source_type, title=title, source_url=None,
+    db.add(SourceDocument(task_id=task_id, source_type=source_type, title=title, source_url=url,
                           retrieved_at=src.retrieved_at, content_hash=src.content_hash, content_excerpt=excerpt))
     db.commit()
 
@@ -184,6 +196,7 @@ class PriceResult(BaseModel):
     rows: list[dict]
     validation: ValidationReport
     source: Source
+    url: str = ""
 
 
 class FinancialsResult(BaseModel):
@@ -193,6 +206,7 @@ class FinancialsResult(BaseModel):
     data: dict
     issues: list[Issue]
     source: Source
+    url: str = ""
 
 
 def get_prices(db: Session, provider: MarketDataProvider, ticker: str, market: str = "NSE",
@@ -218,16 +232,33 @@ def get_prices(db: Session, provider: MarketDataProvider, ticker: str, market: s
         if days:
             df = df[pd.to_datetime(df["date"]) >= pd.Timestamp(as_of) - pd.Timedelta(days=days)]
     clean, report = validate_ohlcv(df, reference_date=ref)
+
+    # Fix #2: drop unfinished price bars fetched before 16:00 IST on trading days
+    if as_of is None and not clean.empty:
+        now_ist = now.astimezone(IST)
+        latest_bar_date = pd.to_datetime(clean["date"].iloc[-1]).date()
+        if latest_bar_date == now_ist.date() and now_ist.weekday() < 5 and (now_ist.hour < 16):
+            clean = clean.iloc[:-1].copy()
+            report.issues.append(Issue(
+                code="unfinished_daily_bar",
+                severity="warning",
+                message=(
+                    f"Prices fetched before 16:00 IST ({now_ist.strftime('%H:%M')} IST); "
+                    f"dropped unfinished intraday bar for {latest_bar_date}"
+                )
+            ))
+
     if src.stale_cache:
         report.issues.append(Issue(code="provider_unavailable", severity="warning",
                                    message="Live fetch failed; serving cached snapshot"))
     rows = clean.assign(date=clean["date"].dt.strftime("%Y-%m-%d")).to_dict("records")
+    url = canonical_url(symbol, "quote")
     if rows:
         _log_source(db, task_id, "price", f"{symbol} OHLCV {period} via {src.provider}", src,
                     f"rows={len(rows)} range={rows[0]['date']}..{rows[-1]['date']} "
-                    + last_close_line(rows[-1]["date"], rows[-1]["close"]))
+                    + last_close_line(rows[-1]["date"], rows[-1]["close"]), url=url)
     return PriceResult(ticker=normalize_ticker(ticker), market=market.upper(), symbol=symbol, period=period,
-                       as_of=as_of, rows=rows, validation=report, source=src)
+                       as_of=as_of, rows=rows, validation=report, source=src, url=url)
 
 
 def get_financials(db: Session, provider: MarketDataProvider, ticker: str, market: str = "NSE",
@@ -239,7 +270,8 @@ def get_financials(db: Session, provider: MarketDataProvider, ticker: str, marke
     if src.stale_cache:
         issues.append(Issue(code="provider_unavailable", severity="warning",
                             message="Live fetch failed; serving cached snapshot"))
+    url = canonical_url(symbol, "financials")
     _log_source(db, task_id, "financials", f"{symbol} financial statements via {src.provider}", src,
-                financials_excerpt(payload.get("annual", [])))
+                financials_excerpt(payload.get("annual", [])), url=url)
     return FinancialsResult(ticker=normalize_ticker(ticker), market=market.upper(), symbol=symbol,
-                            data=payload, issues=issues, source=src)
+                            data=payload, issues=issues, source=src, url=url)

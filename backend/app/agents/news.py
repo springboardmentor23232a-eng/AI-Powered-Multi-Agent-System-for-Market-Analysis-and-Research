@@ -1,4 +1,5 @@
 import hashlib
+import re
 from datetime import datetime, timedelta, timezone
 
 from app.agents.base import AgentContext, ClaimBuilder
@@ -13,6 +14,22 @@ EVENT_KEYWORDS = {
     "acquisition": ("acquire", "acquisition", "merger", "takeover", "stake", "buyout"),
     "regulatory": ("sebi", "rbi", "regulator", "penalty", "fine", "probe", "investigation", "ban", "tax notice"),
 }
+
+NON_ARTICLE_PATTERNS = [
+    r"share price today",
+    r"stock price,\s*news,\s*quote",
+    r"share price:\s*price action",
+    r"live price",
+    r"stock price\s+(?:and|&)\s+chart",
+    r"share price\s*-\s*upstox",
+    r"share price\s*-\s*live",
+]
+NON_ARTICLE_RE = re.compile("|".join(NON_ARTICLE_PATTERNS), re.IGNORECASE)
+
+
+def is_non_article_page(title: str) -> bool:
+    """Detect landing, quote, or chart pages masquerading as news articles."""
+    return bool(NON_ARTICLE_RE.search(title))
 
 
 def event_type(title: str) -> str:
@@ -46,6 +63,8 @@ class NewsAgent:
             if pub is not None and pub.tzinfo is None:
                 pub = pub.replace(tzinfo=timezone.utc)
             if key in seen or (pub is not None and pub < now - timedelta(days=MAX_AGE_DAYS)):
+                continue
+            if is_non_article_page(a.title):
                 continue
             seen.add(key)
             kept.append(a)

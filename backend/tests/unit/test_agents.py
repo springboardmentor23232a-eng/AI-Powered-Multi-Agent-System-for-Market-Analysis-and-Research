@@ -51,6 +51,11 @@ def test_fundamental_values_and_claims(db):
     types = {c.type for c in r.claims}
     assert types == {ClaimType.FACT, ClaimType.CALCULATED, ClaimType.INTERPRETATION}
     assert r.data["signal"] == "bullish"
+    # Fix #3: FACT claims have canonical Yahoo source URLs
+    rev_fact = next(c for c in r.claims if c.type == ClaimType.FACT and "revenue" in c.text.lower())
+    assert rev_fact.evidence.source_url == "https://finance.yahoo.com/quote/TCS.NS/financials"
+    price_fact = next(c for c in r.claims if c.type == ClaimType.FACT and "close" in c.text.lower())
+    assert price_fact.evidence.source_url == "https://finance.yahoo.com/quote/TCS.NS"
 
 
 def test_fundamental_unavailable_without_statements(db):
@@ -72,6 +77,9 @@ def test_technical_bullish_trend(db):
     assert_reproducible(r)
     chart = r.data["chart"]
     assert len(chart["dates"]) == len(chart["close"]) == len(chart["sma50"]) and chart["sma50"][0] is None
+    # Fix #3: FACT claim has canonical Yahoo source URL
+    fact = next(c for c in r.claims if c.type == ClaimType.FACT)
+    assert fact.evidence.source_url == "https://finance.yahoo.com/quote/TCS.NS"
 
 
 def test_technical_bearish_trend(db):
@@ -109,6 +117,40 @@ def test_news_claims_sources_and_sentiment(db):
     docs = {d.content_hash: d for d in db.scalars(select(SourceDocument).where(SourceDocument.source_type == "news"))}
     facts = [c for c in r.claims if c.type == ClaimType.FACT]
     assert len(facts) == 3 and all(f.evidence.quote in docs[f.evidence.content_hash].content_excerpt for f in facts)
+
+
+def test_news_filters_non_article_pages(db):
+    user = User(email="u2@x.com", password_hash="x"); db.add(user); db.commit()
+    task = ResearchTask(user_id=user.user_id, ticker="TCS"); db.add(task); db.commit()
+    
+    non_articles = [
+        article("Titan Company (TITAN) Share Price Today (NSE), Market News - TechGraph", 1),
+        article("Nestlé India (NESTLEIND) Share Price Today (NSE), Market News - TechGraph", 1),
+        article("Maruti Suzuki Share Price - Upstox", 1),
+        article("AXISBANK Share Price Today - Axis Bank on NSE/BSE - scanx.trade", 1),
+        article("Infosys Share Price - Live NSE: INFY Stock Price & Chart - Upstox", 1),
+        article("HDFC Bank Stock Price and Chart — NSE:HDFCBANK - TradingView", 1),
+        article("Kotak Mahindra Bank Share Price: Price Action Near High - Univest", 1),
+        article("Kotak Mahindra Bank Limited (KOTAKBANK.NS) stock price, news, quote and history - Yahoo Finance UK", 1),
+    ]
+    real_article = article("TCS Q2 Results: Net profit rises 5% to Rs 11,909 crore - Economic Times", 1)
+    
+    # When mix of real articles and non-articles are fetched:
+    r = NewsAgent().run(ctx_for(db, news=FakeNews(non_articles + [real_article]), task_id=task.task_id))
+    assert r.status == AgentStatus.success
+    titles = [item["title"] for item in r.data["items"]]
+    assert len(titles) == 1
+    assert titles[0] == real_article.title
+    
+    # FACT claims must only be generated for the real article
+    fact_texts = [c.text for c in r.claims if c.type == ClaimType.FACT]
+    assert len(fact_texts) == 1
+    assert real_article.title in fact_texts[0]
+    
+    # When ONLY non-articles are returned, agent reports unavailable
+    r_empty = NewsAgent().run(ctx_for(db, news=FakeNews(non_articles)))
+    assert r_empty.status == AgentStatus.unavailable
+
 
 
 def test_news_conflicting_reports_flagged(db):

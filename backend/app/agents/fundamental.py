@@ -41,7 +41,8 @@ class FundamentalAgent:
 
         for field, label in (("revenue", "revenue"), ("net_income", "net income")):
             if cur.get(field) is not None:
-                b.fact(f"FY{fy} {label} was {cur[field]:,.0f}", h, md.fact_line(fy, field, cur[field]), key=f"{field}_fact")
+                b.fact(f"FY{fy} {label} was {cur[field]:,.0f}", h, md.fact_line(fy, field, cur[field]),
+                       url=fin.url, key=f"{field}_fact")
 
         m["revenue_growth"] = b.calc(f"Revenue growth FY{py} to FY{fy}", "growth_rate",
                                      {"current": cur.get("revenue"), "previous": prev.get("revenue")}, "revenue_growth")
@@ -65,7 +66,7 @@ class FundamentalAgent:
                 last = prices.rows[-1]
                 price = last["close"]
                 b.fact(f"Latest close was {price:,.2f} on {last['date']}", prices.source.content_hash,
-                       md.last_close_line(last["date"], price), key="price_fact")
+                       md.last_close_line(last["date"], price), url=prices.url, key="price_fact")
         except ProviderError:
             pass
         if price is None:

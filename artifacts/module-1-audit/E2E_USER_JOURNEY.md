@@ -111,3 +111,4 @@ Follow this guided verification script to manually inspect and validate every Mo
 5. **Verify:** You are redirected to `/login`.
 6. Now attempt to directly type and navigate to `http://localhost:5173/` in your browser address bar.
 7. **Verify:** The `<Protected>` route guard intercepts the unauthenticated access and immediately redirects you back to `/login`.
+

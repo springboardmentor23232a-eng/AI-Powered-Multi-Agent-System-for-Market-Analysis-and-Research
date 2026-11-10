@@ -55,6 +55,18 @@ app.include_router(research.router)
 app.include_router(workspace.router)
 
 
+@app.get("/")
+def root():
+    return {
+        "app": "Veritas Equity Research API",
+        "version": "0.1.0",
+        "status": "online",
+        "docs_url": "/docs",
+        "health_url": "/health",
+        "frontend_url": "http://localhost:5173",
+    }
+
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
