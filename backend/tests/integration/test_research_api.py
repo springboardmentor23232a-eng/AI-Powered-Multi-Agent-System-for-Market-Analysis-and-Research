@@ -79,6 +79,11 @@ def test_watchlist_and_preferences(api):
 
     assert api.get("/preferences", headers=h).json()["analysis_period"] == "2y"
     assert api.put("/preferences", json={"market": "NSE", "analysis_period": "1y"}, headers=h).status_code == 200
+    assert api.put("/preferences", json={"market": "BSE", "analysis_period": "6mo"}, headers=h).status_code == 200
+    assert api.put("/preferences", json={"market": "NSE", "analysis_period": "1y"}, headers=h).status_code == 200
     tid = api.post("/research", json={"ticker": "TCS"}, headers=h).json()["task_id"]
     assert api.get(f"/research/{tid}", headers=h).json()["period"] == "1y"      # preference applied
+    hist = api.get("/research", headers=h).json()
+    assert len(hist) > 0 and hist[0]["company_name"] == "Tata Consultancy Services"
+    assert hist[0]["requested_period"] == "1y"
     assert api.put("/preferences", json={"market": "NYSE"}, headers=h).status_code == 422

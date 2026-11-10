@@ -39,6 +39,7 @@ class ClaimType(str, enum.Enum):
 class User(Base):
     __tablename__ = "users"
     user_id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=_uuid)
+    full_name: Mapped[str] = mapped_column(String(128), default="", server_default="")
     email: Mapped[str] = mapped_column(String(320), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(255))
     preferences: Mapped[dict] = mapped_column(JSON, default=dict)

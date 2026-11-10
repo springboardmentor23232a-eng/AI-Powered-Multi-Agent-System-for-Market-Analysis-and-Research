@@ -19,7 +19,7 @@ class WatchlistAdd(BaseModel):
 
 
 class Preferences(BaseModel):
-    market: str = "NSE"
+    market: str = Field(default="NSE", pattern=r"^(NSE|BSE)$")
     analysis_period: str = Field(default="2y", pattern=r"^\d+(d|mo|y)$")
 
 
@@ -58,9 +58,10 @@ def get_preferences(user: User = Depends(current_user)):
 
 @router.put("/preferences")
 def put_preferences(body: Preferences, db: Session = Depends(get_db), user: User = Depends(current_user)):
-    if body.market.upper() != "NSE":
-        raise HTTPException(422, "Only the NSE market is supported")
-    user.preferences = {"market": "NSE", "analysis_period": body.analysis_period}
+    market = body.market.upper()
+    if market not in ("NSE", "BSE"):
+        raise HTTPException(422, "Only the NSE and BSE markets are supported")
+    user.preferences = {"market": market, "analysis_period": body.analysis_period}
     db.add(user)
     db.commit()
     return user.preferences

@@ -18,7 +18,7 @@ def register(body: RegisterRequest, db: Session = Depends(get_db)):
     email = body.email.lower()
     if db.scalar(select(User).where(User.email == email)):
         raise HTTPException(status.HTTP_409_CONFLICT, "Email already registered")
-    user = User(email=email, password_hash=hash_password(body.password))
+    user = User(email=email, password_hash=hash_password(body.password), full_name=body.full_name)
     db.add(user)
     db.commit()
     return TokenResponse(access_token=create_access_token(str(user.user_id)))
@@ -34,4 +34,4 @@ def login(body: LoginRequest, db: Session = Depends(get_db)):
 
 @router.get("/me")
 def me(user: User = Depends(current_user)):
-    return {"user_id": str(user.user_id), "email": user.email, "preferences": user.preferences}
+    return {"user_id": str(user.user_id), "email": user.email, "full_name": user.full_name, "preferences": user.preferences}

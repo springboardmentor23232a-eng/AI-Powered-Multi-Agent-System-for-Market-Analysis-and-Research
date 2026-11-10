@@ -1,0 +1,14 @@
+npm notice run veritas-equity-research-frontend@0.1.0 test
+npm notice run vitest run --run
+
+ RUN  v5.1.0 /home/chandu/Projects/Work/infosys-springboard/frontend
+
+ ✓ src/lib/format.test.ts (2 tests) 3ms
+ ✓ src/lib/matrix.test.ts (3 tests) 5ms
+ ✓ src/api/client.test.ts (4 tests) 36ms
+
+ Test Files  3 passed (3)
+      Tests  9 passed (9)
+   Start at  18:57:03
+   Duration  224ms (import 33%, tests 33%, transform 20%, worker 14%)
+

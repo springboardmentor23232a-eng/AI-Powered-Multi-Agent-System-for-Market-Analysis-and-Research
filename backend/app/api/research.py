@@ -73,13 +73,35 @@ def create_research(body: ResearchRequest, background: BackgroundTasks, db: Sess
     db.add(task)
     db.commit()
     background.add_task(execute_task, task.task_id, Deps(session_factory=factory, market=market, news=news, llm=llm))
-    return task
+    return ResearchTaskOut(
+        task_id=task.task_id,
+        ticker=task.ticker,
+        company_name=UNIVERSE.get(task.ticker),
+        market=task.market,
+        requested_period=task.requested_period,
+        status=task.status.value if hasattr(task.status, "value") else str(task.status),
+        created_at=task.created_at,
+        completed_at=task.completed_at,
+    )
 
 
 @router.get("", response_model=list[ResearchTaskOut])
 def history(limit: int = Query(50, le=200), db: Session = Depends(get_db), user: User = Depends(current_user)):
-    return db.scalars(select(ResearchTask).where(ResearchTask.user_id == user.user_id)
+    tasks = db.scalars(select(ResearchTask).where(ResearchTask.user_id == user.user_id)
                       .order_by(ResearchTask.created_at.desc()).limit(limit)).all()
+    return [
+        ResearchTaskOut(
+            task_id=t.task_id,
+            ticker=t.ticker,
+            company_name=UNIVERSE.get(t.ticker),
+            market=t.market,
+            requested_period=t.requested_period,
+            status=t.status.value if hasattr(t.status, "value") else str(t.status),
+            created_at=t.created_at,
+            completed_at=t.completed_at,
+        )
+        for t in tasks
+    ]
 
 
 @router.get("/{task_id}")

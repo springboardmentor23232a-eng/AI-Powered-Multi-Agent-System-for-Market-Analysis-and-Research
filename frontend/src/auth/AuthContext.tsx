@@ -3,7 +3,7 @@ import { api, setUnauthorizedHandler, tokenStore } from "../api/client";
 
 interface AuthState {
   authenticated: boolean;
-  signIn: (email: string, password: string, mode: "login" | "register") => Promise<void>;
+  signIn: (email: string, password: string, mode: "login" | "register", fullName?: string, confirmPassword?: string) => Promise<void>;
   signOut: () => void;
 }
 
@@ -17,8 +17,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => setUnauthorizedHandler(null);
   }, []);
 
-  const signIn = useCallback(async (email: string, password: string, mode: "login" | "register") => {
-    const { access_token } = mode === "login" ? await api.login(email, password) : await api.register(email, password);
+  const signIn = useCallback(async (email: string, password: string, mode: "login" | "register", fullName?: string, confirmPassword?: string) => {
+    const { access_token } = mode === "login"
+      ? await api.login(email, password)
+      : await api.register(email, password, fullName, confirmPassword);
     tokenStore.set(access_token);
     setToken(access_token);
   }, []);

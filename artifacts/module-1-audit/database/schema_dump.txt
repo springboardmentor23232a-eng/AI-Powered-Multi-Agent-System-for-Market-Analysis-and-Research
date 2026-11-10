@@ -1,0 +1,112 @@
+                                  Table "public.users"
+    Column     |           Type           | Collation | Nullable |        Default        
+---------------+--------------------------+-----------+----------+-----------------------
+ user_id       | uuid                     |           | not null | 
+ email         | character varying(320)   |           | not null | 
+ password_hash | character varying(255)   |           | not null | 
+ preferences   | json                     |           | not null | 
+ created_at    | timestamp with time zone |           | not null | 
+ full_name     | character varying(128)   |           | not null | ''::character varying
+Indexes:
+    "users_pkey" PRIMARY KEY, btree (user_id)
+    "ix_users_email" UNIQUE, btree (email)
+Referenced by:
+    TABLE "research_tasks" CONSTRAINT "research_tasks_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(user_id)
+    TABLE "saved_stocks" CONSTRAINT "saved_stocks_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(user_id)
+
+                        Table "public.saved_stocks"
+     Column     |           Type           | Collation | Nullable | Default 
+----------------+--------------------------+-----------+----------+---------
+ saved_stock_id | uuid                     |           | not null | 
+ user_id        | uuid                     |           | not null | 
+ ticker         | character varying(32)    |           | not null | 
+ created_at     | timestamp with time zone |           | not null | 
+Indexes:
+    "saved_stocks_pkey" PRIMARY KEY, btree (saved_stock_id)
+    "ix_saved_stocks_user_id" btree (user_id)
+    "uq_saved_user_ticker" UNIQUE CONSTRAINT, btree (user_id, ticker)
+Foreign-key constraints:
+    "saved_stocks_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(user_id)
+
+                        Table "public.research_tasks"
+      Column      |           Type           | Collation | Nullable | Default 
+------------------+--------------------------+-----------+----------+---------
+ task_id          | uuid                     |           | not null | 
+ user_id          | uuid                     |           | not null | 
+ ticker           | character varying(32)    |           | not null | 
+ market           | character varying(16)    |           | not null | 
+ requested_period | character varying(16)    |           | not null | 
+ as_of_date       | timestamp with time zone |           |          | 
+ status           | taskstatus               |           | not null | 
+ created_at       | timestamp with time zone |           | not null | 
+ completed_at     | timestamp with time zone |           |          | 
+ latency_ms       | integer                  |           |          | 
+ tokens_used      | integer                  |           |          | 
+ error_message    | text                     |           |          | 
+Indexes:
+    "research_tasks_pkey" PRIMARY KEY, btree (task_id)
+    "ix_research_tasks_ticker" btree (ticker)
+    "ix_research_tasks_user_id" btree (user_id)
+Foreign-key constraints:
+    "research_tasks_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(user_id)
+Referenced by:
+    TABLE "agent_results" CONSTRAINT "agent_results_task_id_fkey" FOREIGN KEY (task_id) REFERENCES research_tasks(task_id)
+    TABLE "claims" CONSTRAINT "claims_task_id_fkey" FOREIGN KEY (task_id) REFERENCES research_tasks(task_id)
+    TABLE "contradictions" CONSTRAINT "contradictions_task_id_fkey" FOREIGN KEY (task_id) REFERENCES research_tasks(task_id)
+    TABLE "research_reports" CONSTRAINT "research_reports_task_id_fkey" FOREIGN KEY (task_id) REFERENCES research_tasks(task_id)
+    TABLE "source_documents" CONSTRAINT "source_documents_task_id_fkey" FOREIGN KEY (task_id) REFERENCES research_tasks(task_id)
+
+                      Table "public.research_reports"
+     Column     |           Type           | Collation | Nullable | Default 
+----------------+--------------------------+-----------+----------+---------
+ report_id      | uuid                     |           | not null | 
+ task_id        | uuid                     |           | not null | 
+ report_content | text                     |           | not null | 
+ summary        | text                     |           | not null | 
+ limitations    | text                     |           | not null | 
+ created_at     | timestamp with time zone |           | not null | 
+Indexes:
+    "research_reports_pkey" PRIMARY KEY, btree (report_id)
+    "research_reports_task_id_key" UNIQUE CONSTRAINT, btree (task_id)
+Foreign-key constraints:
+    "research_reports_task_id_fkey" FOREIGN KEY (task_id) REFERENCES research_tasks(task_id)
+
+                       Table "public.agent_results"
+    Column     |           Type           | Collation | Nullable | Default 
+---------------+--------------------------+-----------+----------+---------
+ result_id     | uuid                     |           | not null | 
+ task_id       | uuid                     |           | not null | 
+ agent_name    | character varying(32)    |           | not null | 
+ status        | agentstatus              |           | not null | 
+ output_json   | json                     |           |          | 
+ error_message | text                     |           |          | 
+ attempts      | integer                  |           | not null | 
+ latency_ms    | integer                  |           |          | 
+ tokens_used   | integer                  |           |          | 
+ cost_usd      | double precision         |           |          | 
+ created_at    | timestamp with time zone |           | not null | 
+Indexes:
+    "agent_results_pkey" PRIMARY KEY, btree (result_id)
+    "ix_agent_results_task_id" btree (task_id)
+Foreign-key constraints:
+    "agent_results_task_id_fkey" FOREIGN KEY (task_id) REFERENCES research_tasks(task_id)
+
+                       Table "public.source_documents"
+     Column      |           Type           | Collation | Nullable | Default 
+-----------------+--------------------------+-----------+----------+---------
+ source_id       | uuid                     |           | not null | 
+ task_id         | uuid                     |           | not null | 
+ source_type     | character varying(32)    |           | not null | 
+ title           | character varying(512)   |           | not null | 
+ source_url      | text                     |           |          | 
+ published_at    | timestamp with time zone |           |          | 
+ retrieved_at    | timestamp with time zone |           | not null | 
+ content_hash    | character varying(64)    |           | not null | 
+ content_excerpt | text                     |           |          | 
+Indexes:
+    "source_documents_pkey" PRIMARY KEY, btree (source_id)
+    "ix_source_documents_content_hash" btree (content_hash)
+    "ix_source_documents_task_id" btree (task_id)
+Foreign-key constraints:
+    "source_documents_task_id_fkey" FOREIGN KEY (task_id) REFERENCES research_tasks(task_id)
+

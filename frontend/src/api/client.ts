@@ -49,7 +49,13 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 const post = <T,>(path: string, body: unknown) => request<T>(path, { method: "POST", body: JSON.stringify(body) });
 
 export const api = {
-  register: (email: string, password: string) => post<{ access_token: string }>("/auth/register", { email, password }),
+  register: (email: string, password: string, full_name?: string, confirm_password?: string) =>
+    post<{ access_token: string }>("/auth/register", {
+      email,
+      password,
+      ...(full_name ? { full_name } : {}),
+      ...(confirm_password ? { confirm_password } : {}),
+    }),
   login: (email: string, password: string) => post<{ access_token: string }>("/auth/login", { email, password }),
   search: (q: string) => request<{ results: SearchHit[] }>(`/stocks/search?q=${encodeURIComponent(q)}`),
   startResearch: (ticker: string, asOf?: string) =>

@@ -5,7 +5,7 @@ import type { Preferences, SearchHit, TaskSummary, WatchItem } from "../api/type
 import { StatusPill } from "../components/Badges";
 import { shortDate } from "../lib/format";
 
-const PERIODS = ["6mo", "1y", "2y", "5y"];
+const PERIODS = ["1mo", "3mo", "6mo", "1y", "5y"];
 
 export default function HomePage() {
   const nav = useNavigate();
@@ -65,15 +65,33 @@ export default function HomePage() {
         <div className="rounded-lg border border-slate-200 bg-white p-4">
           <h2 className="mb-2 text-sm font-semibold text-slate-700">Research history</h2>
           {history.length === 0 ? <p className="text-sm text-slate-500">No research yet. Search for a stock to begin.</p> : (
-            <table className="w-full text-sm"><tbody>
-              {history.map((t) => (
-                <tr key={t.task_id} className="border-t border-slate-100 first:border-0">
-                  <td className="py-2 font-medium"><Link className="text-blue-700 underline" to={`/research/${t.task_id}`}>{t.ticker}</Link></td>
-                  <td><StatusPill status={t.status} /></td>
-                  <td className="text-right text-slate-500">{shortDate(t.created_at)}</td>
-                </tr>
-              ))}
-            </tbody></table>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-100 text-left text-xs font-medium text-slate-500">
+                    <th className="py-2">Stock</th>
+                    <th className="hidden sm:table-cell">Market</th>
+                    <th className="hidden md:table-cell">Period</th>
+                    <th>Status</th>
+                    <th className="text-right">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {history.map((t) => (
+                    <tr key={t.task_id} className="border-t border-slate-100 first:border-0">
+                      <td className="py-2 font-medium">
+                        <Link className="text-blue-700 underline" to={`/research/${t.task_id}`}>{t.ticker}</Link>
+                        {t.company_name && <span className="ml-2 hidden text-xs text-slate-500 sm:inline">{t.company_name}</span>}
+                      </td>
+                      <td className="hidden text-xs text-slate-500 sm:table-cell">{t.market}</td>
+                      <td className="hidden text-xs text-slate-500 md:table-cell">{t.requested_period || "2y"}</td>
+                      <td><StatusPill status={t.status} /></td>
+                      <td className="text-right text-xs text-slate-500">{shortDate(t.created_at)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </section>
@@ -84,9 +102,12 @@ export default function HomePage() {
           {watch.length === 0 ? <p className="text-sm text-slate-500">Nothing saved yet.</p> : (
             <ul className="space-y-1">
               {watch.map((w) => (
-                <li key={w.ticker} className="flex items-center justify-between text-sm">
-                  <span>{w.ticker} <span className="text-slate-500">{w.name}</span></span>
-                  <button className="text-xs text-blue-700 underline" onClick={() => start(w.ticker)}>Research</button>
+                <li key={w.ticker} className="flex items-center justify-between py-1 text-sm border-b border-slate-50 last:border-0">
+                  <span>{w.ticker} <span className="text-xs text-slate-500">{w.name}</span></span>
+                  <span className="flex items-center gap-2">
+                    <button className="text-xs text-red-600 hover:text-red-800" title="Remove from watchlist" onClick={() => run(async () => { await api.unwatch(w.ticker); await refresh(); })}>Remove</button>
+                    <button className="text-xs text-blue-700 underline" onClick={() => start(w.ticker)}>Research</button>
+                  </span>
                 </li>
               ))}
             </ul>
@@ -95,13 +116,19 @@ export default function HomePage() {
         {prefs && (
           <div className="rounded-lg border border-slate-200 bg-white p-4">
             <h2 className="mb-2 text-sm font-semibold text-slate-700">Preferences</h2>
-            <label className="text-sm">Default analysis period
-              <select value={prefs.analysis_period} onChange={(e) => run(async () => setPrefs(await api.setPreferences({ ...prefs, analysis_period: e.target.value })))}
+            <label className="block text-sm">Market
+              <select value={prefs.market} onChange={(e) => run(async () => setPrefs(await api.setPreferences({ ...prefs, market: e.target.value })))}
                 className="mt-1 block w-full rounded border border-slate-300 px-2 py-1">
-                {PERIODS.map((p) => <option key={p}>{p}</option>)}
+                <option value="NSE">NSE (National Stock Exchange)</option>
+                <option value="BSE">BSE (Bombay Stock Exchange)</option>
               </select>
             </label>
-            <p className="mt-2 text-xs text-slate-500">Market: NSE</p>
+            <label className="mt-3 block text-sm">Default analysis period
+              <select value={prefs.analysis_period} onChange={(e) => run(async () => setPrefs(await api.setPreferences({ ...prefs, analysis_period: e.target.value })))}
+                className="mt-1 block w-full rounded border border-slate-300 px-2 py-1">
+                {PERIODS.map((p) => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </label>
           </div>
         )}
       </aside>

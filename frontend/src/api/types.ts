@@ -5,7 +5,9 @@ export type AgentName = "fundamental" | "technical" | "news" | "risk";
 export interface TaskSummary {
   task_id: string;
   ticker: string;
+  company_name?: string | null;
   market: string;
+  requested_period?: string;
   status: TaskStatus;
   created_at: string;
   completed_at: string | null;

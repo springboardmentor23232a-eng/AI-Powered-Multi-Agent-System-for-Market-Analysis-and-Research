@@ -1,0 +1,236 @@
+{
+  "registration_password_mismatch": {
+    "status": 422,
+    "json": {
+      "detail": [
+        {
+          "type": "value_error",
+          "loc": [
+            "body"
+          ],
+          "msg": "Value error, Passwords do not match",
+          "input": {
+            "full_name": "Senior Equity Analyst",
+            "email": "analyst_abfa5b@example.com",
+            "password": "SecurePass123!",
+            "confirm_password": "MismatchedPassword123!"
+          },
+          "ctx": {
+            "error": {}
+          }
+        }
+      ]
+    }
+  },
+  "registration_valid_with_full_name": {
+    "status": 201,
+    "json": {
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDU4OWZiMi1mMDRjLTRlOTUtYWVjMS0yNmQ5ODAyMjA5YWQiLCJleHAiOjE3OTQzMjEzMjl9.g84xEG-1qr73V0Rfvm_-thzADrC_TnVtRNXAjQzkQpI",
+      "token_type": "bearer"
+    }
+  },
+  "registration_duplicate": {
+    "status": 409,
+    "json": {
+      "detail": "Email already registered"
+    }
+  },
+  "registration_invalid_email": {
+    "status": 422,
+    "json": {
+      "detail": [
+        {
+          "type": "value_error",
+          "loc": [
+            "body",
+            "email"
+          ],
+          "msg": "value is not a valid email address: An email address must have an @-sign.",
+          "input": "not-an-email",
+          "ctx": {
+            "reason": "An email address must have an @-sign."
+          }
+        }
+      ]
+    }
+  },
+  "registration_short_password": {
+    "status": 422,
+    "json": {
+      "detail": [
+        {
+          "type": "string_too_short",
+          "loc": [
+            "body",
+            "password"
+          ],
+          "msg": "String should have at least 8 characters",
+          "input": "123",
+          "ctx": {
+            "min_length": 8
+          }
+        },
+        {
+          "type": "string_too_short",
+          "loc": [
+            "body",
+            "confirm_password"
+          ],
+          "msg": "String should have at least 8 characters",
+          "input": "123",
+          "ctx": {
+            "min_length": 8
+          }
+        }
+      ]
+    }
+  },
+  "login_valid": {
+    "status": 200,
+    "has_token": true
+  },
+  "login_invalid_password": {
+    "status": 401,
+    "json": {
+      "detail": "Invalid credentials"
+    }
+  },
+  "login_nonexistent_user": {
+    "status": 401,
+    "json": {
+      "detail": "Invalid credentials"
+    }
+  },
+  "jwt_payload_inspection": {
+    "sub_present": true,
+    "exp_present": true,
+    "has_sensitive_fields": false,
+    "algorithm": "HS256"
+  },
+  "protected_without_token": {
+    "status": 401,
+    "json": {
+      "detail": "Not authenticated"
+    }
+  },
+  "tampered_token": {
+    "status": 401,
+    "json": {
+      "detail": "Invalid or expired token"
+    }
+  },
+  "expired_token": {
+    "status": 401,
+    "json": {
+      "detail": "Invalid or expired token"
+    }
+  },
+  "auth_me_returns_full_name": {
+    "status": 200,
+    "json": {
+      "user_id": "10589fb2-f04c-4e95-aec1-26d9802209ad",
+      "email": "analyst_abfa5b@example.com",
+      "full_name": "Senior Equity Analyst",
+      "preferences": {}
+    }
+  },
+  "user1_add_watchlist": {
+    "status": 201,
+    "json": {
+      "ticker": "TCS",
+      "name": "Tata Consultancy Services"
+    }
+  },
+  "user1_duplicate_watchlist": {
+    "status": 409,
+    "json": {
+      "detail": "Already in watchlist"
+    }
+  },
+  "user2_watchlist_isolation": {
+    "status": 200,
+    "items": []
+  },
+  "user2_cannot_delete_user1_stock": {
+    "status": 404,
+    "json": {
+      "detail": "Not in watchlist"
+    }
+  },
+  "user1_create_research": {
+    "status": 202,
+    "json": {
+      "task_id": "6eea9fd0-043c-4317-b3e0-3057250125f6",
+      "ticker": "INFY",
+      "company_name": "Infosys",
+      "market": "NSE",
+      "requested_period": "2y",
+      "status": "queued",
+      "created_at": "2026-11-10T13:35:30.197588Z",
+      "completed_at": null
+    }
+  },
+  "user1_history_metadata": {
+    "status": 200,
+    "first_task": {
+      "task_id": "6eea9fd0-043c-4317-b3e0-3057250125f6",
+      "ticker": "INFY",
+      "company_name": "Infosys",
+      "market": "NSE",
+      "requested_period": "2y",
+      "status": "partial",
+      "created_at": "2026-11-10T19:05:30.197588+05:30",
+      "completed_at": "2026-11-10T19:05:33.678886+05:30"
+    }
+  },
+  "user2_cannot_view_user1_task": {
+    "status": 404,
+    "json": {
+      "detail": "Research task not found"
+    }
+  },
+  "user2_history_empty": {
+    "status": 200,
+    "tasks": []
+  },
+  "preferences_update_bse": {
+    "status": 200,
+    "json": {
+      "market": "BSE",
+      "analysis_period": "6mo"
+    }
+  },
+  "preferences_update_nse": {
+    "status": 200,
+    "json": {
+      "market": "NSE",
+      "analysis_period": "1y"
+    }
+  },
+  "preferences_invalid_market": {
+    "status": 422,
+    "json": {
+      "detail": [
+        {
+          "type": "string_pattern_mismatch",
+          "loc": [
+            "body",
+            "market"
+          ],
+          "msg": "String should match pattern '^(NSE|BSE)$'",
+          "input": "NYSE",
+          "ctx": {
+            "pattern": "^(NSE|BSE)$"
+          }
+        }
+      ]
+    }
+  },
+  "user2_preferences_isolated": {
+    "status": 200,
+    "json": {
+      "market": "NSE",
+      "analysis_period": "2y"
+    }
+  }
+}
