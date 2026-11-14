@@ -160,3 +160,30 @@ Developed as part of the AI-Powered Multi-Agent System for Market Analysis and R
 ## License
 
 Refer to the LICENSE file.
+
+## Output Works
+
+User Dashboard
+
+<img width="1600" height="756" alt="WhatsApp Image 2026-11-15 at 2 40 48 AM" src="https://github.com/user-attachments/assets/ab9bc241-a189-495a-aba1-bc10573f43e7" />
+
+Stock Search
+
+<img width="1600" height="759" alt="WhatsApp Image 2026-11-15 at 2 41 51 AM" src="https://github.com/user-attachments/assets/6d992582-f254-4174-8053-c6db89c9b4c5" />
+
+Research History
+
+<img width="1600" height="759" alt="WhatsApp Image 2026-11-15 at 2 41 51 AM" src="https://github.com/user-attachments/assets/0d4b9dbe-fbe8-405a-a2db-00ad7b48a46e" />
+
+Watchlist
+
+<img width="1600" height="757" alt="WhatsApp Image 2026-11-15 at 2 42 19 AM" src="https://github.com/user-attachments/assets/97afa378-d097-4666-b394-6937b74f20b0" />
+
+Preferences
+
+<img width="1600" height="771" alt="WhatsApp Image 2026-11-15 at 2 42 37 AM" src="https://github.com/user-attachments/assets/4f278c49-44fe-410b-a33d-40b80c8899c6" />
+
+
+
+
+
