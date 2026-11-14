@@ -2,7 +2,7 @@
 
 A multi-agent stock research analyst. **Module 1: user authentication and research workspace.**
 
-User authentication and a personal research workspace. Users can register, log in, keep a watchlist of stocks, choose their market and analysis period, and view their research history. Stock search is powered by Yahoo Finance (`yfinance`) and all user data is stored in PostgreSQL.
+This repo contains, User authentication and a personal research workspace. Users can register, log in, keep a watchlist of stocks, choose their market and analysis period, and view their research history as of now. Stock search is powered by Yahoo Finance (`yfinance`) and all user data is stored in PostgreSQL.
 
 ## Features
 
