@@ -12,6 +12,11 @@
 Built as part of the **Infosys Springboard Virtual Internship**, this repository hosts the complete implementation of **Module 1: User Authentication & Foundation Workspace**, fully connected to a **FastAPI** backend, a **PostgreSQL** relational database, and an interactive **React + Vite** frontend powered by live market feeds from **Yahoo Finance**.
 
 ---
+<img width="1837" height="837" alt="Screenshot 2026-11-14 231137" src="https://github.com/user-attachments/assets/94f8b631-c554-4d22-bebc-97d361485403" />
+<img width="1886" height="866" alt="Screenshot 2026-11-14 231254" src="https://github.com/user-attachments/assets/92ff8035-adac-415b-87fe-cf2e7ac5f507" />
+
+
+
 
 ## 🚀 Key Features Implemented (Module 1 Scope)
 
