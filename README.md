@@ -280,7 +280,7 @@ CREATE DATABASE stock_research_db;
 
 ## 👩‍💻 Author & Acknowledgements
 
-- **Student / Developer:** M. Vaishnavi
+- **Student:** M. Vaishnavi
 - **Mentorship & Program:** Infosys Springboard Virtual Internship
 - **Project Domain:** AI-Powered Multi-Agent Stock Research and Analysis
 
