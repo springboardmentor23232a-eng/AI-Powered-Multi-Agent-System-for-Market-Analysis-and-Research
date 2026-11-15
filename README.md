@@ -198,11 +198,11 @@ These demonstrate the application's interface, market overview, stock charts, an
 
 ### 3. Stock Charts
 
-![User Dashboard](./dashboard%20images/Screenshot%202026-11-15%20at%201.37.21%20PM.png)
+![User Dashboard](./dashboard%20images/Screenshot%202026-11-15%20at%202.49.30%20PM.png)
 
 ### 4. Stock Comparison
 
-![Dashboard Overview](./dashboard%20images/Screenshot%202026-11-15%20at%201.22.48%20PM.png)
+![Dashboard Overview](./dashboard%20images/Screenshot%202026-11-15%20at%202.50.00%20PM.png)
 
 ### 5. User Preferences
 
