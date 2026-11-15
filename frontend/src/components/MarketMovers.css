@@ -1,0 +1,168 @@
+/* Market Gainers and Losers */
+
+.market-movers {
+  background: #ffffff;
+  padding: 28px;
+  margin-top: 25px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+}
+
+.market-movers-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.market-movers-header h2 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 20px;
+}
+
+.market-movers-header p {
+  color: #64748b;
+  font-size: 13px;
+  margin-top: 7px;
+}
+
+.market-demo-badge {
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 7px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.market-movers-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.movers-card {
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.movers-card h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 17px;
+}
+
+.gainers-title {
+  color: #16a34a;
+}
+
+.losers-title {
+  color: #dc2626;
+}
+
+.mover-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.mover-item:last-child {
+  border-bottom: none;
+}
+
+.mover-item h4 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.mover-item p {
+  margin: 5px 0 0;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.gain-value {
+  color: #16a34a;
+  background: #dcfce7;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.loss-value {
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .market-movers-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .market-movers {
+    padding: 18px;
+  }
+}
+
+/* =================================
+   MARKET MOVERS - DARK MODE
+================================= */
+
+.dark-mode .market-movers {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .market-movers-header h2 {
+  color: #f1f5f9;
+}
+
+.dark-mode .market-movers-header p {
+  color: #94a3b8;
+}
+
+.dark-mode .market-demo-badge {
+  background: #1e3a8a;
+  color: #bfdbfe;
+}
+
+.dark-mode .movers-card {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.dark-mode .mover-item {
+  border-bottom-color: #334155;
+}
+
+.dark-mode .mover-item h4 {
+  color: #e2e8f0;
+}
+
+.dark-mode .mover-item p {
+  color: #94a3b8;
+}
+
+.dark-mode .gain-value {
+  background: #14532d;
+  color: #86efac;
+}
+
+.dark-mode .loss-value {
+  background: #7f1d1d;
+  color: #fecaca;
+}
