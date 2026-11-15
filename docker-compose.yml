@@ -1,0 +1,22 @@
+# Local development database. Start with:  docker compose up -d
+# These credentials are for your own computer only; production uses its own secrets.
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: stock-research-db
+    environment:
+      POSTGRES_USER: stockapp
+      POSTGRES_PASSWORD: stockapp
+      POSTGRES_DB: stock_research
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stockapp -d stock_research"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
