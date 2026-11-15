@@ -1,0 +1,66 @@
+# ==============================================================================
+# FinCrew Repository .gitignore
+# ==============================================================================
+
+# 1. Environment & Secret Files (NEVER COMMIT ACTUAL SECRETS)
+.env
+.env.*
+*.env
+backend/.env
+frontend/.env
+!.env.example
+!backend/.env.example
+!frontend/.env.example
+
+# 2. Virtual Environments
+.venv/
+backend/.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+.eggs/
+
+# 3. Node & Frontend Dependencies
+node_modules/
+frontend/node_modules/
+
+# 4. Build Folders & Bundled Artifacts
+dist/
+frontend/dist/
+build/
+out/
+.next/
+
+# 5. Caches & Compiled Bytecode
+__pycache__/
+*.py[cod]
+*.pyc
+*$py.class
+.Python
+*.so
+.pytest_cache/
+.cache/
+*.cache
+
+# 6. Local Database Files & Dumps
+*.db
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+*.sql
+*.dump
+
+# 7. IDE & Operating System Files
+.vscode/
+.idea/
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 8. Antigravity & Workspace Logs
+.system_generated/

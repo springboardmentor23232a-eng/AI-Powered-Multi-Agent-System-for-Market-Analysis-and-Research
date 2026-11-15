@@ -1,0 +1,31 @@
+# ==============================================================================
+# FinCrew Backend Dependencies (Python 3.10+)
+# ==============================================================================
+
+# FastAPI Framework and Production ASGI Web Server
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+
+# Database ORM, Migrations & PostgreSQL Driver (SQLAlchemy 2.x + psycopg 3 + Alembic)
+sqlalchemy>=2.0.0
+psycopg[binary]>=3.2.0
+alembic>=1.13.0
+
+# Environment and Configuration Management (Pydantic v2 Settings)
+pydantic-settings>=2.4.0
+
+# Financial Market Data Provider & Quantitative Analytics
+yfinance>=0.2.40
+pandas>=2.2.0
+numpy>=1.26.0
+
+# Executive Report & Document Generation (PDF Synthesis)
+fpdf2>=2.8.0
+
+# Cryptographic Security, Password Hashing & JWT Tokens
+bcrypt>=4.0.0
+pyjwt>=2.9.0
+
+# Testing Framework & Async HTTP Client
+httpx>=0.27.0
+pytest>=8.0.0
