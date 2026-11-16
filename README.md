@@ -237,7 +237,7 @@ These demonstrate the application's interface, market overview, stock charts, an
 
 **Debajit Pramanick**
 
-GitHub: https://github.com/springboardmentor23232a-eng
+GitHub: https://github.com/TechnoDeba
 
 ---
 
