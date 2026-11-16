@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-[#060608] text-zinc-100 antialiased selection:bg-rose-600/30 selection:text-rose-200;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Custom dark scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #08080c;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #22222e;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #e11d48;
+  }
+}
+
+@layer components {
+  /* ── Reusable input base ── */
+  .input-base {
+    @apply w-full rounded-xl border border-white/[0.09] bg-[#0b0b10]
+           px-4 py-3 text-sm text-zinc-100 placeholder-zinc-500
+           backdrop-blur-md transition-all duration-200 outline-none
+           focus:border-rose-500/80 focus:ring-2 focus:ring-rose-500/20
+           hover:border-white/[0.18];
+  }
+
+  .input-error {
+    @apply border-rose-500/80 focus:border-rose-500 focus:ring-rose-500/25;
+  }
+
+  /* ── Primary button with crimson glow ── */
+  .btn-primary {
+    @apply flex items-center justify-center gap-2
+           rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-red-600 px-5 py-2.5 text-sm font-semibold
+           text-white shadow-lg shadow-rose-950/50
+           transition-all duration-200
+           hover:from-red-500 hover:via-rose-500 hover:to-red-500 hover:shadow-rose-700/30
+           active:scale-[0.98]
+           disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:from-red-600 disabled:hover:via-rose-600 disabled:hover:to-red-600 disabled:active:scale-100;
+  }
+
+  /* ── Secondary button ── */
+  .btn-secondary {
+    @apply flex items-center justify-center gap-2
+           rounded-xl border border-white/[0.1] bg-white/[0.04] px-4 py-2 text-sm font-medium
+           text-zinc-300 transition-all duration-200
+           hover:bg-white/[0.08] hover:text-white hover:border-white/[0.2]
+           active:scale-[0.98]
+           disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* ── Glass card: modern dark charcoal with crisp thin border ── */
+  .glass-card {
+    @apply rounded-2xl border border-white/[0.08]
+           bg-[#0d0d13]/90 backdrop-blur-xl shadow-2xl shadow-black/80;
+  }
+
+  /* ── Glowing badge ── */
+  .badge-crimson {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold
+           bg-rose-500/10 text-rose-400 border border-rose-500/25;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent;
+  }
+
+  .text-crimson-gradient {
+    @apply bg-gradient-to-r from-red-500 via-rose-500 to-red-600 bg-clip-text text-transparent;
+  }
+
+  /* Ambient red radial lighting */
+  .bg-ambient-glow {
+    background: radial-gradient(ellipse 70% 40% at 50% -10%, rgba(225, 29, 72, 0.16), transparent 70%);
+  }
+
+  .bg-radial-card {
+    background: radial-gradient(ellipse at top left, rgba(225, 29, 72, 0.05), transparent 60%), #0d0d13;
+  }
+}
