@@ -42,6 +42,23 @@ export const stockService = {
     });
     return response.data;
   },
+
+  getHistorical: async (ticker, period = '1y') => {
+    const response = await api.get(`/api/stocks/${encodeURIComponent(ticker)}/historical`, {
+      params: { period },
+    });
+    return response.data;
+  },
+
+  getProfile: async (ticker) => {
+    const response = await api.get(`/api/stocks/${encodeURIComponent(ticker)}/profile`);
+    return response.data;
+  },
+
+  getFinancials: async (ticker) => {
+    const response = await api.get(`/api/stocks/${encodeURIComponent(ticker)}/financials`);
+    return response.data;
+  },
 };
 
 export const dashboardService = {

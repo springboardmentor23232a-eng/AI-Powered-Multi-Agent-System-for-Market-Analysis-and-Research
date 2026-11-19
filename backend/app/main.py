@@ -28,7 +28,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Multi-Agent Stock Research Analyst API",
-    description="Backend API for Multi-Agent Stock Research Analyst - Module 1: User Authentication & Workspace",
+    description="Backend API for Multi-Agent Stock Research Analyst - Market Analytics, Time Series Analysis & Research Workspace",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",

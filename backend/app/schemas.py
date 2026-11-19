@@ -185,3 +185,72 @@ class UserPreferenceOut(BaseModel):
     class Config:
         from_attributes = True
 
+
+# ============================================================================
+# MODULE 2 SCHEMAS: Historical Data, OHLCV, TSA, Profile & Financials
+# ============================================================================
+
+class OHLCVRecord(BaseModel):
+    date: str
+    open: float
+    high: float
+    low: float
+    close: float
+    volume: int
+    change_percent: Optional[float] = None
+
+
+class HistoricalDataResponse(BaseModel):
+    ticker: str
+    company_name: str
+    market: str
+    exchange: str
+    currency: str
+    currency_symbol: str
+    is_us_market: bool
+    period: str
+    interval: str = "1d"
+    data_source: str = "yfinance API"
+    retrieved_at: str  # YYYY-MM-DD HH:mm:ss
+    time_series_analysis: dict
+    ohlcv: List[OHLCVRecord]
+
+
+class CompanyProfileResponse(BaseModel):
+    ticker: str
+    company_name: str
+    market: str
+    exchange: str
+    currency: str
+    currency_symbol: str
+    is_us_market: bool
+    sector: Optional[str] = "N/A"
+    industry: Optional[str] = "N/A"
+    country: Optional[str] = "N/A"
+    website: Optional[str] = None
+    summary: Optional[str] = "No description available."
+    market_cap: Optional[float] = None
+    market_cap_formatted: Optional[str] = None
+    trailing_pe: Optional[float] = None
+    forward_pe: Optional[float] = None
+    beta: Optional[float] = None
+    fifty_two_week_high: Optional[float] = None
+    fifty_two_week_low: Optional[float] = None
+    dividend_yield: Optional[float] = None
+    executives: List[dict] = []
+    data_source: str = "yfinance API"
+    retrieved_at: str
+
+
+class FinancialStatementsResponse(BaseModel):
+    ticker: str
+    company_name: str
+    currency: str
+    currency_symbol: str
+    income_statement: List[dict] = []
+    balance_sheet: List[dict] = []
+    cash_flow: List[dict] = []
+    data_source: str = "yfinance API"
+    retrieved_at: str
+
+

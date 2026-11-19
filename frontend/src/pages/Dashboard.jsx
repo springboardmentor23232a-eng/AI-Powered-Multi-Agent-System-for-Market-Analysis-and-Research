@@ -17,11 +17,17 @@ import {
   Globe,
   Loader2,
   SlidersHorizontal,
-  Check
+  Check,
+  Activity,
+  Download,
+  FileDown,
+  Database
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import StockSearch from '../components/StockSearch';
 import AgentCard from '../components/AgentCard';
+import StockAnalyticsHub from '../components/StockAnalyticsHub';
+import StructuredReportViewer from '../components/StructuredReportViewer';
 import { useAuth } from '../context/AuthContext';
 import { dashboardService } from '../services/api';
 
@@ -47,9 +53,63 @@ export const Dashboard = () => {
   const [activeReport, setActiveReport] = useState(null);
   const [loadingReport, setLoadingReport] = useState(false);
   const [launchingResearch, setLaunchingResearch] = useState(false);
+  const [pdfNotice, setPdfNotice] = useState(false);
 
-  // USD currency confirmation modal (for watchlist Analyze button)
-  const [usdConfirm, setUsdConfirm] = useState({ open: false, stock: null });
+  const handleDownloadMarkdown = () => {
+    if (!activeReport) return;
+    const reportDate = new Date(activeReport?.created_at || selectedTask?.created_at).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    const mdText = `# Research Report: ${selectedTask?.ticker} - ${selectedTask?.company_name}
+Report Generated Date: ${reportDate}
+Data Source: yfinance API
+Data Retrieval Timestamp: ${new Date(selectedTask?.created_at).toLocaleString()}
+Market Exchange: ${selectedTask?.market} | Horizon: ${selectedTask?.requested_period}
+
+## Executive Summary
+${activeReport.summary}
+
+## Detailed Findings
+${activeReport.report_content}
+
+## Limitations & Disclaimer
+${activeReport.limitations}
+`;
+    const blob = new Blob([mdText], { type: 'text/markdown;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${selectedTask?.ticker || 'Stock'}_Research_Report.md`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Market Analytics Hub State (Appears only when user searches or selects a stock)
+  const [analyticsTicker, setAnalyticsTicker] = useState(null);
+
+  const handleSelectStockForAnalytics = (selectedTicker) => {
+    setAnalyticsTicker(selectedTicker);
+    // Smooth scroll down to the analytics hub
+    setTimeout(() => {
+      const el = document.getElementById('analytics-hub');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
+  const handleQuickAddWatchlist = async (tickerToAdd) => {
+    try {
+      await dashboardService.addToWatchlist(tickerToAdd);
+      fetchWatchlist();
+    } catch (e) {
+      console.error('Failed to add to watchlist:', e);
+    }
+  };
+
+  // USD currency confirmation modal (for watchlist, preference, analytics)
+  const [usdConfirm, setUsdConfirm] = useState({ open: false, stock: null, type: null, targetMarket: null });
 
   // Form state for new research
   const [researchForm, setResearchForm] = useState({
@@ -231,7 +291,19 @@ export const Dashboard = () => {
                 <span className="text-xs text-slate-400 font-medium">Market:</span>
                 <select
                   value={preferences.preferred_market}
-                  onChange={(e) => setPreferences({ ...preferences, preferred_market: e.target.value })}
+                  onChange={(e) => {
+                    const newMarket = e.target.value;
+                    if (newMarket === 'NASDAQ' || newMarket === 'NYSE') {
+                      setUsdConfirm({
+                        open: true,
+                        type: 'preference',
+                        targetMarket: newMarket,
+                        stock: null,
+                      });
+                    } else {
+                      setPreferences({ ...preferences, preferred_market: newMarket });
+                    }
+                  }}
                   className="px-3 py-1.5 bg-[#111620] border border-[#1e293b] rounded-lg text-xs font-semibold text-white focus:outline-none focus:border-emerald-500 transition-colors"
                 >
                   <option value="NSE">NSE (India)</option>
@@ -287,8 +359,22 @@ export const Dashboard = () => {
           <StockSearch
             onWatchlistUpdated={fetchWatchlist}
             onStartResearch={openResearchModal}
+            onSelectStock={handleSelectStockForAnalytics}
           />
         </section>
+
+        {/* Module 2: Market Analytics & Financial Intelligence Hub */}
+        {analyticsTicker && (
+          <section id="analytics-hub" className="animate-fade-in">
+            <StockAnalyticsHub
+              ticker={analyticsTicker}
+              initialPeriod={preferences.preferred_period}
+              onClose={() => setAnalyticsTicker(null)}
+              onAddToWatchlist={handleQuickAddWatchlist}
+              onOpenResearch={openResearchModal}
+            />
+          </section>
+        )}
 
         {/* Research Agents Section */}
         <section className="space-y-4">
@@ -345,10 +431,22 @@ export const Dashboard = () => {
                 <div className="divide-y divide-[#18212e] w-full">
                   {watchlist.map((stock) => (
                     <div key={stock.saved_stock_id} className="flex items-center justify-between py-3 px-1 gap-2">
-                      {/* Left: ticker + enriched market info */}
-                      <div className="flex flex-col min-w-0">
+                      {/* Left: ticker + enriched market info (Clickable to open Market Analytics & Financial Intelligence) */}
+                      <div
+                        onClick={() => {
+                          if (stock.is_us_market) {
+                            setUsdConfirm({ open: true, stock, type: 'analytics' });
+                          } else {
+                            handleSelectStockForAnalytics(stock.ticker);
+                          }
+                        }}
+                        className="flex flex-col min-w-0 cursor-pointer group"
+                        title="Click to view Market Analytics & Financial Intelligence"
+                      >
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-bold text-white text-sm tracking-wide">{stock.ticker}</span>
+                          <span className="font-bold text-white text-sm tracking-wide group-hover:text-emerald-400 transition-colors">
+                            {stock.ticker}
+                          </span>
                           {/* Currency badge */}
                           {stock.is_us_market ? (
                             <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-950/60 text-amber-400 border border-amber-500/40">$ USD</span>
@@ -360,7 +458,9 @@ export const Dashboard = () => {
                           )}
                         </div>
                         {stock.company_name && (
-                          <span className="text-[11px] text-slate-400 truncate max-w-[180px] mt-0.5">{stock.company_name}</span>
+                          <span className="text-[11px] text-slate-400 truncate max-w-[180px] mt-0.5 group-hover:text-slate-200 transition-colors">
+                            {stock.company_name}
+                          </span>
                         )}
                         <div className="flex items-center gap-2 mt-0.5">
                           {stock.current_price != null && (
@@ -381,7 +481,7 @@ export const Dashboard = () => {
                         <button
                           onClick={() => {
                             if (stock.is_us_market) {
-                              setUsdConfirm({ open: true, stock });
+                              setUsdConfirm({ open: true, stock, type: 'research' });
                             } else {
                               openResearchModal(stock.ticker, stock.company_name, stock.exchange || '');
                             }
@@ -473,8 +573,8 @@ export const Dashboard = () => {
 
       </main>
 
-      {/* ── MODAL 1: USD Currency Confirmation (Watchlist Analyze) ── */}
-      {usdConfirm.open && usdConfirm.stock && (
+      {/* ── MODAL 1: USD Currency Confirmation (Preference, Watchlist, Analytics) ── */}
+      {usdConfirm.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           <div className="w-full max-w-sm bg-[#0b0f15] border border-amber-500/40 rounded-2xl p-6 shadow-2xl">
             <div className="flex items-start gap-3 mb-4">
@@ -482,34 +582,51 @@ export const Dashboard = () => {
                 <AlertTriangle className="w-5 h-5 text-amber-400" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white mb-1">Currency Notice — Are you sure?</h3>
-                <p className="text-sm text-slate-300 leading-relaxed">
-                  <span className="font-semibold text-amber-300">{usdConfirm.stock.ticker}</span> is listed on a{' '}
-                  <span className="font-semibold text-amber-300">US Exchange ({usdConfirm.stock.exchange || 'NASDAQ/NYSE'})</span>.
-                  All prices and financial data are quoted in{' '}
-                  <span className="font-bold text-white">US Dollars (USD $)</span>.
-                </p>
+                <h3 className="text-base font-bold text-white mb-1">Currency Notice — US Dollar Market</h3>
+                {usdConfirm.type === 'preference' ? (
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    You have selected <span className="font-semibold text-amber-300">{usdConfirm.targetMarket} (US Market)</span> as your market preference. All stock valuations, historical prices, and analytics will be quoted in <span className="font-bold text-white">US Dollars (USD $)</span>.
+                  </p>
+                ) : (
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    <span className="font-semibold text-amber-300">{usdConfirm.stock?.ticker}</span> is listed on a{' '}
+                    <span className="font-semibold text-amber-300">US Exchange ({usdConfirm.stock?.exchange || 'NASDAQ/NYSE'})</span>.
+                    All prices and financial data are quoted in{' '}
+                    <span className="font-bold text-white">US Dollars (USD $)</span>.
+                  </p>
+                )}
               </div>
             </div>
             <div className="p-3 rounded-xl bg-amber-950/30 border border-amber-500/20 text-xs text-amber-300/90 mb-5">
-              💡 If you are based in India, note that returns will be affected by USD/INR exchange rate fluctuations.
+              💡 If you are based in India, note that returns and metrics will be affected by USD/INR foreign exchange fluctuations.
             </div>
             <div className="flex items-center gap-3 justify-end">
               <button
-                onClick={() => setUsdConfirm({ open: false, stock: null })}
+                type="button"
+                onClick={() => setUsdConfirm({ open: false, stock: null, type: null, targetMarket: null })}
                 className="px-4 py-2 rounded-lg border border-[#1e293b] text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={() => {
-                  const s = usdConfirm.stock;
-                  setUsdConfirm({ open: false, stock: null });
-                  openResearchModal(s.ticker, s.company_name, s.exchange || 'NASDAQ');
+                  if (usdConfirm.type === 'preference') {
+                    setPreferences((prev) => ({ ...prev, preferred_market: usdConfirm.targetMarket }));
+                    setUsdConfirm({ open: false, stock: null, type: null, targetMarket: null });
+                  } else if (usdConfirm.type === 'analytics') {
+                    const t = usdConfirm.stock?.ticker;
+                    setUsdConfirm({ open: false, stock: null, type: null, targetMarket: null });
+                    if (t) handleSelectStockForAnalytics(t);
+                  } else {
+                    const s = usdConfirm.stock;
+                    setUsdConfirm({ open: false, stock: null, type: null, targetMarket: null });
+                    if (s) openResearchModal(s.ticker, s.company_name, s.exchange || 'NASDAQ');
+                  }
                 }}
-                className="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold transition-all"
+                className="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold transition-all shadow-md"
               >
-                Yes, I am Sure (Proceed in USD $)
+                Yes, Proceed in USD ($)
               </button>
             </div>
           </div>
@@ -637,7 +754,7 @@ export const Dashboard = () => {
       {/* ── MODAL 3: View Generated Research Report ── */}
       {isReportModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
-          <div className="w-full max-w-2xl bg-[#0b0f15] border border-[#1c2533] rounded-3xl p-6 sm:p-8 shadow-2xl relative max-h-[90vh] flex flex-col justify-between">
+          <div className="w-full max-w-3xl bg-[#0b0f15] border border-[#1c2533] rounded-3xl p-6 sm:p-8 shadow-2xl relative max-h-[90vh] flex flex-col justify-between">
 
             {/* Header */}
             <div className="flex items-center justify-between border-b border-[#1c2533] pb-4 mb-4">
@@ -655,10 +772,28 @@ export const Dashboard = () => {
                   <p className="text-xs text-slate-400">
                     {selectedTask?.company_name} • {selectedTask?.market} ({selectedTask?.requested_period})
                   </p>
+                  {/* Report Generated Date, Data Source & Retrieval Time Badges */}
+                  <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-2.5 flex-wrap">
+                    <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#121924] border border-[#1e293b] text-emerald-300 font-medium">
+                      <Calendar className="w-3 h-3 text-emerald-400" />
+                      <span>Generated: <strong className="text-white">{new Date(activeReport?.created_at || selectedTask?.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</strong></span>
+                    </span>
+                    <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#121924] border border-[#1e293b] text-slate-300 font-medium">
+                      <Database className="w-3 h-3 text-emerald-400" />
+                      <span>Source: <strong className="text-white">yfinance API</strong></span>
+                    </span>
+                    <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#121924] border border-[#1e293b] text-slate-300 font-mono">
+                      <Clock className="w-3 h-3 text-cyan-400" />
+                      <span>Retrieved: {new Date(selectedTask?.created_at).toLocaleString()}</span>
+                    </span>
+                  </div>
                 </div>
               </div>
               <button
-                onClick={() => setIsReportModalOpen(false)}
+                onClick={() => {
+                  setIsReportModalOpen(false);
+                  setPdfNotice(false);
+                }}
                 className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
               >
                 <X className="w-5 h-5" />
@@ -667,6 +802,14 @@ export const Dashboard = () => {
 
             {/* Content Body */}
             <div className="flex-1 overflow-y-auto pr-2 space-y-4 text-xs sm:text-sm">
+              {/* PDF Export Banner Notice */}
+              {pdfNotice && (
+                <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/40 text-amber-300 text-xs flex items-center justify-between animate-fade-in">
+                  <span>📄 <strong>PDF Export Notice:</strong> PDF report download option is currently a placeholder. Markdown report download is active below!</span>
+                  <button onClick={() => setPdfNotice(false)} className="text-amber-400 hover:text-white ml-2 text-sm">✕</button>
+                </div>
+              )}
+
               {loadingReport ? (
                 <div className="flex items-center justify-center py-16 gap-3 text-slate-400">
                   <Loader2 className="w-6 h-6 text-emerald-400 animate-spin" />
@@ -675,24 +818,62 @@ export const Dashboard = () => {
               ) : activeReport ? (
                 <>
                   {/* Executive Summary */}
-                  <div className="p-4 rounded-xl bg-[#101722] border border-[#1e293b]">
-                    <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>Executive Synthesis</span>
-                    </h4>
-                    <p className="text-slate-300 leading-relaxed">
-                      {activeReport.summary}
+                  <div className="p-4 sm:p-5 rounded-2xl bg-[#0c121c] border border-emerald-500/25 space-y-3 shadow-md">
+                    <div className="flex items-center justify-between border-b border-[#182333] pb-2.5">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400">
+                          <Sparkles className="w-3.5 h-3.5" />
+                        </div>
+                        <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
+                          Executive Synthesis
+                        </h4>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {isUSMarket(selectedTask?.market) && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                            USD ($)
+                          </span>
+                        )}
+                        <span className="text-[10px] font-medium text-slate-400 bg-[#141b25] px-2 py-0.5 rounded-md border border-[#222e40]">
+                          {selectedTask?.requested_period}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* US Currency Notice Callout */}
+                    {(isUSMarket(selectedTask?.market) || activeReport.summary?.includes('Currency Notice')) && (
+                      <div className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-950/25 border border-amber-500/30 text-xs text-amber-300/90 leading-relaxed">
+                        <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                        <div>
+                          <span className="font-semibold text-amber-200">US Market Currency Notice: </span>
+                          <span>
+                            All valuation multiples, historical prices, and financial metrics for {selectedTask?.ticker} are quoted in <strong className="text-white">US Dollars ($ USD)</strong>.
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Clean Synthesis Narrative */}
+                    <p className="text-slate-200 text-xs sm:text-sm leading-relaxed font-normal">
+                      {activeReport.summary
+                        .replace(/\*\*⚠️ Currency Notice.*?\*\*\.?/gs, '')
+                        .replace(/All valuation multiples and metrics for .*? are denominated in \*\*US Dollars \(\$ USD\)\*\*\.?/gs, '')
+                        .replace(/\*\*/g, '')
+                        .trim()}
                     </p>
                   </div>
 
-                  {/* Multi-Agent Breakdown */}
-                  <div className="p-4 rounded-xl bg-[#0e141e] border border-[#1c2533] space-y-3">
-                    <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                      Multi-Agent Detailed Findings
-                    </h4>
-                    <div className="whitespace-pre-line text-slate-300 leading-relaxed font-mono text-xs bg-[#090d14] p-3 rounded-lg border border-[#18212e]">
-                      {activeReport.report_content}
+                  {/* Multi-Agent Breakdown Rendered via StructuredReportViewer */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                        Research Findings
+                      </h4>
+                      <span className="text-[11px] text-slate-400">
+                        AI-Powered Research Report
+                      </span>
                     </div>
+                    <StructuredReportViewer content={activeReport.report_content} />
                   </div>
 
                   {/* Limitations and Disclaimer */}
@@ -714,16 +895,47 @@ export const Dashboard = () => {
             </div>
 
             {/* Footer */}
-            <div className="pt-4 border-t border-[#1c2533] mt-4 flex items-center justify-between">
-              <span className="text-[11px] text-slate-500">
-                Generated {new Date(selectedTask?.created_at).toLocaleString()}
-              </span>
-              <button
-                onClick={() => setIsReportModalOpen(false)}
-                className="px-4 py-2 rounded-lg bg-[#141b25] hover:bg-[#1a2330] text-xs font-medium text-slate-200 border border-[#222e40] transition-colors"
-              >
-                Close Report
-              </button>
+            <div className="pt-4 border-t border-[#1c2533] mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-[11px] text-slate-400 order-2 sm:order-1 flex-wrap">
+                <span>Generated: <strong className="text-emerald-400">{new Date(activeReport?.created_at || selectedTask?.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</strong></span>
+                <span>•</span>
+                <span>Source: <strong className="text-white">yfinance API</strong></span>
+                <span>•</span>
+                <span>Retrieved: <strong className="text-slate-300">{new Date(selectedTask?.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong></span>
+              </div>
+              <div className="flex items-center gap-2 order-1 sm:order-2 flex-wrap">
+                {/* Dummy Download PDF Button (Module 8 Feature) */}
+                <button
+                  type="button"
+                  onClick={() => setPdfNotice(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#141b25] hover:bg-[#1a2330] text-xs font-semibold text-slate-300 border border-[#222e40] hover:border-slate-500 transition-colors shadow-sm"
+                  title="Export report as formatted PDF (Module 8 Feature)"
+                >
+                  <FileDown className="w-3.5 h-3.5 text-red-400" />
+                  <span>Download PDF</span>
+                </button>
+
+                {/* Download Markdown Report Button */}
+                <button
+                  type="button"
+                  onClick={handleDownloadMarkdown}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-xs font-semibold text-emerald-300 border border-emerald-500/40 transition-colors shadow-sm"
+                  title="Download report as Markdown (.md)"
+                >
+                  <Download className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Download Markdown</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setIsReportModalOpen(false);
+                    setPdfNotice(false);
+                  }}
+                  className="px-4 py-1.5 rounded-lg bg-[#141b25] hover:bg-[#1a2330] text-xs font-medium text-slate-200 border border-[#222e40] transition-colors"
+                >
+                  Close Report
+                </button>
+              </div>
             </div>
 
           </div>

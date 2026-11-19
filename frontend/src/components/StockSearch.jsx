@@ -1,14 +1,181 @@
-import React, { useState } from 'react';
-import { Search, Lightbulb, Plus, Check, Loader2, Sparkles, AlertTriangle, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Lightbulb, Plus, Check, Loader2, Sparkles, AlertTriangle, X, Activity } from 'lucide-react';
 import { stockService, dashboardService } from '../services/api';
 
-export const StockSearch = ({ onWatchlistUpdated, onStartResearch }) => {
+const QUICK_SUGGESTIONS = [
+  {
+    ticker: 'AAPL',
+    name: 'Apple Inc.',
+    market: 'NASDAQ',
+    exchange: 'NASDAQ (US)',
+    currency: 'USD',
+    currency_symbol: '$',
+    is_us_market: true,
+  },
+  {
+    ticker: 'MSFT',
+    name: 'Microsoft Corporation',
+    market: 'NASDAQ',
+    exchange: 'NASDAQ (US)',
+    currency: 'USD',
+    currency_symbol: '$',
+    is_us_market: true,
+  },
+  {
+    ticker: 'TSLA',
+    name: 'Tesla, Inc.',
+    market: 'NASDAQ',
+    exchange: 'NASDAQ (US)',
+    currency: 'USD',
+    currency_symbol: '$',
+    is_us_market: true,
+  },
+  {
+    ticker: 'AMZN',
+    name: 'Amazon.com Inc.',
+    market: 'NASDAQ',
+    exchange: 'NASDAQ (US)',
+    currency: 'USD',
+    currency_symbol: '$',
+    is_us_market: true,
+  },
+  {
+    ticker: 'GOOGL',
+    name: 'Alphabet Inc. (Google)',
+    market: 'NASDAQ',
+    exchange: 'NASDAQ (US)',
+    currency: 'USD',
+    currency_symbol: '$',
+    is_us_market: true,
+  },
+  {
+    ticker: 'NVDA',
+    name: 'NVIDIA Corporation',
+    market: 'NASDAQ',
+    exchange: 'NASDAQ (US)',
+    currency: 'USD',
+    currency_symbol: '$',
+    is_us_market: true,
+  },
+  {
+    ticker: 'META',
+    name: 'Meta Platforms Inc.',
+    market: 'NASDAQ',
+    exchange: 'NASDAQ (US)',
+    currency: 'USD',
+    currency_symbol: '$',
+    is_us_market: true,
+  },
+  {
+    ticker: 'RELIANCE.NS',
+    name: 'Reliance Industries Limited',
+    market: 'NSE',
+    exchange: 'NSE (India)',
+    currency: 'INR',
+    currency_symbol: '₹',
+    is_us_market: false,
+  },
+  {
+    ticker: 'TCS.NS',
+    name: 'Tata Consultancy Services Limited',
+    market: 'NSE',
+    exchange: 'NSE (India)',
+    currency: 'INR',
+    currency_symbol: '₹',
+    is_us_market: false,
+  },
+  {
+    ticker: 'INFY.NS',
+    name: 'Infosys Limited',
+    market: 'NSE',
+    exchange: 'NSE (India)',
+    currency: 'INR',
+    currency_symbol: '₹',
+    is_us_market: false,
+  },
+  {
+    ticker: 'HDFCBANK.NS',
+    name: 'HDFC Bank Limited',
+    market: 'NSE',
+    exchange: 'NSE (India)',
+    currency: 'INR',
+    currency_symbol: '₹',
+    is_us_market: false,
+  },
+  {
+    ticker: 'ICICIBANK.NS',
+    name: 'ICICI Bank Limited',
+    market: 'NSE',
+    exchange: 'NSE (India)',
+    currency: 'INR',
+    currency_symbol: '₹',
+    is_us_market: false,
+  },
+  {
+    ticker: 'WIPRO.NS',
+    name: 'Wipro Limited',
+    market: 'NSE',
+    exchange: 'NSE (India)',
+    currency: 'INR',
+    currency_symbol: '₹',
+    is_us_market: false,
+  },
+];
+
+export const StockSearch = ({ onWatchlistUpdated, onStartResearch, onSelectStock }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [addedMap, setAddedMap] = useState({});
-  const [pendingUsAction, setPendingUsAction] = useState(null); // { type: 'research'|'watchlist', item }
+  const [pendingUsAction, setPendingUsAction] = useState(null); // { type: 'research'|'watchlist'|'analytics', item }
+
+  // Instant live search as-you-type (suggests Apple when typing "app")
+  useEffect(() => {
+    const q = searchTerm.trim().toLowerCase();
+    if (!q) {
+      setResults([]);
+      setHasSearched(false);
+      return;
+    }
+
+    setHasSearched(true);
+
+    // Instant local matches for 0ms immediate response
+    const localMatches = QUICK_SUGGESTIONS.filter(
+      (s) =>
+        s.ticker.toLowerCase().includes(q) ||
+        s.name.toLowerCase().includes(q)
+    );
+    if (localMatches.length > 0) {
+      setResults(localMatches);
+    }
+
+    // Debounced live API fetch for full catalog coverage
+    const timer = setTimeout(async () => {
+      try {
+        setLoading(true);
+        const res = await stockService.search(q);
+        if (res.results && res.results.length > 0) {
+          const combined = [...res.results];
+          localMatches.forEach((lm) => {
+            if (!combined.some((c) => c.ticker === lm.ticker)) {
+              combined.push(lm);
+            }
+          });
+          setResults(combined);
+        } else if (localMatches.length === 0) {
+          setResults([]);
+        }
+      } catch (e) {
+        console.error('Auto-suggest error:', e);
+      } finally {
+        setLoading(false);
+      }
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const handleSearch = async (termToSearch = searchTerm) => {
     const query = termToSearch.trim();
@@ -18,7 +185,13 @@ export const StockSearch = ({ onWatchlistUpdated, onStartResearch }) => {
       setLoading(true);
       setHasSearched(true);
       const res = await stockService.search(query);
-      setResults(res.results || []);
+      const found = res.results || [];
+      setResults(found);
+      if (found.length > 0 && onSelectStock) {
+        if (!found[0].is_us_market && found[0].currency !== 'USD') {
+          onSelectStock(found[0].ticker);
+        }
+      }
     } catch (err) {
       console.error('Stock search error:', err);
       setResults([]);
@@ -35,8 +208,12 @@ export const StockSearch = ({ onWatchlistUpdated, onStartResearch }) => {
   };
 
   const handleExampleClick = (example) => {
-    setSearchTerm(example);
-    handleSearch(example);
+    const sym = example.includes('(') ? example.split('(')[1].replace(')', '') : example;
+    setSearchTerm(sym);
+    handleSearch(sym);
+    if (onSelectStock) {
+      onSelectStock(sym);
+    }
   };
 
   const executeAddToWatchlist = async (ticker) => {
@@ -59,6 +236,14 @@ export const StockSearch = ({ onWatchlistUpdated, onStartResearch }) => {
     }
   };
 
+  const handleAnalyticsClick = (item) => {
+    if (item.is_us_market || item.currency === 'USD') {
+      setPendingUsAction({ type: 'analytics', item });
+    } else if (onSelectStock) {
+      onSelectStock(item.ticker);
+    }
+  };
+
   const handleResearchClick = (item) => {
     if (item.is_us_market || item.currency === 'USD') {
       setPendingUsAction({ type: 'research', item });
@@ -75,6 +260,8 @@ export const StockSearch = ({ onWatchlistUpdated, onStartResearch }) => {
       executeAddToWatchlist(item.ticker);
     } else if (type === 'research' && onStartResearch) {
       onStartResearch(item.ticker, item.name, item.market);
+    } else if (type === 'analytics' && onSelectStock) {
+      onSelectStock(item.ticker);
     }
   };
 
@@ -95,8 +282,22 @@ export const StockSearch = ({ onWatchlistUpdated, onStartResearch }) => {
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Search for companies by name or ticker (e.g. AAPL, RELIANCE, TCS, TSLA)..."
-            className="w-full px-4 py-3 bg-[#0b0f15] border border-[#1c2533] focus:border-emerald-500/70 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none transition-colors shadow-inner"
+            className="w-full px-4 py-3 pr-10 bg-[#0b0f15] border border-[#1c2533] focus:border-emerald-500/70 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none transition-colors shadow-inner"
           />
+          {searchTerm && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchTerm('');
+                setResults([]);
+                setHasSearched(false);
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1"
+              title="Clear search"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         <button
@@ -147,9 +348,15 @@ export const StockSearch = ({ onWatchlistUpdated, onStartResearch }) => {
                   key={item.ticker}
                   className="flex items-center justify-between py-3 px-3 hover:bg-[#111722] rounded-lg transition-colors gap-3"
                 >
-                  <div className="min-w-0 flex-1">
+                  <div
+                    onClick={() => handleAnalyticsClick(item)}
+                    className="min-w-0 flex-1 cursor-pointer group"
+                    title="Click to view Market Analytics & Financial Intelligence"
+                  >
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-bold text-white text-sm">{item.ticker}</span>
+                      <span className="font-bold text-white text-sm group-hover:text-emerald-400 transition-colors">
+                        {item.ticker}
+                      </span>
                       <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#18212e] text-slate-300 border border-[#243144]">
                         {item.exchange || item.market}
                       </span>
@@ -179,7 +386,9 @@ export const StockSearch = ({ onWatchlistUpdated, onStartResearch }) => {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-slate-400 mt-1 truncate">{item.name}</p>
+                    <p className="text-xs text-slate-400 mt-1 truncate group-hover:text-slate-200 transition-colors">
+                      {item.name}
+                    </p>
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">

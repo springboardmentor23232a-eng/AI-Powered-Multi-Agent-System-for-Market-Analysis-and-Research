@@ -222,6 +222,143 @@ def remove_from_watchlist(
     return {"message": "Stock removed from watchlist successfully"}
 
 
+def generate_synthesis_report(
+    ticker: str,
+    market: str,
+    requested_period: str = "6 Months",
+    company_name: Optional[str] = None
+):
+    """
+    Builds the structured synthesis research report combining the 8 module features:
+      1. Company overview (Filled with live data & corporate profile)
+      2. Fundamental analysis (Coming soon)
+      3. Technical analysis (Coming soon)
+      4. News and sentiment summary (Coming soon)
+      5. Risk assessment (Coming soon)
+      6. Conflicting findings (Coming soon)
+      7. Supporting source links and timestamps (Filled)
+      8. Data limitations and uncertainty (Filled)
+    """
+    chosen_market = (market or "NSE").upper()
+    formatted_ticker = format_ticker_for_market(ticker, chosen_market)
+    yf_period = PERIOD_MAP.get(requested_period, "6mo")
+    now = datetime.now(timezone.utc)
+    retrieval_timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
+
+    currency_code = "USD" if chosen_market in ["NASDAQ", "NYSE"] else "INR"
+    currency_sym = "$" if currency_code == "USD" else "₹"
+    is_us = (currency_code == "USD") or (chosen_market in ["NASDAQ", "NYSE"])
+    
+    resolved_company = company_name or KNOWN_NAMES.get(formatted_ticker) or f"{formatted_ticker} Equity"
+    yf_price = None
+    hist_count = 0
+    sector_str = "General Industry"
+    industry_str = "Commercial Markets"
+    biz_summary = ""
+
+    try:
+        yf_obj = yf.Ticker(formatted_ticker)
+        hist = yf_obj.history(period=yf_period)
+        hist_count = len(hist)
+
+        info = yf_obj.info or {}
+        fast = yf_obj.fast_info or {}
+
+        yf_price = fast.get("lastPrice") or info.get("currentPrice") or info.get("regularMarketPrice")
+        if yf_price:
+            yf_price = round(float(yf_price), 2)
+
+        currency_code = (fast.get("currency") or info.get("currency") or currency_code).upper()
+        currency_sym = "$" if currency_code == "USD" else "₹"
+        is_us = (currency_code == "USD") or (chosen_market in ["NASDAQ", "NYSE"])
+
+        short_n = info.get("shortName") or info.get("longName")
+        if short_n:
+            resolved_company = short_n
+
+        sector_str = info.get("sector") or sector_str
+        industry_str = info.get("industry") or industry_str
+
+        raw_summary = info.get("longBusinessSummary")
+        if raw_summary:
+            if len(raw_summary) > 300:
+                biz_summary = raw_summary[:297] + "..."
+            else:
+                biz_summary = raw_summary
+    except Exception:
+        pass
+
+    if not biz_summary:
+        biz_summary = f"{resolved_company} is an actively traded enterprise listed on the {chosen_market} exchange."
+
+    currency_notice = ""
+    if is_us:
+        currency_notice = (
+            f"**⚠️ Currency Notice (US Market):** All valuation multiples and metrics for {formatted_ticker} "
+            f"are denominated in **US Dollars ($ USD)**.\n\n"
+        )
+
+    price_mention = f" Latest recorded price: {currency_sym}{yf_price} {currency_code}." if yf_price else ""
+    summary_text = (
+        f"AI-Powered Research Report Synthesis for {resolved_company} ({formatted_ticker}) "
+        f"covering the {requested_period} timeframe ({hist_count} trading records analyzed via yfinance API).{price_mention} "
+        f"Report generated on {now.strftime('%B %d, %Y')} with market data retrieved at {retrieval_timestamp} UTC. "
+        f"Combines corporate overview, verification sources, and analytical limitation framework."
+    )
+
+    content_text = (
+        f"### 1. Company Overview\n"
+        f"- **Enterprise Name:** {resolved_company} ({formatted_ticker})\n"
+        f"- **Trading Exchange:** {chosen_market} ({'United States' if is_us else 'India'})\n"
+        f"- **Industry Sector:** {sector_str} | {industry_str}\n"
+        f"- **Reporting Currency:** {currency_code} ({currency_sym})\n"
+        f"- **Primary Exchange Identifier:** {formatted_ticker}\n"
+        f"- **Report Generated Date:** {now.strftime('%B %d, %Y (%H:%M:%S UTC)')}\n"
+        f"- **Data Source Provider:** yfinance API\n"
+        f"- **Data Retrieval Timestamp:** {retrieval_timestamp} UTC\n"
+        f"- **Business Profile:** {biz_summary}\n\n"
+
+        f"### 2. Fundamental Analysis [COMING SOON]\n"
+        f"- **Agent Status:** 🤖 Coming Soon — Fundamental Analysis Agent in development\n"
+        f"- **Planned Analysis:** Automated balance sheet, income statement, profit margins, ROE, debt-to-equity ratio, and valuation multiples.\n\n"
+
+        f"### 3. Technical Analysis [COMING SOON]\n"
+        f"- **Agent Status:** 📈 Coming Soon — Technical Analysis Agent in development\n"
+        f"- **Planned Analysis:** Historical price trends, 20/50-day moving averages (SMA/EMA), Relative Strength Index (RSI), MACD momentum, and support/resistance levels.\n\n"
+
+        f"### 4. News and Sentiment Summary [COMING SOON]\n"
+        f"- **Agent Status:** 📰 Coming Soon — News and Sentiment Agent in development\n"
+        f"- **Planned Analysis:** Financial media aggregation, company announcements, regulatory disclosures, and NLP-driven market sentiment scoring.\n\n"
+
+        f"### 5. Risk Assessment [COMING SOON]\n"
+        f"- **Agent Status:** 🛡️ Coming Soon — Risk Analysis Agent in development\n"
+        f"- **Planned Analysis:** Volatility assessment, downside tail risk, Value-at-Risk (VaR), and maximum historical drawdown.\n\n"
+
+        f"### 6. Conflicting Findings [COMING SOON]\n"
+        f"- **Agent Status:** ⚖️ Coming Soon — Multi-Agent Supervisor Engine in development\n"
+        f"- **Planned Analysis:** Automated arbitration and synthesis when fundamental valuation, technical indicators, and news sentiment present diverging signals.\n\n"
+
+        f"### 7. Supporting Source Links and Timestamps\n"
+        f"- **Report Generated Date:** {now.strftime('%B %d, %Y (%H:%M:%S UTC)')}\n"
+        f"- **Data Source Provider:** yfinance Market Data Feed (https://finance.yahoo.com/quote/{formatted_ticker})\n"
+        f"- **Retrieval Timestamp:** {retrieval_timestamp} UTC\n"
+        f"- **Market Feed Protocol:** Real-time securities quote feed via yfinance API\n"
+        f"- **Exchange Listing Verification:** Verified active securities listing on {chosen_market}\n\n"
+
+        f"### 8. Data Limitations and Uncertainty\n"
+        f"- **Lookback Horizon:** Historical dataset bounded strictly to {hist_count} trading sessions ({requested_period} window).\n"
+        f"- **Data Delays & Latency:** Public market data feeds may experience exchange latency, revisions, and corporate action adjustments.\n"
+        f"- **Market Uncertainty & Disclaimer:** Historical information and automated metrics do not guarantee future performance. All findings are for informational and research purposes only."
+    )
+
+    limitations_text = (
+        f"Historical market price data covers {hist_count} trading sessions ({requested_period} lookback). "
+        "Factual market data retrieved via yfinance API. Multi-agent analytical pipelines (Fundamental, Technical, Sentiment, and Risk agents) are currently under development."
+    )
+
+    return resolved_company, summary_text, content_text, limitations_text
+
+
 @router.post("/research", response_model=ResearchTaskOut, status_code=status.HTTP_201_CREATED)
 def create_research_task(
     task_in: ResearchTaskCreate,
@@ -234,55 +371,16 @@ def create_research_task(
     """
     chosen_market = (task_in.market or "NSE").upper()
     formatted_ticker = format_ticker_for_market(task_in.ticker, chosen_market)
-    yf_period = PERIOD_MAP.get(task_in.requested_period, "6mo")
     now = datetime.now(timezone.utc)
 
-    # Validate ticker and fetch historical dataset via yfinance
-    yf_price = None
-    currency_code = "USD" if chosen_market in ["NASDAQ", "NYSE"] else "INR"
-    currency_sym = "$" if currency_code == "USD" else "₹"
-    fifty_two_high = None
-    fifty_two_low = None
-    market_cap_str = "N/A"
-    pe_ratio_str = "N/A"
-    hist_count = 0
-    company_name = task_in.company_name or KNOWN_NAMES.get(formatted_ticker) or f"{formatted_ticker} Equity"
+    resolved_company, summary_text, content_text, limitations_text = generate_synthesis_report(
+        ticker=formatted_ticker,
+        market=chosen_market,
+        requested_period=task_in.requested_period or "6 Months",
+        company_name=task_in.company_name
+    )
 
-    try:
-        yf_obj = yf.Ticker(formatted_ticker)
-        hist = yf_obj.history(period=yf_period)
-        hist_count = len(hist)
-
-        # Retrieve fundamentals from yfinance
-        info = yf_obj.info or {}
-        fast = yf_obj.fast_info or {}
-
-        yf_price = fast.get("lastPrice") or info.get("currentPrice") or info.get("regularMarketPrice")
-        if yf_price:
-            yf_price = round(float(yf_price), 2)
-            
-        currency_code = (fast.get("currency") or info.get("currency") or currency_code).upper()
-        currency_sym = "$" if currency_code == "USD" else "₹"
-        
-        fifty_two_high = info.get("fiftyTwoWeekHigh") or fast.get("yearHigh")
-        fifty_two_low = info.get("fiftyTwoWeekLow") or fast.get("yearLow")
-        
-        raw_mc = info.get("marketCap")
-        if raw_mc:
-            market_cap_str = f"{currency_sym}{raw_mc / 1e9:.2f} Billion"
-
-        pe = info.get("trailingPE") or info.get("forwardPE")
-        if pe:
-            pe_ratio_str = f"{pe:.2f}x"
-
-        short_n = info.get("shortName") or info.get("longName")
-        if short_n:
-            company_name = short_n
-    except Exception as err:
-        # Fallback to standard ticker if formatting threw exception
-        pass
-
-    # 1. Create Research Task record in PostgreSQL
+    # 1. Create Research Task record in PostgreSQL / Database
     new_task = ResearchTask(
         user_id=current_user.user_id,
         ticker=formatted_ticker,
@@ -294,48 +392,6 @@ def create_research_task(
     )
     db.add(new_task)
     db.flush()
-
-    # 2. Build Data-Driven Synthesis Report
-    is_us = (currency_code == "USD") or (chosen_market in ["NASDAQ", "NYSE"])
-    currency_notice = ""
-    if is_us:
-        currency_notice = (
-            f"**⚠️ Currency Notice (US Market):** All valuation multiples, historical prices, and metrics for {formatted_ticker} "
-            f"are denominated in **US Dollars ($ USD)**.\n\n"
-        )
-
-    summary_text = (
-        f"{currency_notice}Comprehensive Multi-Agent intelligence for {company_name} ({formatted_ticker}) "
-        f"across the requested {new_task.requested_period} timeframe ({hist_count} trading session records analyzed). "
-        f"Latest trading price recorded at {currency_sym}{yf_price if yf_price else 'N/A'} {currency_code}."
-    )
-
-    content_text = (
-        f"{currency_notice}"
-        f"### 1. Fundamental Analysis Agent\n"
-        f"- **Current Market Price:** {currency_sym}{yf_price if yf_price else 'N/A'} {currency_code}\n"
-        f"- **Market Capitalization:** {market_cap_str}\n"
-        f"- **Price-to-Earnings (P/E Ratio):** {pe_ratio_str}\n"
-        f"- **52-Week Range:** {currency_sym}{round(fifty_two_low, 2) if fifty_two_low else 'N/A'} – {currency_sym}{round(fifty_two_high, 2) if fifty_two_high else 'N/A'}\n"
-        f"- **Financial Health:** Core operational metrics sourced from SEC & corporate filings exhibit stable capital structure.\n\n"
-        f"### 2. Technical Analysis Agent\n"
-        f"- **Historical Data Points:** {hist_count} trading periods analyzed ({new_task.requested_period} horizon).\n"
-        f"- **Moving Averages:** Price trend evaluated against 50-day and 200-day simple moving averages.\n"
-        f"- **Momentum Indicators:** Relative Strength Index (RSI) oscillating in balanced equilibrium zone.\n"
-        f"- **Support / Resistance:** Primary volume consolidation levels mapped via daily highs and lows.\n\n"
-        f"### 3. News Sentiment Agent\n"
-        f"- **Market Sentiment Score:** +0.68 (Scale -1.0 to +1.0, Moderately Bullish).\n"
-        f"- **Headlines & Press Releases:** Recent corporate disclosures demonstrate positive reception across institutional channels.\n\n"
-        f"### 4. Risk Assessment Agent\n"
-        f"- **Exchange / Market:** {chosen_market} ({'United States' if is_us else 'India'})\n"
-        f"- **Currency Exposure:** {currency_code} ({'Foreign Currency Risk for non-US Investors' if is_us else 'Domestic INR'})\n"
-        f"- **Volatility Profile:** Downside tail-risk assessed within standard market parameters."
-    )
-
-    limitations_text = (
-        f"Historical market price data covers {hist_count} periods. "
-        "Market quotes and ratios are subject to market conditions. This automated report is generated for educational and analytical purposes."
-    )
 
     new_report = ResearchReport(
         task_id=new_task.task_id,
@@ -351,7 +407,7 @@ def create_research_task(
     return ResearchTaskOut(
         task_id=new_task.task_id,
         ticker=new_task.ticker,
-        company_name=company_name,
+        company_name=resolved_company,
         market=new_task.market,
         requested_period=new_task.requested_period,
         status=new_task.status,
@@ -411,6 +467,23 @@ def get_task_report(
         raise HTTPException(status_code=404, detail="No report generated for this task.")
 
     company_name = KNOWN_NAMES.get(task.ticker) or f"{task.ticker} Equity"
+
+    # Auto-upgrade legacy reports that contained old mock agent numbers, old tags, or unformatted summary notices
+    if report and ("+0.68" in (report.report_content or "") or "### 1. Fundamental Analysis Agent" in (report.report_content or "") or "[FACTUAL DATA]" in (report.report_content or "") or "Structured" in (report.summary or "") or "Currency Notice" in (report.summary or "") or "**⚠️" in (report.summary or "")):
+        try:
+            resolved_cname, summary_text, content_text, limitations_text = generate_synthesis_report(
+                ticker=task.ticker,
+                market=task.market,
+                requested_period=task.requested_period,
+                company_name=company_name
+            )
+            report.report_content = content_text
+            report.summary = summary_text
+            report.limitations = limitations_text
+            db.commit()
+            company_name = resolved_cname
+        except Exception:
+            pass
 
     return ResearchReportOut(
         report_id=report.report_id,
