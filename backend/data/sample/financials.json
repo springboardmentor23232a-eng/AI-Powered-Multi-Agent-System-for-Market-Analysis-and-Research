@@ -1,0 +1,1682 @@
+{
+ "RELIANCE.NS": {
+  "income_statement": {
+   "2022-03-31": {
+    "Total Revenue": 7119603486295,
+    "Cost Of Revenue": 5566388031861,
+    "Gross Profit": 1553215454434,
+    "Operating Expense": 571269567427,
+    "Operating Income": 981945887007,
+    "Interest Expense": 85435241836,
+    "Pretax Income": 896510645171,
+    "Tax Provision": 215162554841,
+    "Net Income": 681348090330,
+    "Basic EPS": 100.79
+   },
+   "2023-03-31": {
+    "Total Revenue": 7559542820128,
+    "Cost Of Revenue": 5917967654355,
+    "Gross Profit": 1641575165772,
+    "Operating Expense": 602803516331,
+    "Operating Income": 1038771649441,
+    "Interest Expense": 90714513842,
+    "Pretax Income": 948057135600,
+    "Tax Provision": 227533712544,
+    "Net Income": 720523423056,
+    "Basic EPS": 106.59
+   },
+   "2024-03-31": {
+    "Total Revenue": 8272458661941,
+    "Cost Of Revenue": 6469020314409,
+    "Gross Profit": 1803438347533,
+    "Operating Expense": 666141415858,
+    "Operating Income": 1137296931675,
+    "Interest Expense": 99269503943,
+    "Pretax Income": 1038027427731,
+    "Tax Provision": 249126582655,
+    "Net Income": 788900845076,
+    "Basic EPS": 116.7
+   },
+   "2025-03-31": {
+    "Total Revenue": 9157470947338,
+    "Cost Of Revenue": 7152687644971,
+    "Gross Profit": 2004783302367,
+    "Operating Expense": 744232982434,
+    "Operating Income": 1260550319933,
+    "Interest Expense": 109889651368,
+    "Pretax Income": 1150660668565,
+    "Tax Provision": 276158560456,
+    "Net Income": 874502108110,
+    "Basic EPS": 129.36
+   }
+  },
+  "balance_sheet": {
+   "2022-03-31": {
+    "Total Assets": 9473547971266,
+    "Total Liabilities": 5494657823334,
+    "Stockholders Equity": 3978890147932,
+    "Cash And Cash Equivalents": 852619317414,
+    "Total Debt": 1923130238167
+   },
+   "2023-03-31": {
+    "Total Assets": 10358454168987,
+    "Total Liabilities": 6007903418012,
+    "Stockholders Equity": 4350550750974,
+    "Cash And Cash Equivalents": 932260875209,
+    "Total Debt": 2102766196304
+   },
+   "2024-03-31": {
+    "Total Assets": 10691024980223,
+    "Total Liabilities": 6200794488529,
+    "Stockholders Equity": 4490230491694,
+    "Cash And Cash Equivalents": 962192248220,
+    "Total Debt": 2170278070985
+   },
+   "2025-03-31": {
+    "Total Assets": 12327082431216,
+    "Total Liabilities": 7149707810105,
+    "Stockholders Equity": 5177374621111,
+    "Cash And Cash Equivalents": 1109437418809,
+    "Total Debt": 2502397733537
+   }
+  },
+  "cash_flow": {
+   "2022-03-31": {
+    "Operating Cash Flow": 807065047522,
+    "Investing Cash Flow": -489472739683,
+    "Financing Cash Flow": -158796153920,
+    "Capital Expenditure": -391578191746,
+    "Free Cash Flow": 415486855776
+   },
+   "2023-03-31": {
+    "Operating Cash Flow": 866460001243,
+    "Investing Cash Flow": -519718568884,
+    "Financing Cash Flow": -173370716180,
+    "Capital Expenditure": -415774855107,
+    "Free Cash Flow": 450685146136
+   },
+   "2024-03-31": {
+    "Operating Cash Flow": 925935268138,
+    "Investing Cash Flow": -568731533008,
+    "Financing Cash Flow": -178601867565,
+    "Capital Expenditure": -454985226407,
+    "Free Cash Flow": 470950041731
+   },
+   "2025-03-31": {
+    "Operating Cash Flow": 1031045314948,
+    "Investing Cash Flow": -629576127629,
+    "Financing Cash Flow": -200734593659,
+    "Capital Expenditure": -503660902104,
+    "Free Cash Flow": 527384412844
+   }
+  }
+ },
+ "RELIANCE.BO": {
+  "income_statement": {
+   "2022-03-31": {
+    "Total Revenue": 7119603486295,
+    "Cost Of Revenue": 5566388031861,
+    "Gross Profit": 1553215454434,
+    "Operating Expense": 571269567427,
+    "Operating Income": 981945887007,
+    "Interest Expense": 85435241836,
+    "Pretax Income": 896510645171,
+    "Tax Provision": 215162554841,
+    "Net Income": 681348090330,
+    "Basic EPS": 100.79
+   },
+   "2023-03-31": {
+    "Total Revenue": 7559542820128,
+    "Cost Of Revenue": 5917967654355,
+    "Gross Profit": 1641575165772,
+    "Operating Expense": 602803516331,
+    "Operating Income": 1038771649441,
+    "Interest Expense": 90714513842,
+    "Pretax Income": 948057135600,
+    "Tax Provision": 227533712544,
+    "Net Income": 720523423056,
+    "Basic EPS": 106.59
+   },
+   "2024-03-31": {
+    "Total Revenue": 8272458661941,
+    "Cost Of Revenue": 6469020314409,
+    "Gross Profit": 1803438347533,
+    "Operating Expense": 666141415858,
+    "Operating Income": 1137296931675,
+    "Interest Expense": 99269503943,
+    "Pretax Income": 1038027427731,
+    "Tax Provision": 249126582655,
+    "Net Income": 788900845076,
+    "Basic EPS": 116.7
+   },
+   "2025-03-31": {
+    "Total Revenue": 9157470947338,
+    "Cost Of Revenue": 7152687644971,
+    "Gross Profit": 2004783302367,
+    "Operating Expense": 744232982434,
+    "Operating Income": 1260550319933,
+    "Interest Expense": 109889651368,
+    "Pretax Income": 1150660668565,
+    "Tax Provision": 276158560456,
+    "Net Income": 874502108110,
+    "Basic EPS": 129.36
+   }
+  },
+  "balance_sheet": {
+   "2022-03-31": {
+    "Total Assets": 9473547971266,
+    "Total Liabilities": 5494657823334,
+    "Stockholders Equity": 3978890147932,
+    "Cash And Cash Equivalents": 852619317414,
+    "Total Debt": 1923130238167
+   },
+   "2023-03-31": {
+    "Total Assets": 10358454168987,
+    "Total Liabilities": 6007903418012,
+    "Stockholders Equity": 4350550750974,
+    "Cash And Cash Equivalents": 932260875209,
+    "Total Debt": 2102766196304
+   },
+   "2024-03-31": {
+    "Total Assets": 10691024980223,
+    "Total Liabilities": 6200794488529,
+    "Stockholders Equity": 4490230491694,
+    "Cash And Cash Equivalents": 962192248220,
+    "Total Debt": 2170278070985
+   },
+   "2025-03-31": {
+    "Total Assets": 12327082431216,
+    "Total Liabilities": 7149707810105,
+    "Stockholders Equity": 5177374621111,
+    "Cash And Cash Equivalents": 1109437418809,
+    "Total Debt": 2502397733537
+   }
+  },
+  "cash_flow": {
+   "2022-03-31": {
+    "Operating Cash Flow": 807065047522,
+    "Investing Cash Flow": -489472739683,
+    "Financing Cash Flow": -158796153920,
+    "Capital Expenditure": -391578191746,
+    "Free Cash Flow": 415486855776
+   },
+   "2023-03-31": {
+    "Operating Cash Flow": 866460001243,
+    "Investing Cash Flow": -519718568884,
+    "Financing Cash Flow": -173370716180,
+    "Capital Expenditure": -415774855107,
+    "Free Cash Flow": 450685146136
+   },
+   "2024-03-31": {
+    "Operating Cash Flow": 925935268138,
+    "Investing Cash Flow": -568731533008,
+    "Financing Cash Flow": -178601867565,
+    "Capital Expenditure": -454985226407,
+    "Free Cash Flow": 470950041731
+   },
+   "2025-03-31": {
+    "Operating Cash Flow": 1031045314948,
+    "Investing Cash Flow": -629576127629,
+    "Financing Cash Flow": -200734593659,
+    "Capital Expenditure": -503660902104,
+    "Free Cash Flow": 527384412844
+   }
+  }
+ },
+ "TCS.NS": {
+  "income_statement": {
+   "2022-03-31": {
+    "Total Revenue": 1810914959770,
+    "Cost Of Revenue": 1050086375123,
+    "Gross Profit": 760828584646,
+    "Operating Expense": 304886298101,
+    "Operating Income": 455942286546,
+    "Interest Expense": 21730979517,
+    "Pretax Income": 434211307028,
+    "Tax Provision": 104210713687,
+    "Net Income": 330000593342,
+    "Basic EPS": 91.67
+   },
+   "2023-03-31": {
+    "Total Revenue": 1990573091617,
+    "Cost Of Revenue": 1153373392255,
+    "Gross Profit": 837199699362,
+    "Operating Expense": 348843864005,
+    "Operating Income": 488355835356,
+    "Interest Expense": 23886877099,
+    "Pretax Income": 464468958257,
+    "Tax Provision": 111472549982,
+    "Net Income": 352996408275,
+    "Basic EPS": 98.05
+   },
+   "2024-03-31": {
+    "Total Revenue": 2163266999308,
+    "Cost Of Revenue": 1253456823857,
+    "Gross Profit": 909810175451,
+    "Operating Expense": 367378187162,
+    "Operating Income": 542431988289,
+    "Interest Expense": 25959203992,
+    "Pretax Income": 516472784297,
+    "Tax Provision": 123953468231,
+    "Net Income": 392519316066,
+    "Basic EPS": 109.03
+   },
+   "2025-03-31": {
+    "Total Revenue": 2455429214344,
+    "Cost Of Revenue": 1403528814803,
+    "Gross Profit": 1051900399541,
+    "Operating Expense": 411736262367,
+    "Operating Income": 640164137174,
+    "Interest Expense": 29465150572,
+    "Pretax Income": 610698986602,
+    "Tax Provision": 146567756784,
+    "Net Income": 464131229817,
+    "Basic EPS": 128.93
+   }
+  },
+  "balance_sheet": {
+   "2022-03-31": {
+    "Total Assets": 2408795078014,
+    "Total Liabilities": 1397101145248,
+    "Stockholders Equity": 1011693932766,
+    "Cash And Cash Equivalents": 216791557021,
+    "Total Debt": 488985400837
+   },
+   "2023-03-31": {
+    "Total Assets": 2660534952890,
+    "Total Liabilities": 1543110272676,
+    "Stockholders Equity": 1117424680214,
+    "Cash And Cash Equivalents": 239448145760,
+    "Total Debt": 540088595437
+   },
+   "2024-03-31": {
+    "Total Assets": 2885787788477,
+    "Total Liabilities": 1673756917317,
+    "Stockholders Equity": 1212030871161,
+    "Cash And Cash Equivalents": 259720900963,
+    "Total Debt": 585814921061
+   },
+   "2025-03-31": {
+    "Total Assets": 3186111828818,
+    "Total Liabilities": 1847944860714,
+    "Stockholders Equity": 1338166968103,
+    "Cash And Cash Equivalents": 286750064594,
+    "Total Debt": 646780701250
+   }
+  },
+  "cash_flow": {
+   "2022-03-31": {
+    "Operating Cash Flow": 395972769298,
+    "Investing Cash Flow": -124500403484,
+    "Financing Cash Flow": -135736182907,
+    "Capital Expenditure": -99600322787,
+    "Free Cash Flow": 296372446511
+   },
+   "2023-03-31": {
+    "Operating Cash Flow": 440380638012,
+    "Investing Cash Flow": -136851900049,
+    "Financing Cash Flow": -151764368982,
+    "Capital Expenditure": -109481520039,
+    "Free Cash Flow": 330899117973
+   },
+   "2024-03-31": {
+    "Operating Cash Flow": 464710640575,
+    "Investing Cash Flow": -148724606202,
+    "Financing Cash Flow": -157993017187,
+    "Capital Expenditure": -118979684962,
+    "Free Cash Flow": 345730955614
+   },
+   "2025-03-31": {
+    "Operating Cash Flow": 521400125085,
+    "Investing Cash Flow": -168810758486,
+    "Financing Cash Flow": -176294683299,
+    "Capital Expenditure": -135048606789,
+    "Free Cash Flow": 386351518296
+   }
+  }
+ },
+ "TCS.BO": {
+  "income_statement": {
+   "2022-03-31": {
+    "Total Revenue": 1810914959770,
+    "Cost Of Revenue": 1050086375123,
+    "Gross Profit": 760828584646,
+    "Operating Expense": 304886298101,
+    "Operating Income": 455942286546,
+    "Interest Expense": 21730979517,
+    "Pretax Income": 434211307028,
+    "Tax Provision": 104210713687,
+    "Net Income": 330000593342,
+    "Basic EPS": 91.67
+   },
+   "2023-03-31": {
+    "Total Revenue": 1990573091617,
+    "Cost Of Revenue": 1153373392255,
+    "Gross Profit": 837199699362,
+    "Operating Expense": 348843864005,
+    "Operating Income": 488355835356,
+    "Interest Expense": 23886877099,
+    "Pretax Income": 464468958257,
+    "Tax Provision": 111472549982,
+    "Net Income": 352996408275,
+    "Basic EPS": 98.05
+   },
+   "2024-03-31": {
+    "Total Revenue": 2163266999308,
+    "Cost Of Revenue": 1253456823857,
+    "Gross Profit": 909810175451,
+    "Operating Expense": 367378187162,
+    "Operating Income": 542431988289,
+    "Interest Expense": 25959203992,
+    "Pretax Income": 516472784297,
+    "Tax Provision": 123953468231,
+    "Net Income": 392519316066,
+    "Basic EPS": 109.03
+   },
+   "2025-03-31": {
+    "Total Revenue": 2455429214344,
+    "Cost Of Revenue": 1403528814803,
+    "Gross Profit": 1051900399541,
+    "Operating Expense": 411736262367,
+    "Operating Income": 640164137174,
+    "Interest Expense": 29465150572,
+    "Pretax Income": 610698986602,
+    "Tax Provision": 146567756784,
+    "Net Income": 464131229817,
+    "Basic EPS": 128.93
+   }
+  },
+  "balance_sheet": {
+   "2022-03-31": {
+    "Total Assets": 2408795078014,
+    "Total Liabilities": 1397101145248,
+    "Stockholders Equity": 1011693932766,
+    "Cash And Cash Equivalents": 216791557021,
+    "Total Debt": 488985400837
+   },
+   "2023-03-31": {
+    "Total Assets": 2660534952890,
+    "Total Liabilities": 1543110272676,
+    "Stockholders Equity": 1117424680214,
+    "Cash And Cash Equivalents": 239448145760,
+    "Total Debt": 540088595437
+   },
+   "2024-03-31": {
+    "Total Assets": 2885787788477,
+    "Total Liabilities": 1673756917317,
+    "Stockholders Equity": 1212030871161,
+    "Cash And Cash Equivalents": 259720900963,
+    "Total Debt": 585814921061
+   },
+   "2025-03-31": {
+    "Total Assets": 3186111828818,
+    "Total Liabilities": 1847944860714,
+    "Stockholders Equity": 1338166968103,
+    "Cash And Cash Equivalents": 286750064594,
+    "Total Debt": 646780701250
+   }
+  },
+  "cash_flow": {
+   "2022-03-31": {
+    "Operating Cash Flow": 395972769298,
+    "Investing Cash Flow": -124500403484,
+    "Financing Cash Flow": -135736182907,
+    "Capital Expenditure": -99600322787,
+    "Free Cash Flow": 296372446511
+   },
+   "2023-03-31": {
+    "Operating Cash Flow": 440380638012,
+    "Investing Cash Flow": -136851900049,
+    "Financing Cash Flow": -151764368982,
+    "Capital Expenditure": -109481520039,
+    "Free Cash Flow": 330899117973
+   },
+   "2024-03-31": {
+    "Operating Cash Flow": 464710640575,
+    "Investing Cash Flow": -148724606202,
+    "Financing Cash Flow": -157993017187,
+    "Capital Expenditure": -118979684962,
+    "Free Cash Flow": 345730955614
+   },
+   "2025-03-31": {
+    "Operating Cash Flow": 521400125085,
+    "Investing Cash Flow": -168810758486,
+    "Financing Cash Flow": -176294683299,
+    "Capital Expenditure": -135048606789,
+    "Free Cash Flow": 386351518296
+   }
+  }
+ },
+ "INFY.NS": {
+  "income_statement": {
+   "2022-03-31": {
+    "Total Revenue": 1151759710517,
+    "Cost Of Revenue": 664117929174,
+    "Gross Profit": 487641781343,
+    "Operating Expense": 202773791192,
+    "Operating Income": 284867990151,
+    "Interest Expense": 13821116526,
+    "Pretax Income": 271046873625,
+    "Tax Provision": 65051249670,
+    "Net Income": 205995623955,
+    "Basic EPS": 50.24
+   },
+   "2023-03-31": {
+    "Total Revenue": 1272197256435,
+    "Cost Of Revenue": 733955073628,
+    "Gross Profit": 538242182807,
+    "Operating Expense": 217610211131,
+    "Operating Income": 320631971676,
+    "Interest Expense": 15266367077,
+    "Pretax Income": 305365604599,
+    "Tax Provision": 73287745104,
+    "Net Income": 232077859495,
+    "Basic EPS": 56.6
+   },
+   "2024-03-31": {
+    "Total Revenue": 1340987792797,
+    "Cost Of Revenue": 770458310456,
+    "Gross Profit": 570529482342,
+    "Operating Expense": 225392002482,
+    "Operating Income": 345137479860,
+    "Interest Expense": 16091853514,
+    "Pretax Income": 329045626346,
+    "Tax Provision": 78970950323,
+    "Net Income": 250074676023,
+    "Basic EPS": 60.99
+   },
+   "2025-03-31": {
+    "Total Revenue": 1501862264476,
+    "Cost Of Revenue": 870431182971,
+    "Gross Profit": 631431081505,
+    "Operating Expense": 259195661229,
+    "Operating Income": 372235420276,
+    "Interest Expense": 18022347174,
+    "Pretax Income": 354213073103,
+    "Tax Provision": 85011137545,
+    "Net Income": 269201935558,
+    "Basic EPS": 65.66
+   }
+  },
+  "balance_sheet": {
+   "2022-03-31": {
+    "Total Assets": 1545277424183,
+    "Total Liabilities": 896260906026,
+    "Stockholders Equity": 649016518157,
+    "Cash And Cash Equivalents": 139074968176,
+    "Total Debt": 313691317109
+   },
+   "2023-03-31": {
+    "Total Assets": 1736685718456,
+    "Total Liabilities": 1007277716704,
+    "Stockholders Equity": 729408001751,
+    "Cash And Cash Equivalents": 156301714661,
+    "Total Debt": 352547200847
+   },
+   "2024-03-31": {
+    "Total Assets": 1832939086729,
+    "Total Liabilities": 1063104670303,
+    "Stockholders Equity": 769834416426,
+    "Cash And Cash Equivalents": 164964517806,
+    "Total Debt": 372086634606
+   },
+   "2025-03-31": {
+    "Total Assets": 2056901606384,
+    "Total Liabilities": 1193002931703,
+    "Stockholders Equity": 863898674681,
+    "Cash And Cash Equivalents": 185121144575,
+    "Total Debt": 417551026096
+   }
+  },
+  "cash_flow": {
+   "2022-03-31": {
+    "Operating Cash Flow": 251801281341,
+    "Investing Cash Flow": -79183480098,
+    "Financing Cash Flow": -86308900621,
+    "Capital Expenditure": -63346784078,
+    "Free Cash Flow": 188454497262
+   },
+   "2023-03-31": {
+    "Operating Cash Flow": 267357958799,
+    "Investing Cash Flow": -87463561380,
+    "Financing Cash Flow": -89947198709,
+    "Capital Expenditure": -69970849104,
+    "Free Cash Flow": 197387109695
+   },
+   "2024-03-31": {
+    "Operating Cash Flow": 305195646384,
+    "Investing Cash Flow": -92192910755,
+    "Financing Cash Flow": -106501367815,
+    "Capital Expenditure": -73754328604,
+    "Free Cash Flow": 231441317781
+   },
+   "2025-03-31": {
+    "Operating Cash Flow": 316581603539,
+    "Investing Cash Flow": -103253030683,
+    "Financing Cash Flow": -106664286428,
+    "Capital Expenditure": -82602424546,
+    "Free Cash Flow": 233979178993
+   }
+  }
+ },
+ "INFY.BO": {
+  "income_statement": {
+   "2022-03-31": {
+    "Total Revenue": 1151759710517,
+    "Cost Of Revenue": 664117929174,
+    "Gross Profit": 487641781343,
+    "Operating Expense": 202773791192,
+    "Operating Income": 284867990151,
+    "Interest Expense": 13821116526,
+    "Pretax Income": 271046873625,
+    "Tax Provision": 65051249670,
+    "Net Income": 205995623955,
+    "Basic EPS": 50.24
+   },
+   "2023-03-31": {
+    "Total Revenue": 1272197256435,
+    "Cost Of Revenue": 733955073628,
+    "Gross Profit": 538242182807,
+    "Operating Expense": 217610211131,
+    "Operating Income": 320631971676,
+    "Interest Expense": 15266367077,
+    "Pretax Income": 305365604599,
+    "Tax Provision": 73287745104,
+    "Net Income": 232077859495,
+    "Basic EPS": 56.6
+   },
+   "2024-03-31": {
+    "Total Revenue": 1340987792797,
+    "Cost Of Revenue": 770458310456,
+    "Gross Profit": 570529482342,
+    "Operating Expense": 225392002482,
+    "Operating Income": 345137479860,
+    "Interest Expense": 16091853514,
+    "Pretax Income": 329045626346,
+    "Tax Provision": 78970950323,
+    "Net Income": 250074676023,
+    "Basic EPS": 60.99
+   },
+   "2025-03-31": {
+    "Total Revenue": 1501862264476,
+    "Cost Of Revenue": 870431182971,
+    "Gross Profit": 631431081505,
+    "Operating Expense": 259195661229,
+    "Operating Income": 372235420276,
+    "Interest Expense": 18022347174,
+    "Pretax Income": 354213073103,
+    "Tax Provision": 85011137545,
+    "Net Income": 269201935558,
+    "Basic EPS": 65.66
+   }
+  },
+  "balance_sheet": {
+   "2022-03-31": {
+    "Total Assets": 1545277424183,
+    "Total Liabilities": 896260906026,
+    "Stockholders Equity": 649016518157,
+    "Cash And Cash Equivalents": 139074968176,
+    "Total Debt": 313691317109
+   },
+   "2023-03-31": {
+    "Total Assets": 1736685718456,
+    "Total Liabilities": 1007277716704,
+    "Stockholders Equity": 729408001751,
+    "Cash And Cash Equivalents": 156301714661,
+    "Total Debt": 352547200847
+   },
+   "2024-03-31": {
+    "Total Assets": 1832939086729,
+    "Total Liabilities": 1063104670303,
+    "Stockholders Equity": 769834416426,
+    "Cash And Cash Equivalents": 164964517806,
+    "Total Debt": 372086634606
+   },
+   "2025-03-31": {
+    "Total Assets": 2056901606384,
+    "Total Liabilities": 1193002931703,
+    "Stockholders Equity": 863898674681,
+    "Cash And Cash Equivalents": 185121144575,
+    "Total Debt": 417551026096
+   }
+  },
+  "cash_flow": {
+   "2022-03-31": {
+    "Operating Cash Flow": 251801281341,
+    "Investing Cash Flow": -79183480098,
+    "Financing Cash Flow": -86308900621,
+    "Capital Expenditure": -63346784078,
+    "Free Cash Flow": 188454497262
+   },
+   "2023-03-31": {
+    "Operating Cash Flow": 267357958799,
+    "Investing Cash Flow": -87463561380,
+    "Financing Cash Flow": -89947198709,
+    "Capital Expenditure": -69970849104,
+    "Free Cash Flow": 197387109695
+   },
+   "2024-03-31": {
+    "Operating Cash Flow": 305195646384,
+    "Investing Cash Flow": -92192910755,
+    "Financing Cash Flow": -106501367815,
+    "Capital Expenditure": -73754328604,
+    "Free Cash Flow": 231441317781
+   },
+   "2025-03-31": {
+    "Operating Cash Flow": 316581603539,
+    "Investing Cash Flow": -103253030683,
+    "Financing Cash Flow": -106664286428,
+    "Capital Expenditure": -82602424546,
+    "Free Cash Flow": 233979178993
+   }
+  }
+ },
+ "HDFCBANK.NS": {
+  "income_statement": {
+   "2022-03-31": {
+    "Total Revenue": 1546807810415,
+    "Cost Of Revenue": 681035349681,
+    "Gross Profit": 865772460734,
+    "Operating Expense": 347983909583,
+    "Operating Income": 517788551151,
+    "Interest Expense": 18561693725,
+    "Pretax Income": 499226857426,
+    "Tax Provision": 119814445782,
+    "Net Income": 379412411644,
+    "Basic EPS": 49.92
+   },
+   "2023-03-31": {
+    "Total Revenue": 1661191128695,
+    "Cost Of Revenue": 749198251773,
+    "Gross Profit": 911992876921,
+    "Operating Expense": 365913912491,
+    "Operating Income": 546078964430,
+    "Interest Expense": 19934293544,
+    "Pretax Income": 526144670885,
+    "Tax Provision": 126274721013,
+    "Net Income": 399869949873,
+    "Basic EPS": 52.61
+   },
+   "2024-03-31": {
+    "Total Revenue": 1810811729668,
+    "Cost Of Revenue": 817989994765,
+    "Gross Profit": 992821734903,
+    "Operating Expense": 398134362379,
+    "Operating Income": 594687372524,
+    "Interest Expense": 21729740756,
+    "Pretax Income": 572957631768,
+    "Tax Provision": 137509831624,
+    "Net Income": 435447800144,
+    "Basic EPS": 57.3
+   },
+   "2025-03-31": {
+    "Total Revenue": 2008559308484,
+    "Cost Of Revenue": 904358910084,
+    "Gross Profit": 1104200398400,
+    "Operating Expense": 440389567521,
+    "Operating Income": 663810830879,
+    "Interest Expense": 24102711702,
+    "Pretax Income": 639708119177,
+    "Tax Provision": 153529948603,
+    "Net Income": 486178170575,
+    "Basic EPS": 63.97
+   }
+  },
+  "balance_sheet": {
+   "2022-03-31": {
+    "Total Assets": 2086526286847,
+    "Total Liabilities": 1210185246371,
+    "Stockholders Equity": 876341040476,
+    "Cash And Cash Equivalents": 187787365816,
+    "Total Debt": 423564836230
+   },
+   "2023-03-31": {
+    "Total Assets": 2263097233873,
+    "Total Liabilities": 1312596395646,
+    "Stockholders Equity": 950500838227,
+    "Cash And Cash Equivalents": 203678751049,
+    "Total Debt": 459408738476
+   },
+   "2024-03-31": {
+    "Total Assets": 2485080419438,
+    "Total Liabilities": 1441346643274,
+    "Stockholders Equity": 1043733776164,
+    "Cash And Cash Equivalents": 223657237749,
+    "Total Debt": 504471325146
+   },
+   "2025-03-31": {
+    "Total Assets": 2746269153580,
+    "Total Liabilities": 1592836109076,
+    "Stockholders Equity": 1153433044504,
+    "Cash And Cash Equivalents": 247164223822,
+    "Total Debt": 557492638177
+   }
+  },
+  "cash_flow": {
+   "2022-03-31": {
+    "Operating Cash Flow": 439417359111,
+    "Investing Cash Flow": -106343036966,
+    "Financing Cash Flow": -166537161072,
+    "Capital Expenditure": -85074429573,
+    "Free Cash Flow": 354342929538
+   },
+   "2023-03-31": {
+    "Operating Cash Flow": 462493764084,
+    "Investing Cash Flow": -114206890098,
+    "Financing Cash Flow": -174143436993,
+    "Capital Expenditure": -91365512078,
+    "Free Cash Flow": 371128252005
+   },
+   "2024-03-31": {
+    "Operating Cash Flow": 490204346458,
+    "Investing Cash Flow": -124493306415,
+    "Financing Cash Flow": -182855520022,
+    "Capital Expenditure": -99594645132,
+    "Free Cash Flow": 390609701326
+   },
+   "2025-03-31": {
+    "Operating Cash Flow": 582228787523,
+    "Investing Cash Flow": -138088452458,
+    "Financing Cash Flow": -222070167532,
+    "Capital Expenditure": -110470761967,
+    "Free Cash Flow": 471758025556
+   }
+  }
+ },
+ "HDFCBANK.BO": {
+  "income_statement": {
+   "2022-03-31": {
+    "Total Revenue": 1546807810415,
+    "Cost Of Revenue": 681035349681,
+    "Gross Profit": 865772460734,
+    "Operating Expense": 347983909583,
+    "Operating Income": 517788551151,
+    "Interest Expense": 18561693725,
+    "Pretax Income": 499226857426,
+    "Tax Provision": 119814445782,
+    "Net Income": 379412411644,
+    "Basic EPS": 49.92
+   },
+   "2023-03-31": {
+    "Total Revenue": 1661191128695,
+    "Cost Of Revenue": 749198251773,
+    "Gross Profit": 911992876921,
+    "Operating Expense": 365913912491,
+    "Operating Income": 546078964430,
+    "Interest Expense": 19934293544,
+    "Pretax Income": 526144670885,
+    "Tax Provision": 126274721013,
+    "Net Income": 399869949873,
+    "Basic EPS": 52.61
+   },
+   "2024-03-31": {
+    "Total Revenue": 1810811729668,
+    "Cost Of Revenue": 817989994765,
+    "Gross Profit": 992821734903,
+    "Operating Expense": 398134362379,
+    "Operating Income": 594687372524,
+    "Interest Expense": 21729740756,
+    "Pretax Income": 572957631768,
+    "Tax Provision": 137509831624,
+    "Net Income": 435447800144,
+    "Basic EPS": 57.3
+   },
+   "2025-03-31": {
+    "Total Revenue": 2008559308484,
+    "Cost Of Revenue": 904358910084,
+    "Gross Profit": 1104200398400,
+    "Operating Expense": 440389567521,
+    "Operating Income": 663810830879,
+    "Interest Expense": 24102711702,
+    "Pretax Income": 639708119177,
+    "Tax Provision": 153529948603,
+    "Net Income": 486178170575,
+    "Basic EPS": 63.97
+   }
+  },
+  "balance_sheet": {
+   "2022-03-31": {
+    "Total Assets": 2086526286847,
+    "Total Liabilities": 1210185246371,
+    "Stockholders Equity": 876341040476,
+    "Cash And Cash Equivalents": 187787365816,
+    "Total Debt": 423564836230
+   },
+   "2023-03-31": {
+    "Total Assets": 2263097233873,
+    "Total Liabilities": 1312596395646,
+    "Stockholders Equity": 950500838227,
+    "Cash And Cash Equivalents": 203678751049,
+    "Total Debt": 459408738476
+   },
+   "2024-03-31": {
+    "Total Assets": 2485080419438,
+    "Total Liabilities": 1441346643274,
+    "Stockholders Equity": 1043733776164,
+    "Cash And Cash Equivalents": 223657237749,
+    "Total Debt": 504471325146
+   },
+   "2025-03-31": {
+    "Total Assets": 2746269153580,
+    "Total Liabilities": 1592836109076,
+    "Stockholders Equity": 1153433044504,
+    "Cash And Cash Equivalents": 247164223822,
+    "Total Debt": 557492638177
+   }
+  },
+  "cash_flow": {
+   "2022-03-31": {
+    "Operating Cash Flow": 439417359111,
+    "Investing Cash Flow": -106343036966,
+    "Financing Cash Flow": -166537161072,
+    "Capital Expenditure": -85074429573,
+    "Free Cash Flow": 354342929538
+   },
+   "2023-03-31": {
+    "Operating Cash Flow": 462493764084,
+    "Investing Cash Flow": -114206890098,
+    "Financing Cash Flow": -174143436993,
+    "Capital Expenditure": -91365512078,
+    "Free Cash Flow": 371128252005
+   },
+   "2024-03-31": {
+    "Operating Cash Flow": 490204346458,
+    "Investing Cash Flow": -124493306415,
+    "Financing Cash Flow": -182855520022,
+    "Capital Expenditure": -99594645132,
+    "Free Cash Flow": 390609701326
+   },
+   "2025-03-31": {
+    "Operating Cash Flow": 582228787523,
+    "Investing Cash Flow": -138088452458,
+    "Financing Cash Flow": -222070167532,
+    "Capital Expenditure": -110470761967,
+    "Free Cash Flow": 471758025556
+   }
+  }
+ },
+ "ICICIBANK.NS": {
+  "income_statement": {
+   "2022-03-31": {
+    "Total Revenue": 1233314597747,
+    "Cost Of Revenue": 553547085661,
+    "Gross Profit": 679767512085,
+    "Operating Expense": 271337481032,
+    "Operating Income": 408430031053,
+    "Interest Expense": 14799775173,
+    "Pretax Income": 393630255880,
+    "Tax Provision": 94471261411,
+    "Net Income": 299158994469,
+    "Basic EPS": 42.74
+   },
+   "2023-03-31": {
+    "Total Revenue": 1369789131823,
+    "Cost Of Revenue": 618784401567,
+    "Gross Profit": 751004730256,
+    "Operating Expense": 293967206412,
+    "Operating Income": 457037523844,
+    "Interest Expense": 16437469582,
+    "Pretax Income": 440600054262,
+    "Tax Provision": 105744013023,
+    "Net Income": 334856041239,
+    "Basic EPS": 47.84
+   },
+   "2024-03-31": {
+    "Total Revenue": 1474638471872,
+    "Cost Of Revenue": 659324194243,
+    "Gross Profit": 815314277629,
+    "Operating Expense": 309867631069,
+    "Operating Income": 505446646560,
+    "Interest Expense": 17695661662,
+    "Pretax Income": 487750984897,
+    "Tax Provision": 117060236375,
+    "Net Income": 370690748522,
+    "Basic EPS": 52.96
+   },
+   "2025-03-31": {
+    "Total Revenue": 1594724956582,
+    "Cost Of Revenue": 711595533431,
+    "Gross Profit": 883129423151,
+    "Operating Expense": 355122843059,
+    "Operating Income": 528006580092,
+    "Interest Expense": 19136699479,
+    "Pretax Income": 508869880613,
+    "Tax Provision": 122128771347,
+    "Net Income": 386741109266,
+    "Basic EPS": 55.25
+   }
+  },
+  "balance_sheet": {
+   "2022-03-31": {
+    "Total Assets": 1642230899651,
+    "Total Liabilities": 952493921798,
+    "Stockholders Equity": 689736977854,
+    "Cash And Cash Equivalents": 147800780969,
+    "Total Debt": 333372872629
+   },
+   "2023-03-31": {
+    "Total Assets": 1868369205721,
+    "Total Liabilities": 1083654139318,
+    "Stockholders Equity": 784715066403,
+    "Cash And Cash Equivalents": 168153228515,
+    "Total Debt": 379278948761
+   },
+   "2024-03-31": {
+    "Total Assets": 2014408224818,
+    "Total Liabilities": 1168356770395,
+    "Stockholders Equity": 846051454424,
+    "Cash And Cash Equivalents": 181296740234,
+    "Total Debt": 408924869638
+   },
+   "2025-03-31": {
+    "Total Assets": 2111207212263,
+    "Total Liabilities": 1224500183113,
+    "Stockholders Equity": 886707029151,
+    "Cash And Cash Equivalents": 190008649104,
+    "Total Debt": 428575064089
+   }
+  },
+  "cash_flow": {
+   "2022-03-31": {
+    "Operating Cash Flow": 364827781892,
+    "Investing Cash Flow": -84790378595,
+    "Financing Cash Flow": -140018701648,
+    "Capital Expenditure": -67832302876,
+    "Free Cash Flow": 296995479016
+   },
+   "2023-03-31": {
+    "Operating Cash Flow": 387359263781,
+    "Investing Cash Flow": -94173002813,
+    "Financing Cash Flow": -146593130484,
+    "Capital Expenditure": -75338402250,
+    "Free Cash Flow": 312020861531
+   },
+   "2024-03-31": {
+    "Operating Cash Flow": 452995742491,
+    "Investing Cash Flow": -101381394941,
+    "Financing Cash Flow": -175807173775,
+    "Capital Expenditure": -81105115953,
+    "Free Cash Flow": 371890626538
+   },
+   "2025-03-31": {
+    "Operating Cash Flow": 451207442395,
+    "Investing Cash Flow": -109637340765,
+    "Financing Cash Flow": -170785050815,
+    "Capital Expenditure": -87709872612,
+    "Free Cash Flow": 363497569783
+   }
+  }
+ },
+ "AAPL": {
+  "income_statement": {
+   "2022-12-31": {
+    "Total Revenue": 298148578636,
+    "Cost Of Revenue": 173434913076,
+    "Gross Profit": 124713665560,
+    "Operating Expense": 50748187991,
+    "Operating Income": 73965477569,
+    "Interest Expense": 3577782944,
+    "Pretax Income": 70387694625,
+    "Tax Provision": 16893046710,
+    "Net Income": 53494647915,
+    "Basic EPS": 3.45
+   },
+   "2023-12-31": {
+    "Total Revenue": 328637786775,
+    "Cost Of Revenue": 189353367653,
+    "Gross Profit": 139284419121,
+    "Operating Expense": 54642609863,
+    "Operating Income": 84641809258,
+    "Interest Expense": 3943653441,
+    "Pretax Income": 80698155817,
+    "Tax Provision": 19367557396,
+    "Net Income": 61330598421,
+    "Basic EPS": 3.96
+   },
+   "2024-12-31": {
+    "Total Revenue": 347555258468,
+    "Cost Of Revenue": 203199939130,
+    "Gross Profit": 144355319338,
+    "Operating Expense": 58291204987,
+    "Operating Income": 86064114351,
+    "Interest Expense": 4170663102,
+    "Pretax Income": 81893451250,
+    "Tax Provision": 19654428300,
+    "Net Income": 62239022950,
+    "Basic EPS": 4.02
+   },
+   "2025-12-31": {
+    "Total Revenue": 386466093689,
+    "Cost Of Revenue": 224659605754,
+    "Gross Profit": 161806487935,
+    "Operating Expense": 64781460678,
+    "Operating Income": 97025027257,
+    "Interest Expense": 4637593124,
+    "Pretax Income": 92387434133,
+    "Tax Provision": 22172984192,
+    "Net Income": 70214449941,
+    "Basic EPS": 4.53
+   }
+  },
+  "balance_sheet": {
+   "2022-12-31": {
+    "Total Assets": 413450364353,
+    "Total Liabilities": 239801211325,
+    "Stockholders Equity": 173649153028,
+    "Cash And Cash Equivalents": 37210532792,
+    "Total Debt": 83930423964
+   },
+   "2023-12-31": {
+    "Total Assets": 437172074893,
+    "Total Liabilities": 253559803438,
+    "Stockholders Equity": 183612271455,
+    "Cash And Cash Equivalents": 39345486740,
+    "Total Debt": 88745931203
+   },
+   "2024-12-31": {
+    "Total Assets": 473471130005,
+    "Total Liabilities": 274613255403,
+    "Stockholders Equity": 198857874602,
+    "Cash And Cash Equivalents": 42612401700,
+    "Total Debt": 96114639391
+   },
+   "2025-12-31": {
+    "Total Assets": 541395998020,
+    "Total Liabilities": 314009678852,
+    "Stockholders Equity": 227386319169,
+    "Cash And Cash Equivalents": 48725639822,
+    "Total Debt": 109903387598
+   }
+  },
+  "cash_flow": {
+   "2022-12-31": {
+    "Operating Cash Flow": 62147503638,
+    "Investing Cash Flow": -20497714781,
+    "Financing Cash Flow": -20824894428,
+    "Capital Expenditure": -16398171825,
+    "Free Cash Flow": 45749331813
+   },
+   "2023-12-31": {
+    "Operating Cash Flow": 69270128162,
+    "Investing Cash Flow": -22593847841,
+    "Financing Cash Flow": -23338140161,
+    "Capital Expenditure": -18075078273,
+    "Free Cash Flow": 51195049890
+   },
+   "2024-12-31": {
+    "Operating Cash Flow": 72800173611,
+    "Investing Cash Flow": -23894424020,
+    "Financing Cash Flow": -24452874796,
+    "Capital Expenditure": -19115539216,
+    "Free Cash Flow": 53684634396
+   },
+   "2025-12-31": {
+    "Operating Cash Flow": 81514572090,
+    "Investing Cash Flow": -26569543941,
+    "Financing Cash Flow": -27472514075,
+    "Capital Expenditure": -21255635153,
+    "Free Cash Flow": 60258936937
+   }
+  }
+ },
+ "MSFT": {
+  "income_statement": {
+   "2022-12-31": {
+    "Total Revenue": 180023989880,
+    "Cost Of Revenue": 105774278561,
+    "Gross Profit": 74249711319,
+    "Operating Expense": 31421314830,
+    "Operating Income": 42828396488,
+    "Interest Expense": 2160287879,
+    "Pretax Income": 40668108610,
+    "Tax Provision": 9760346066,
+    "Net Income": 30907762543,
+    "Basic EPS": 4.18
+   },
+   "2023-12-31": {
+    "Total Revenue": 194614113033,
+    "Cost Of Revenue": 112669964040,
+    "Gross Profit": 81944148993,
+    "Operating Expense": 32319623662,
+    "Operating Income": 49624525331,
+    "Interest Expense": 2335369356,
+    "Pretax Income": 47289155975,
+    "Tax Provision": 11349397434,
+    "Net Income": 35939758541,
+    "Basic EPS": 4.86
+   },
+   "2024-12-31": {
+    "Total Revenue": 209971048913,
+    "Cost Of Revenue": 120323038691,
+    "Gross Profit": 89648010222,
+    "Operating Expense": 35987733636,
+    "Operating Income": 53660276586,
+    "Interest Expense": 2519652587,
+    "Pretax Income": 51140623999,
+    "Tax Provision": 12273749760,
+    "Net Income": 38866874239,
+    "Basic EPS": 5.25
+   },
+   "2025-12-31": {
+    "Total Revenue": 229915943184,
+    "Cost Of Revenue": 131586340060,
+    "Gross Profit": 98329603124,
+    "Operating Expense": 39226098894,
+    "Operating Income": 59103504229,
+    "Interest Expense": 2758991318,
+    "Pretax Income": 56344512911,
+    "Tax Provision": 13522683099,
+    "Net Income": 42821829812,
+    "Basic EPS": 5.79
+   }
+  },
+  "balance_sheet": {
+   "2022-12-31": {
+    "Total Assets": 239234525084,
+    "Total Liabilities": 138756024549,
+    "Stockholders Equity": 100478500535,
+    "Cash And Cash Equivalents": 21531107258,
+    "Total Debt": 48564608592
+   },
+   "2023-12-31": {
+    "Total Assets": 268926979209,
+    "Total Liabilities": 155977647941,
+    "Stockholders Equity": 112949331268,
+    "Cash And Cash Equivalents": 24203428129,
+    "Total Debt": 54592176779
+   },
+   "2024-12-31": {
+    "Total Assets": 285417286341,
+    "Total Liabilities": 165542026078,
+    "Stockholders Equity": 119875260263,
+    "Cash And Cash Equivalents": 25687555771,
+    "Total Debt": 57939709127
+   },
+   "2025-12-31": {
+    "Total Assets": 314989037133,
+    "Total Liabilities": 182693641537,
+    "Stockholders Equity": 132295395596,
+    "Cash And Cash Equivalents": 28349013342,
+    "Total Debt": 63942774538
+   }
+  },
+  "cash_flow": {
+   "2022-12-31": {
+    "Operating Cash Flow": 37084014847,
+    "Investing Cash Flow": -12376649304,
+    "Financing Cash Flow": -12353682772,
+    "Capital Expenditure": -9901319443,
+    "Free Cash Flow": 27182695404
+   },
+   "2023-12-31": {
+    "Operating Cash Flow": 44657257677,
+    "Investing Cash Flow": -13379720271,
+    "Financing Cash Flow": -15638768703,
+    "Capital Expenditure": -10703776217,
+    "Free Cash Flow": 33953481460
+   },
+   "2024-12-31": {
+    "Operating Cash Flow": 47183898909,
+    "Investing Cash Flow": -14435509613,
+    "Financing Cash Flow": -16374194648,
+    "Capital Expenditure": -11548407690,
+    "Free Cash Flow": 35635491219
+   },
+   "2025-12-31": {
+    "Operating Cash Flow": 50480374788,
+    "Investing Cash Flow": -15806721094,
+    "Financing Cash Flow": -17336826847,
+    "Capital Expenditure": -12645376875,
+    "Free Cash Flow": 37834997913
+   }
+  }
+ },
+ "GOOGL": {
+  "income_statement": {
+   "2022-12-31": {
+    "Total Revenue": 235529807986,
+    "Cost Of Revenue": 105133500465,
+    "Gross Profit": 130396307521,
+    "Operating Expense": 51643407473,
+    "Operating Income": 78752900048,
+    "Interest Expense": 2826357696,
+    "Pretax Income": 75926542352,
+    "Tax Provision": 18222370165,
+    "Net Income": 57704172188,
+    "Basic EPS": 4.69
+   },
+   "2023-12-31": {
+    "Total Revenue": 258373169652,
+    "Cost Of Revenue": 116138577384,
+    "Gross Profit": 142234592269,
+    "Operating Expense": 55375442909,
+    "Operating Income": 86859149360,
+    "Interest Expense": 3100478036,
+    "Pretax Income": 83758671324,
+    "Tax Provision": 20102081118,
+    "Net Income": 63656590206,
+    "Basic EPS": 5.18
+   },
+   "2024-12-31": {
+    "Total Revenue": 278513108994,
+    "Cost Of Revenue": 125295924251,
+    "Gross Profit": 153217184742,
+    "Operating Expense": 61354957481,
+    "Operating Income": 91862227262,
+    "Interest Expense": 3342157308,
+    "Pretax Income": 88520069954,
+    "Tax Provision": 21244816789,
+    "Net Income": 67275253165,
+    "Basic EPS": 5.47
+   },
+   "2025-12-31": {
+    "Total Revenue": 303598197211,
+    "Cost Of Revenue": 140297344047,
+    "Gross Profit": 163300853163,
+    "Operating Expense": 67330888951,
+    "Operating Income": 95969964213,
+    "Interest Expense": 3643178367,
+    "Pretax Income": 92326785846,
+    "Tax Provision": 22158428603,
+    "Net Income": 70168357243,
+    "Basic EPS": 5.7
+   }
+  },
+  "balance_sheet": {
+   "2022-12-31": {
+    "Total Assets": 320028744656,
+    "Total Liabilities": 185616671901,
+    "Stockholders Equity": 134412072756,
+    "Cash And Cash Equivalents": 28802587019,
+    "Total Debt": 64965835165
+   },
+   "2023-12-31": {
+    "Total Assets": 346909640368,
+    "Total Liabilities": 201207591414,
+    "Stockholders Equity": 145702048955,
+    "Cash And Cash Equivalents": 31221867633,
+    "Total Debt": 70422656995
+   },
+   "2024-12-31": {
+    "Total Assets": 367533649441,
+    "Total Liabilities": 213169516676,
+    "Stockholders Equity": 154364132765,
+    "Cash And Cash Equivalents": 33078028450,
+    "Total Debt": 74609330837
+   },
+   "2025-12-31": {
+    "Total Assets": 418968216451,
+    "Total Liabilities": 243001565542,
+    "Stockholders Equity": 175966650909,
+    "Cash And Cash Equivalents": 37707139481,
+    "Total Debt": 85050547940
+   }
+  },
+  "cash_flow": {
+   "2022-12-31": {
+    "Operating Cash Flow": 69559640649,
+    "Investing Cash Flow": -16192674299,
+    "Financing Cash Flow": -26683483175,
+    "Capital Expenditure": -12954139439,
+    "Free Cash Flow": 56605501209
+   },
+   "2023-12-31": {
+    "Operating Cash Flow": 75442053897,
+    "Investing Cash Flow": -17763155414,
+    "Financing Cash Flow": -28839449242,
+    "Capital Expenditure": -14210524331,
+    "Free Cash Flow": 61231529566
+   },
+   "2024-12-31": {
+    "Operating Cash Flow": 79834208826,
+    "Investing Cash Flow": -19147776243,
+    "Financing Cash Flow": -30343216291,
+    "Capital Expenditure": -15318220995,
+    "Free Cash Flow": 64515987831
+   },
+   "2025-12-31": {
+    "Operating Cash Flow": 84572559147,
+    "Investing Cash Flow": -20872376058,
+    "Financing Cash Flow": -31850091544,
+    "Capital Expenditure": -16697900847,
+    "Free Cash Flow": 67874658300
+   }
+  }
+ },
+ "JPM": {
+  "income_statement": {
+   "2022-12-31": {
+    "Total Revenue": 123629232395,
+    "Cost Of Revenue": 54873478470,
+    "Gross Profit": 68755753925,
+    "Operating Expense": 27940965736,
+    "Operating Income": 40814788189,
+    "Interest Expense": 1483550789,
+    "Pretax Income": 39331237400,
+    "Tax Provision": 9439496976,
+    "Net Income": 29891740424,
+    "Basic EPS": 10.68
+   },
+   "2023-12-31": {
+    "Total Revenue": 134397580420,
+    "Cost Of Revenue": 59152666816,
+    "Gross Profit": 75244913604,
+    "Operating Expense": 29567288428,
+    "Operating Income": 45677625177,
+    "Interest Expense": 1612770965,
+    "Pretax Income": 44064854212,
+    "Tax Provision": 10575565011,
+    "Net Income": 33489289201,
+    "Basic EPS": 11.96
+   },
+   "2024-12-31": {
+    "Total Revenue": 150131484359,
+    "Cost Of Revenue": 66371599567,
+    "Gross Profit": 83759884792,
+    "Operating Expense": 33480669612,
+    "Operating Income": 50279215180,
+    "Interest Expense": 1801577812,
+    "Pretax Income": 48477637368,
+    "Tax Provision": 11634632968,
+    "Net Income": 36843004399,
+    "Basic EPS": 13.16
+   },
+   "2025-12-31": {
+    "Total Revenue": 159399578639,
+    "Cost Of Revenue": 71051013288,
+    "Gross Profit": 88348565351,
+    "Operating Expense": 35172460343,
+    "Operating Income": 53176105008,
+    "Interest Expense": 1912794944,
+    "Pretax Income": 51263310065,
+    "Tax Provision": 12303194416,
+    "Net Income": 38960115649,
+    "Basic EPS": 13.91
+   }
+  },
+  "balance_sheet": {
+   "2022-12-31": {
+    "Total Assets": 164843624929,
+    "Total Liabilities": 95609302459,
+    "Stockholders Equity": 69234322470,
+    "Cash And Cash Equivalents": 14835926244,
+    "Total Debt": 33463255861
+   },
+   "2023-12-31": {
+    "Total Assets": 178562861347,
+    "Total Liabilities": 103566459581,
+    "Stockholders Equity": 74996401766,
+    "Cash And Cash Equivalents": 16070657521,
+    "Total Debt": 36248260853
+   },
+   "2024-12-31": {
+    "Total Assets": 206607597376,
+    "Total Liabilities": 119832406478,
+    "Stockholders Equity": 86775190898,
+    "Cash And Cash Equivalents": 18594683764,
+    "Total Debt": 41941342267
+   },
+   "2025-12-31": {
+    "Total Assets": 216815240965,
+    "Total Liabilities": 125752839760,
+    "Stockholders Equity": 91062401205,
+    "Cash And Cash Equivalents": 19513371687,
+    "Total Debt": 44013493916
+   }
+  },
+  "cash_flow": {
+   "2022-12-31": {
+    "Operating Cash Flow": 35559880597,
+    "Investing Cash Flow": -8499509727,
+    "Financing Cash Flow": -13530185435,
+    "Capital Expenditure": -6799607782,
+    "Free Cash Flow": 28760272816
+   },
+   "2023-12-31": {
+    "Operating Cash Flow": 39001916957,
+    "Investing Cash Flow": -9239833654,
+    "Financing Cash Flow": -14881041652,
+    "Capital Expenditure": -7391866923,
+    "Free Cash Flow": 31610050034
+   },
+   "2024-12-31": {
+    "Operating Cash Flow": 42090089856,
+    "Investing Cash Flow": -10321539550,
+    "Financing Cash Flow": -15884275153,
+    "Capital Expenditure": -8257231640,
+    "Free Cash Flow": 33832858217
+   },
+   "2025-12-31": {
+    "Operating Cash Flow": 46910171972,
+    "Investing Cash Flow": -10958721031,
+    "Financing Cash Flow": -17975725470,
+    "Capital Expenditure": -8766976825,
+    "Free Cash Flow": 38143195147
+   }
+  }
+ },
+ "KO": {
+  "income_statement": {
+   "2022-12-31": {
+    "Total Revenue": 40823638049,
+    "Cost Of Revenue": 17313677477,
+    "Gross Profit": 23509960572,
+    "Operating Expense": 11524459423,
+    "Operating Income": 11985501149,
+    "Interest Expense": 489883657,
+    "Pretax Income": 11495617492,
+    "Tax Provision": 2758948198,
+    "Net Income": 8736669294,
+    "Basic EPS": 2.03
+   },
+   "2023-12-31": {
+    "Total Revenue": 43466579762,
+    "Cost Of Revenue": 18306928854,
+    "Gross Profit": 25159650908,
+    "Operating Expense": 12029092331,
+    "Operating Income": 13130558577,
+    "Interest Expense": 521598957,
+    "Pretax Income": 12608959619,
+    "Tax Provision": 3026150309,
+    "Net Income": 9582809311,
+    "Basic EPS": 2.23
+   },
+   "2024-12-31": {
+    "Total Revenue": 44716864402,
+    "Cost Of Revenue": 18578773930,
+    "Gross Profit": 26138090471,
+    "Operating Expense": 12373801701,
+    "Operating Income": 13764288770,
+    "Interest Expense": 536602373,
+    "Pretax Income": 13227686398,
+    "Tax Provision": 3174644735,
+    "Net Income": 10053041662,
+    "Basic EPS": 2.34
+   },
+   "2025-12-31": {
+    "Total Revenue": 45969247696,
+    "Cost Of Revenue": 19186407853,
+    "Gross Profit": 26782839844,
+    "Operating Expense": 13133060403,
+    "Operating Income": 13649779440,
+    "Interest Expense": 551630972,
+    "Pretax Income": 13098148468,
+    "Tax Provision": 3143555632,
+    "Net Income": 9954592836,
+    "Basic EPS": 2.32
+   }
+  },
+  "balance_sheet": {
+   "2022-12-31": {
+    "Total Assets": 54594192216,
+    "Total Liabilities": 31664631485,
+    "Stockholders Equity": 22929560731,
+    "Cash And Cash Equivalents": 4913477299,
+    "Total Debt": 11082621020
+   },
+   "2023-12-31": {
+    "Total Assets": 56063981127,
+    "Total Liabilities": 32517109054,
+    "Stockholders Equity": 23546872073,
+    "Cash And Cash Equivalents": 5045758301,
+    "Total Debt": 11380988169
+   },
+   "2024-12-31": {
+    "Total Assets": 60640988941,
+    "Total Liabilities": 35171773586,
+    "Stockholders Equity": 25469215355,
+    "Cash And Cash Equivalents": 5457689005,
+    "Total Debt": 12310120755
+   },
+   "2025-12-31": {
+    "Total Assets": 61840156891,
+    "Total Liabilities": 35867290997,
+    "Stockholders Equity": 25972865894,
+    "Cash And Cash Equivalents": 5565614120,
+    "Total Debt": 12553551849
+   }
+  },
+  "cash_flow": {
+   "2022-12-31": {
+    "Operating Cash Flow": 10084065988,
+    "Investing Cash Flow": -2806625116,
+    "Financing Cash Flow": -3638720436,
+    "Capital Expenditure": -2245300093,
+    "Free Cash Flow": 7838765895
+   },
+   "2023-12-31": {
+    "Operating Cash Flow": 11574742393,
+    "Investing Cash Flow": -2988327359,
+    "Financing Cash Flow": -4293207517,
+    "Capital Expenditure": -2390661887,
+    "Free Cash Flow": 9184080507
+   },
+   "2024-12-31": {
+    "Operating Cash Flow": 12051611392,
+    "Investing Cash Flow": -3074284428,
+    "Financing Cash Flow": -4488663482,
+    "Capital Expenditure": -2459427542,
+    "Free Cash Flow": 9592183850
+   },
+   "2025-12-31": {
+    "Operating Cash Flow": 11194397920,
+    "Investing Cash Flow": -3160385779,
+    "Financing Cash Flow": -4017006071,
+    "Capital Expenditure": -2528308623,
+    "Free Cash Flow": 8666089297
+   }
+  }
+ },
+ "XOM": {
+  "income_statement": {
+   "2022-12-31": {
+    "Total Revenue": 298159686904,
+    "Cost Of Revenue": 231132057191,
+    "Gross Profit": 67027629714,
+    "Operating Expense": 23284984602,
+    "Operating Income": 43742645112,
+    "Interest Expense": 3577916243,
+    "Pretax Income": 40164728869,
+    "Tax Provision": 9639534929,
+    "Net Income": 30525193940,
+    "Basic EPS": 7.63
+   },
+   "2023-12-31": {
+    "Total Revenue": 321403764460,
+    "Cost Of Revenue": 249202362683,
+    "Gross Profit": 72201401777,
+    "Operating Expense": 25245701092,
+    "Operating Income": 46955700685,
+    "Interest Expense": 3856845174,
+    "Pretax Income": 43098855511,
+    "Tax Provision": 10343725323,
+    "Net Income": 32755130189,
+    "Basic EPS": 8.19
+   },
+   "2024-12-31": {
+    "Total Revenue": 351593703342,
+    "Cost Of Revenue": 273448527589,
+    "Gross Profit": 78145175753,
+    "Operating Expense": 28069120721,
+    "Operating Income": 50076055032,
+    "Interest Expense": 4219124440,
+    "Pretax Income": 45856930592,
+    "Tax Provision": 11005663342,
+    "Net Income": 34851267250,
+    "Basic EPS": 8.71
+   },
+   "2025-12-31": {
+    "Total Revenue": 390328121617,
+    "Cost Of Revenue": 303874867770,
+    "Gross Profit": 86453253848,
+    "Operating Expense": 31243695053,
+    "Operating Income": 55209558795,
+    "Interest Expense": 4683937459,
+    "Pretax Income": 50525621335,
+    "Tax Provision": 12126149121,
+    "Net Income": 38399472215,
+    "Basic EPS": 9.6
+   }
+  },
+  "balance_sheet": {
+   "2022-12-31": {
+    "Total Assets": 397392470609,
+    "Total Liabilities": 230487632953,
+    "Stockholders Equity": 166904837656,
+    "Cash And Cash Equivalents": 35765322355,
+    "Total Debt": 80670671534
+   },
+   "2023-12-31": {
+    "Total Assets": 415153649868,
+    "Total Liabilities": 240789116924,
+    "Stockholders Equity": 174364532945,
+    "Cash And Cash Equivalents": 37363828488,
+    "Total Debt": 84276190923
+   },
+   "2024-12-31": {
+    "Total Assets": 478828859618,
+    "Total Liabilities": 277720738578,
+    "Stockholders Equity": 201108121039,
+    "Cash And Cash Equivalents": 43094597366,
+    "Total Debt": 97202258502
+   },
+   "2025-12-31": {
+    "Total Assets": 520086176545,
+    "Total Liabilities": 301649982396,
+    "Stockholders Equity": 218436194149,
+    "Cash And Cash Equivalents": 46807755889,
+    "Total Debt": 105577493839
+   }
+  },
+  "cash_flow": {
+   "2022-12-31": {
+    "Operating Cash Flow": 35515238945,
+    "Investing Cash Flow": -20498478475,
+    "Financing Cash Flow": -7508380235,
+    "Capital Expenditure": -16398782780,
+    "Free Cash Flow": 19116456165
+   },
+   "2023-12-31": {
+    "Operating Cash Flow": 36771093921,
+    "Investing Cash Flow": -22096508807,
+    "Financing Cash Flow": -7337292557,
+    "Capital Expenditure": -17677207045,
+    "Free Cash Flow": 19093886876
+   },
+   "2024-12-31": {
+    "Operating Cash Flow": 41240511305,
+    "Investing Cash Flow": -24172067105,
+    "Financing Cash Flow": -8534222100,
+    "Capital Expenditure": -19337653684,
+    "Free Cash Flow": 21902857622
+   },
+   "2025-12-31": {
+    "Operating Cash Flow": 46312789770,
+    "Investing Cash Flow": -26835058361,
+    "Financing Cash Flow": -9738865704,
+    "Capital Expenditure": -21468046689,
+    "Free Cash Flow": 24844743081
+   }
+  }
+ }
+}

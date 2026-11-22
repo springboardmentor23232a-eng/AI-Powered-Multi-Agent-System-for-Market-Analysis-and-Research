@@ -18,3 +18,8 @@ DATABASE_URL = os.getenv("DATABASE_URL") or URL.create(
 SECRET_KEY = os.environ["SECRET_KEY"]
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
 COOKIE_SECURE = os.getenv("COOKIE_SECURE", "false").lower() == "true"
+
+# Where market data is collected from: "sample" (bundled model dataset) or "yfinance" (live).
+DATA_SOURCE = os.getenv("DATA_SOURCE", "sample").lower()
+if DATA_SOURCE not in ("sample", "yfinance"):
+    raise RuntimeError('DATA_SOURCE must be "sample" or "yfinance"')

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator, model_validator
@@ -82,3 +82,65 @@ class ResearchOut(BaseModel):
 class ResearchDetail(ResearchOut):
     report: str | None = None
     error_message: str | None = None
+
+
+class CollectIn(BaseModel):
+    ticker: str = Field(min_length=1, max_length=20)
+    market: Market
+    company_name: str | None = Field(default=None, max_length=200)
+
+
+class IssueOut(BaseModel):
+    check: str
+    label: str
+    count: int
+    action: str
+    examples: list[str] = []
+
+
+class ReportOut(BaseModel):
+    rows_in: int
+    rows_out: int
+    issues: list[IssueOut]
+
+
+class CollectionOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    collection_id: int
+    ticker: str
+    company_name: str
+    market: Market
+    analysis_period: Period
+    source: str
+    retrieved_at: datetime
+    rows_raw: int
+    rows_clean: int
+    status: str
+
+
+class CollectionDetail(CollectionOut):
+    report: ReportOut
+    profile: dict | None = None
+    financials: dict[str, dict[str, dict[str, float | None]]] | None = None
+
+
+class PriceBarOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    date: date
+    open: float
+    high: float
+    low: float
+    close: float
+    volume: int
+
+
+class SymbolInfo(BaseModel):
+    symbol: str
+    name: str
+    market: Market
+
+
+class SourceInfo(BaseModel):
+    name: str
+    kind: str
+    symbols: list[SymbolInfo] | None = None

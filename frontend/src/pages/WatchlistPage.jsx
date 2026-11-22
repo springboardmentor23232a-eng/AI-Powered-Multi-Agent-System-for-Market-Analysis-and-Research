@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useData } from '../data.jsx'
 import { fmtDate } from '../format.js'
 import Page from '../components/Page.jsx'
@@ -23,6 +24,7 @@ export default function WatchlistPage() {
                   <p className="truncate text-mute">{s.company_name}, saved {fmtDate(s.created_at)}</p>
                 </div>
                 <div className="flex items-center gap-3">
+                  <Link to={`/dashboard/market-data?ticker=${s.ticker}&market=${s.market}`} className="btn-line btn-sm">Market data</Link>
                   <button className="btn-cobalt btn-sm" onClick={() => research(s)}>Research</button>
                   <button className="text-sm font-medium text-mute underline underline-offset-4 hover:text-loss" onClick={() => removeStock(s)}>Remove</button>
                 </div>

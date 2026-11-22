@@ -2,7 +2,9 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from './auth.jsx'
 import AuthPage from './pages/AuthPage.jsx'
 import DashboardLayout from './pages/DashboardLayout.jsx'
+import CollectionDetail from './pages/CollectionDetail.jsx'
 import Home from './pages/Home.jsx'
+import MarketDataPage from './pages/MarketDataPage.jsx'
 import Overview from './pages/Overview.jsx'
 import PreferencesPage from './pages/PreferencesPage.jsx'
 import ResearchPage from './pages/ResearchPage.jsx'
@@ -21,6 +23,8 @@ export default function App() {
       <Route path="/dashboard" element={user ? <DashboardLayout /> : <Navigate to="/login" replace />}>
         <Route index element={<Overview />} />
         <Route path="watchlist" element={<WatchlistPage />} />
+        <Route path="market-data" element={<MarketDataPage />} />
+        <Route path="market-data/:id" element={<CollectionDetail />} />
         <Route path="research" element={<ResearchPage />} />
         <Route path="preferences" element={<PreferencesPage />} />
       </Route>

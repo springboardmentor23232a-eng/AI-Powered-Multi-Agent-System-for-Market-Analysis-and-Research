@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { ClipboardList, LayoutGrid, LogOut, SlidersHorizontal, Star } from 'lucide-react'
+import { ClipboardList, LayoutGrid, LineChart, LogOut, SlidersHorizontal, Star } from 'lucide-react'
 import { useAuth } from '../auth.jsx'
 import { DataProvider, useData } from '../data.jsx'
 import Mark from '../components/Mark.jsx'
@@ -11,6 +11,7 @@ function Shell() {
   const nav = [
     { to: '/dashboard', end: true, label: 'Overview', icon: LayoutGrid },
     { to: '/dashboard/watchlist', label: 'Watchlist', icon: Star, count: saved.length },
+    { to: '/dashboard/market-data', label: 'Market data', icon: LineChart },
     { to: '/dashboard/research', label: 'Research', icon: ClipboardList, count: tasks.length },
     { to: '/dashboard/preferences', label: 'Preferences', icon: SlidersHorizontal },
   ]
@@ -47,10 +48,10 @@ function Shell() {
         ) : <Outlet />}
       </main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-white/10 bg-ink lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-white/10 bg-ink lg:hidden">
         {nav.map(({ to, end, label, icon: Icon }) => (
           <NavLink key={to} to={to} end={end}
-            className={({ isActive }) => 'flex flex-col items-center gap-1 py-2.5 text-xs font-medium ' + (isActive ? 'text-mark' : 'text-white/70')}>
+            className={({ isActive }) => 'flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium ' + (isActive ? 'text-mark' : 'text-white/70')}>
             <Icon size={19} /> {label}
           </NavLink>
         ))}

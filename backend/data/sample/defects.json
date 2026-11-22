@@ -1,0 +1,21 @@
+{
+ "RELIANCE.BO": {
+  "non_positive": 1,
+  "inconsistent_ohlc": 1
+ },
+ "TCS.BO": {
+  "missing_prices": 2,
+  "duplicate_dates": 1,
+  "inconsistent_ohlc": 1
+ },
+ "INFY.BO": {
+  "missing_prices": 1,
+  "missing_volume": 2
+ },
+ "HDFCBANK.NS": {
+  "duplicate_dates": 2
+ },
+ "AAPL": {
+  "missing_volume": 3
+ }
+}

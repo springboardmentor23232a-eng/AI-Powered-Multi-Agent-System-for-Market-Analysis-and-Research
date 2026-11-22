@@ -34,6 +34,11 @@ export const api = {
   history: () => request('/research'),
   report: (id) => request(`/research/${id}`),
   startResearch: (b) => request('/research', { method: 'POST', body: b }),
+  marketSource: () => request('/market-data/source'),
+  collections: () => request('/market-data'),
+  collect: (b) => request('/market-data/collect', { method: 'POST', body: b }),
+  collection: (id) => request(`/market-data/${id}`),
+  prices: (id) => request(`/market-data/${id}/prices`),
 }
 
 export const MARKETS = [

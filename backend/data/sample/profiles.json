@@ -1,0 +1,137 @@
+{
+ "RELIANCE.NS": {
+  "name": "Reliance Industries Limited",
+  "exchange": "NSE",
+  "market": "NSE",
+  "currency": "INR",
+  "country": "India",
+  "sector": "Energy",
+  "industry": "Oil & Gas Refining & Marketing"
+ },
+ "RELIANCE.BO": {
+  "name": "Reliance Industries Limited",
+  "exchange": "BSE",
+  "market": "BSE",
+  "currency": "INR",
+  "country": "India",
+  "sector": "Energy",
+  "industry": "Oil & Gas Refining & Marketing"
+ },
+ "TCS.NS": {
+  "name": "Tata Consultancy Services Limited",
+  "exchange": "NSE",
+  "market": "NSE",
+  "currency": "INR",
+  "country": "India",
+  "sector": "Technology",
+  "industry": "Information Technology Services"
+ },
+ "TCS.BO": {
+  "name": "Tata Consultancy Services Limited",
+  "exchange": "BSE",
+  "market": "BSE",
+  "currency": "INR",
+  "country": "India",
+  "sector": "Technology",
+  "industry": "Information Technology Services"
+ },
+ "INFY.NS": {
+  "name": "Infosys Limited",
+  "exchange": "NSE",
+  "market": "NSE",
+  "currency": "INR",
+  "country": "India",
+  "sector": "Technology",
+  "industry": "Information Technology Services"
+ },
+ "INFY.BO": {
+  "name": "Infosys Limited",
+  "exchange": "BSE",
+  "market": "BSE",
+  "currency": "INR",
+  "country": "India",
+  "sector": "Technology",
+  "industry": "Information Technology Services"
+ },
+ "HDFCBANK.NS": {
+  "name": "HDFC Bank Limited",
+  "exchange": "NSE",
+  "market": "NSE",
+  "currency": "INR",
+  "country": "India",
+  "sector": "Financial Services",
+  "industry": "Banks - Regional"
+ },
+ "HDFCBANK.BO": {
+  "name": "HDFC Bank Limited",
+  "exchange": "BSE",
+  "market": "BSE",
+  "currency": "INR",
+  "country": "India",
+  "sector": "Financial Services",
+  "industry": "Banks - Regional"
+ },
+ "ICICIBANK.NS": {
+  "name": "ICICI Bank Limited",
+  "exchange": "NSE",
+  "market": "NSE",
+  "currency": "INR",
+  "country": "India",
+  "sector": "Financial Services",
+  "industry": "Banks - Regional"
+ },
+ "AAPL": {
+  "name": "Apple Inc.",
+  "exchange": "NASDAQ",
+  "market": "NASDAQ",
+  "currency": "USD",
+  "country": "United States",
+  "sector": "Technology",
+  "industry": "Consumer Electronics"
+ },
+ "MSFT": {
+  "name": "Microsoft Corporation",
+  "exchange": "NASDAQ",
+  "market": "NASDAQ",
+  "currency": "USD",
+  "country": "United States",
+  "sector": "Technology",
+  "industry": "Software - Infrastructure"
+ },
+ "GOOGL": {
+  "name": "Alphabet Inc.",
+  "exchange": "NASDAQ",
+  "market": "NASDAQ",
+  "currency": "USD",
+  "country": "United States",
+  "sector": "Communication Services",
+  "industry": "Internet Content & Information"
+ },
+ "JPM": {
+  "name": "JPMorgan Chase & Co.",
+  "exchange": "NYSE",
+  "market": "NYSE",
+  "currency": "USD",
+  "country": "United States",
+  "sector": "Financial Services",
+  "industry": "Banks - Diversified"
+ },
+ "KO": {
+  "name": "The Coca-Cola Company",
+  "exchange": "NYSE",
+  "market": "NYSE",
+  "currency": "USD",
+  "country": "United States",
+  "sector": "Consumer Defensive",
+  "industry": "Beverages - Non-Alcoholic"
+ },
+ "XOM": {
+  "name": "Exxon Mobil Corporation",
+  "exchange": "NYSE",
+  "market": "NYSE",
+  "currency": "USD",
+  "country": "United States",
+  "sector": "Energy",
+  "industry": "Oil & Gas Integrated"
+ }
+}

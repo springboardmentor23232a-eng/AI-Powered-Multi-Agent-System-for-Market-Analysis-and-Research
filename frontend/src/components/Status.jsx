@@ -1,4 +1,4 @@
-const DOT = { Pending: 'bg-amber', Processing: 'bg-cobalt', Completed: 'bg-gain', Failed: 'bg-loss' }
+const DOT = { Pending: 'bg-amber', Processing: 'bg-cobalt', Completed: 'bg-gain', Failed: 'bg-loss', Clean: 'bg-gain', Cleaned: 'bg-amber' }
 
 export default function Status({ value }) {
   return (
