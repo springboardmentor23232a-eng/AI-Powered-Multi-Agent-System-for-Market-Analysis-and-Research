@@ -86,3 +86,27 @@ class ResearchTask(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
+
+
+class DataFetchLog(Base):
+    __tablename__ = "data_fetch_logs"
+
+    fetch_id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.user_id", ondelete="SET NULL"), index=True, nullable=True
+    )
+    task_id: Mapped[int | None] = mapped_column(
+        ForeignKey("research_tasks.task_id", ondelete="SET NULL"), nullable=True
+    )  # filled in later, when the agent workflow uses this data
+    source: Mapped[str] = mapped_column(String(60))
+    data_type: Mapped[str] = mapped_column(String(30))
+    ticker: Mapped[str | None] = mapped_column(String(30), index=True, nullable=True)
+    request_detail: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    status: Mapped[str] = mapped_column(String(10))  # success / partial / failed
+    record_count: Mapped[int | None] = mapped_column(nullable=True)
+    as_of: Mapped[str | None] = mapped_column(String(10), nullable=True)  # latest data date
+    duration_ms: Mapped[int | None] = mapped_column(nullable=True)
+    error_message: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    retrieved_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), index=True
+    )  

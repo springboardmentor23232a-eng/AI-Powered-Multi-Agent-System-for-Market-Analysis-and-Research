@@ -6,6 +6,8 @@ import StockSearch from "../components/StockSearch";
 import WatchlistSummary from "../components/WatchlistSummary";
 import Preferences from "../components/Preferences";
 import ResearchHistory from "../components/ResearchHistory";
+import MarketStatus from "../components/MarketStatus";
+
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -40,7 +42,7 @@ export default function Dashboard() {
           watchlists={watchlists}
           onAdded={loadWatchlists}
         />
-
+        <MarketStatus preferred={prefs?.market} />
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <WatchlistSummary watchlists={watchlists} loading={loadingLists} />

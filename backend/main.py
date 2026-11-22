@@ -15,6 +15,10 @@ from watchlists import router as watchlists_router
 app.include_router(watchlists_router)
 from workspace import router as workspace_router
 app.include_router(workspace_router)
+from company import router as company_router
+app.include_router(company_router)
+from markets import router as markets_router
+app.include_router(markets_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],

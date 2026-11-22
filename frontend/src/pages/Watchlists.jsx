@@ -2,12 +2,14 @@ import { useCallback, useEffect, useState } from "react";
 import api, { errorMessage } from "../api";
 import Header from "../components/Header";
 import PriceChart from "../components/PriceChart";
+import CompanyDetails from "../components/CompanyDetails";
 
 export default function Watchlists() {
   const [watchlists, setWatchlists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newName, setNewName] = useState("");
   const [chartTicker, setChartTicker] = useState(null);
+  const [detailsTicker, setDetailsTicker] = useState(null);
   const [message, setMessage] = useState({ type: "", text: "" });
 
   const notify = (type, text) => setMessage({ type, text });
@@ -30,7 +32,10 @@ export default function Watchlists() {
   const createList = async (e) => {
     e.preventDefault();
     const name = newName.trim();
-    if (!name) return;
+    if (!name) {
+      notify("error", "Type a name for the watchlist first.");
+      return;
+    }
     try {
       await api.post("/watchlists", { name });
       setNewName("");
@@ -113,6 +118,13 @@ export default function Watchlists() {
         {chartTicker && (
           <PriceChart ticker={chartTicker} onClose={() => setChartTicker(null)} />
         )}
+        {detailsTicker && (
+          <CompanyDetails
+            key={detailsTicker}
+            ticker={detailsTicker}
+            onClose={() => setDetailsTicker(null)}
+          />
+        )}
 
         {loading && <p className="text-gray-500">Loading...</p>}
 
@@ -159,6 +171,15 @@ export default function Watchlists() {
                         <td className="py-2 pr-4">{new Date(s.created_at).toLocaleString()}</td>
                         <td className="py-2">
                           <div className="flex flex-wrap items-center gap-2">
+                            <button
+                              onClick={() => {
+                                setDetailsTicker(s.ticker);
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                              }}
+                              className={`${btn} border-gray-300 hover:bg-gray-50`}
+                            >
+                              Details
+                            </button>
                             <button onClick={() => setChartTicker(s.ticker)} className={`${btn} border-gray-300 hover:bg-gray-50`}>
                               Chart
                             </button>

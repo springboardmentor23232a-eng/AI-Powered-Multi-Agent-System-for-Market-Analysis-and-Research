@@ -1,4 +1,6 @@
 import yfinance as yf
+import math
+import pandas as pd
 
 from stocks import find_stock, search_stocks as search_static  # built-in fallback list
 
@@ -79,14 +81,30 @@ def get_stock_info(ticker: str) -> dict | None:
 
 
 def get_price_history(ticker: str, period_code: str) -> list[dict]:
-    interval = "1wk" if period_code == "5Y" else "1d"  # keeps 5Y small
+    """Returns one OHLCV row per trading day (per week for the 5Y period)."""
+    interval = "1wk" if period_code == "5Y" else "1d"
     hist = yf.Ticker(ticker).history(period=PERIODS[period_code], interval=interval)
+
+    # Rows with a missing price can't be drawn or sent as JSON, so drop them.
+    # (Proper data validation is bullet 6, which we are skipping for now.)
+    hist = hist.dropna(subset=["Open", "High", "Low", "Close"])
     if hist.empty:
         raise ValueError("No price data returned")
-    return [
-        {"date": idx.strftime("%Y-%m-%d"), "close": round(float(row["Close"]), 2)}
-        for idx, row in hist.iterrows()
-    ]
+
+    rows = []
+    for idx, row in hist.iterrows():
+        volume = row["Volume"]
+        rows.append(
+            {
+                "date": idx.strftime("%Y-%m-%d"),
+                "open": round(float(row["Open"]), 2),
+                "high": round(float(row["High"]), 2),
+                "low": round(float(row["Low"]), 2),
+                "close": round(float(row["Close"]), 2),
+                "volume": 0 if math.isnan(volume) else int(volume),
+            }
+        )
+    return rows
 def resolve_ticker(raw: str, preferred_market: str | None = None) -> dict | None:
     """Accepts RELIANCE or TCS for NSE/BSE users by adding .NS / .BO."""
     raw = raw.strip().upper()
@@ -102,3 +120,66 @@ def has_price_data(ticker: str) -> bool | None:
         return not yf.Ticker(ticker).history(period="1mo").empty
     except Exception:
         return None
+
+def get_company_profile(ticker: str) -> dict:
+    """Company facts from Yahoo. Missing fields come back as None."""
+    info = yf.Ticker(ticker).info or {}
+    return {
+        "sector": info.get("sector"),
+        "industry": info.get("industry"),
+        "country": info.get("country"),
+        "description": info.get("longBusinessSummary"),
+        "website": info.get("website"),
+        "employees": info.get("fullTimeEmployees"),
+        "market_cap": info.get("marketCap"),
+        "currency": info.get("currency"),  # currency the stock trades in
+        "financial_currency": info.get("financialCurrency"),  # currency the company reports in
+    }
+
+
+def _empty_statement() -> dict:
+    return {"available": False, "periods": [], "rows": []}
+
+
+def _statement(df) -> dict:
+    """Turns a Yahoo statement table into {periods, rows}. Line items with no data at all are dropped."""
+    if df is None or df.empty:
+        return _empty_statement()
+    df = df.dropna(how="all")
+    if df.empty:
+        return _empty_statement()
+    periods = [str(col)[:10] for col in df.columns]  # period-end dates, newest first
+    rows = []
+    for item, series in df.iterrows():
+        values = [None if pd.isna(v) else float(v) for v in series]
+        rows.append({"item": str(item), "values": values})
+    return {"available": True, "periods": periods, "rows": rows}
+
+
+def _safe_statement(getter) -> dict:
+    try:
+        return _statement(getter())
+    except Exception:
+        return _empty_statement()
+
+
+def get_financials(ticker: str, frequency: str) -> dict:
+    """Income statement, balance sheet and cash flow, annual or quarterly."""
+    t = yf.Ticker(ticker)
+    quarterly = frequency == "quarterly"
+    try:
+        currency = t.info.get("financialCurrency")
+    except Exception:
+        currency = None
+    return {
+        "currency": currency,
+        "income_statement": _safe_statement(
+            lambda: t.quarterly_income_stmt if quarterly else t.income_stmt
+        ),
+        "balance_sheet": _safe_statement(
+            lambda: t.quarterly_balance_sheet if quarterly else t.balance_sheet
+        ),
+        "cash_flow": _safe_statement(
+            lambda: t.quarterly_cashflow if quarterly else t.cashflow
+        ),
+    }

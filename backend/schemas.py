@@ -83,7 +83,11 @@ class ResearchTaskOut(BaseModel):
 
 class PricePoint(BaseModel):
     date: str
+    open: float
+    high: float
+    low: float
     close: float
+    volume: int
 
 
 class PriceHistory(BaseModel):
@@ -92,8 +96,10 @@ class PriceHistory(BaseModel):
     market: str
     period: str
     points: list[PricePoint]
-
-
+    source: str
+    retrieved_at: datetime
+    as_of: str | None = None
+    currency: str | None = None
 # ---------- Watchlists ----------
 class SavedStockOut(BaseModel):
     saved_stock_id: int
@@ -142,3 +148,44 @@ class WatchlistItem(BaseModel):
 
 class HorizonUpdate(BaseModel):
     horizon: Horizon
+
+# ---------- Company data ----------
+class CompanyProfile(BaseModel):
+    ticker: str
+    name: str
+    market: str
+    sector: str | None = None
+    industry: str | None = None
+    country: str | None = None
+    description: str | None = None
+    website: str | None = None
+    employees: int | None = None
+    market_cap: float | None = None
+    currency: str | None = None
+    financial_currency: str | None = None
+    source: str
+    retrieved_at: datetime
+
+
+class StatementRow(BaseModel):
+    item: str
+    values: list[float | None]
+
+
+class Statement(BaseModel):
+    available: bool
+    periods: list[str]
+    rows: list[StatementRow]
+
+
+class Financials(BaseModel):
+    ticker: str
+    name: str
+    frequency: Literal["annual", "quarterly"]
+    currency: str | None = None
+    income_statement: Statement
+    balance_sheet: Statement
+    cash_flow: Statement
+    source: str
+    retrieved_at: datetime
+    as_of: str | None = None

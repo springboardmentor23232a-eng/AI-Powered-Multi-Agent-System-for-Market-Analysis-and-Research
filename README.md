@@ -1,102 +1,67 @@
-\# AI-Powered Multi-Agent System for Market Analysis and Research
-
-
-
-\## Project Overview
-
-
-
-This project focuses on developing an AI-powered multi-agent system for stock market analysis and financial research. It integrates multiple specialized agents to assist users in analysing stock market information and generating research insights.
-
-
-
-\## Project Structure
-
-
-
-\- backend/ - Contains the Python backend and API implementation.
-
-\- frontend/ - Contains the frontend application.
-
-\- requirements.txt - Lists the Python dependencies.
-
-
-
-\## Technologies Used
-
-
-
-\- Python
-
-\- FastAPI
-
-\- React.js
-
-\- JavaScript
-
-\- Vite
-
-
-
-\## Installation and Setup
-
-
-
-\### Backend Setup
-
-
-
-1\. Create a virtual environment:
-
-
-
-&#x20;  python -m venv venv
-
-
-
-2\. Activate the environment:
-
-
-
-&#x20;  venv\\Scripts\\activate
-
-
-
-3\. Install dependencies:
-
-
-
-&#x20;  pip install -r requirements.txt
-
-
-
-4\. Run the backend application using the appropriate startup command.
-
-
-
-\### Frontend Setup
-
-
-
-1\. Navigate to the frontend directory:
-
-
-
-&#x20;  cd frontend
-
-
-
-2\. Install dependencies:
-
-
-
-&#x20;  npm install
-
-
-
-3\. Start the development server:
-
-
-
-&#x20;  npm run dev
-
+﻿# AI-Powered Multi-Agent System for Market Analysis and Research
+
+## Project Overview
+
+The AI-Powered Multi-Agent System for Market Analysis and Research is a web-based stock research platform designed to help users explore stock market information and organize their investment research.
+
+The application combines a React frontend with a FastAPI backend and integrates financial market data to provide stock information, company details, financial data, market status, watchlists, and research workspace functionality.
+
+## Features
+
+- **User Authentication:** User registration and login functionality, including Google authentication.
+- **Stock Market Data:** Retrieve stock information and historical price data.
+- **Company Research:** View company profiles, stock information, and financial details.
+- **Market Information:** Access market status and related market information.
+- **Watchlists:** Create and manage saved stocks and watchlists.
+- **Research Workspace:** Organize stock research activities.
+- **Data Provenance:** Record information about external data retrieval operations.
+
+## Technology Stack
+
+### Frontend
+- React
+- JavaScript
+- Vite
+- Tailwind CSS
+- Axios
+- React Router
+
+### Backend
+- Python
+- FastAPI
+- SQLAlchemy
+- Pydantic
+- Uvicorn
+- yfinance
+- Pandas
+
+### Database
+- SQLAlchemy-compatible database configured through an environment variable.
+
+## Project Structure
+
+```text
+AI-Powered-Multi-Agent-System-for-Market-Analysis-and-Research/
+│
+├── backend/
+│   ├── main.py
+│   ├── auth.py
+│   ├── company.py
+│   ├── database.py
+│   ├── market_data.py
+│   ├── markets.py
+│   ├── models.py
+│   ├── provenance.py
+│   ├── schemas.py
+│   ├── security.py
+│   ├── watchlists.py
+│   └── workspace.py
+│
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   ├── package.json
+│   └── vite.config.js
+│
+├── README.md
+└── requirements.txt
