@@ -8,6 +8,9 @@ import StockComparisonChart from "../components/StockComparisonChart";
 import MarketMovers from "../components/MarketMovers";
 import StockSearch from "../components/StockSearch";
 import StockHistoryChart from "../components/StockHistoryChart";
+import StockOHLCV from "../components/StockOHLCV";
+import CompanyProfile from "../components/CompanyProfile";
+import FinancialStatements from "../components/FinancialStatements";
 import ResearchHistory from "../components/ResearchHistory";
 import Preferences from "../components/Preferences";
 
@@ -257,6 +260,15 @@ function Dashboard() {
         </section>
         <section className="dashboard-content">
           <StockHistoryChart />
+        </section>
+        <section className="dashboard-content">
+          <StockOHLCV />
+        </section>
+        <section className="dashboard-content">
+          <CompanyProfile />
+        </section>
+        <section className="dashboard-content">
+          <FinancialStatements />
         </section>
         <section className="dashboard-content">
           <StockComparisonChart />
