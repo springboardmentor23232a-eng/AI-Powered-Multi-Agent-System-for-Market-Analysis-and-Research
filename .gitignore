@@ -16,17 +16,3 @@ dist/
 Thumbs.db
 .idea/
 .vscode/
-
-# Environment files
-.env.*
-!.env.example
-
-# Python virtual environments
-.venv/
-venv/
-__pycache__/
-*.pyc
-
-# Node dependencies and builds
-node_modules/
-dist/

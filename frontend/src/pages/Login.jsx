@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Fingerprint, Lock, Shield, ShieldAlert, User } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import api, { apiError } from '../api/client'
@@ -9,6 +9,7 @@ export default function Login() {
   const navigate = useNavigate()
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
+  const [role, setRole] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -17,7 +18,7 @@ export default function Login() {
     setError('')
     setLoading(true)
     try {
-      await login(identifier.trim(), password)
+      await login(identifier.trim(), password, role || null)
       navigate('/', { replace: true })
     } catch (err) {
       if (err.response?.status === 429) {
@@ -91,6 +92,22 @@ export default function Login() {
                 />
               </div>
             </div>
+            <div>
+              <label className="block text-[11px] font-semibold uppercase tracking-wider text-soc-muted mb-1.5">
+                Login Role
+              </label>
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="input"
+                aria-label="Login role"
+              >
+                <option value="">Select role</option>
+                <option value="administrator">Admin</option>
+                <option value="security_analyst">Security Analyst</option>
+                <option value="team_lead">Team Lead</option>
+              </select>
+            </div>
           </div>
 
           {error && (
@@ -111,6 +128,10 @@ export default function Login() {
             )}
           </button>
         </form>
+
+        <p className="mt-6 text-center text-sm text-soc-muted">
+          Need an account? <Link to="/register" className="text-soc-accentBright hover:underline">Register</Link>
+        </p>
 
         <div className="mt-6 flex items-center justify-center gap-2 text-[11px] font-mono text-soc-muted">
           <span className="w-1.5 h-1.5 rounded-full bg-soc-green" />

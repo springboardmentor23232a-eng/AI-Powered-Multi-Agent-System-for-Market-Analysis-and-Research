@@ -15,6 +15,21 @@ export function configureAuth({ getToken, onExpired }) {
   onSessionExpired = onExpired
 }
 
+export function refreshSession() {
+  if (!refreshPromise) {
+    refreshPromise = api
+      .post('/auth/refresh')
+      .then(({ data }) => {
+        window.dispatchEvent(new CustomEvent('netshield:token', { detail: data.access_token }))
+        return data
+      })
+      .finally(() => {
+        refreshPromise = null
+      })
+  }
+  return refreshPromise
+}
+
 api.interceptors.request.use((config) => {
   const token = getAccessToken()
   if (token) {
@@ -27,22 +42,20 @@ api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const original = error.config
-    const isAuthEndpoint = original?.url?.includes('/auth/login') || original?.url?.includes('/auth/refresh')
-    if (error.response?.status === 401 && !original._retried && !isAuthEndpoint) {
+    const isAuthEndpoint =
+      original?.url?.includes('/auth/login') || original?.url?.includes('/auth/refresh')
+    if (error.response?.status === 401 && original && !original._retried && !isAuthEndpoint) {
       original._retried = true
+      let data
       try {
-        if (!refreshPromise) {
-          refreshPromise = api.post('/auth/refresh').finally(() => {
-            refreshPromise = null
-          })
-        }
-        const { data } = await refreshPromise
-        window.dispatchEvent(new CustomEvent('netshield:token', { detail: data.access_token }))
-        original.headers.Authorization = `Bearer ${data.access_token}`
-        return api(original)
-      } catch {
-        onSessionExpired()
+        data = await refreshSession()
+      } catch (refreshError) {
+        const status = refreshError.response?.status
+        if (status === 401 || status === 403) onSessionExpired()
+        return Promise.reject(refreshError)
       }
+      original.headers.Authorization = `Bearer ${data.access_token}`
+      return api(original)
     }
     return Promise.reject(error)
   },

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Cookie, Depends, Request, Response
 
 from ..dependencies import CurrentUser, get_current_user, get_db
-from ..models.schemas import ChangePasswordRequest, LoginRequest
+from ..models.schemas import ChangePasswordRequest, LoginRequest, RegisterRequest
 from ..services import auth_service
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -17,8 +17,13 @@ def _client_ip(request: Request) -> str | None:
 @router.post("/login")
 def login(payload: LoginRequest, request: Request, response: Response, conn=Depends(get_db)):
     return auth_service.login(
-        conn, payload.identifier, payload.password, _client_ip(request), response
+        conn, payload.identifier, payload.password, payload.role, _client_ip(request), response
     )
+
+
+@router.post("/register", status_code=201)
+def register(payload: RegisterRequest, request: Request, conn=Depends(get_db)):
+    return auth_service.register(conn, payload, _client_ip(request))
 
 
 @router.post("/refresh")

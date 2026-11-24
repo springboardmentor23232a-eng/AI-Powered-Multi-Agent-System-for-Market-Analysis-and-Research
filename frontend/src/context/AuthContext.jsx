@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import api, { configureAuth } from '../api/client'
+import api, { configureAuth, refreshSession } from '../api/client'
 
 const AuthContext = createContext(null)
 
@@ -35,7 +35,7 @@ export function AuthProvider({ children }) {
     let cancelled = false
     ;(async () => {
       try {
-        const { data } = await api.post('/auth/refresh')
+        const data = await refreshSession()
         if (!cancelled) applySession(data)
       } catch {
         // no valid session
@@ -49,8 +49,8 @@ export function AuthProvider({ children }) {
   }, [applySession])
 
   const login = useCallback(
-    async (identifier, password) => {
-      const { data } = await api.post('/auth/login', { identifier, password })
+    async (identifier, password, role) => {
+      const { data } = await api.post('/auth/login', { identifier, password, role })
       applySession(data)
       return data.user
     },

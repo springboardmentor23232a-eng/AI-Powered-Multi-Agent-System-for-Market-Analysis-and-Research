@@ -109,6 +109,7 @@ Open http://localhost:5173 — Vite proxies `/api` to `localhost:8000`.
 | POST/DELETE | `/teams/{id}/members[/{user_id}]` | `teams.manage_members` |
 | GET | `/audit-logs` | `audit.view` (team leads see team-scoped logs) |
 | GET | `/dashboard/stats` | any authenticated user (role-scoped) |
+| GET | `/network/packets/export.csv` | `reports.generate`; streams filtered packet metadata |
 
 ## Security notes
 
@@ -143,6 +144,32 @@ NetShield AI/
 │   └── src/{api,context,components,pages}
 └── README.md
 ```
+
+## Windows live packet capture
+
+Live capture uses Scapy 2.6.1 with Npcap 1.89 on Windows. Install Scapy from the
+backend requirements and keep Npcap installed and running. Npcap's service must
+remain available, and Windows may require elevated privileges depending on the
+selected adapter and Npcap installation options.
+
+The capture foundation stores metadata only: timestamp, IP addresses, ports,
+protocol, packet size, traffic direction, capture session, frame number, and
+capture source. It does not store packet payloads or application content.
+
+The Traffic Monitor can export historical, live, or combined packet metadata
+as CSV. The authenticated `/api/v1/network/packets/export.csv` endpoint accepts
+the packet filters used by the monitor and streams every matching row in
+bounded database batches, independently of the visible packet page. CSV rows
+include their capture source and available packet metadata; no payload or
+application content is exported.
+
+PCAPNG export is not supported. Historical imports contain metadata only, and
+live capture discards raw packet bytes after extracting metadata. Without the
+original frame bytes, a genuine PCAPNG cannot be reconstructed; synthesizing
+packet contents would be misleading.
+
+Apply migration `migrations/004_live_capture.sql` after migrations `001_init.sql`,
+`002_packet_analysis.sql`, and `003_module2_permissions.sql`.
 
 ## Module 2+ readiness
 

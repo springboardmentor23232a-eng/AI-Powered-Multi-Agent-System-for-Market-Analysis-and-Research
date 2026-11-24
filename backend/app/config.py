@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     ADMIN_EMAIL: str = "admin@netshield.local"
     ADMIN_PASSWORD: str = ""
     ADMIN_FULL_NAME: str = "System Administrator"
+    DETECTION_HIGH_VOLUME_THRESHOLD: int = 500
+    DETECTION_HIGH_VOLUME_WINDOW_SECONDS: int = 60
+    DETECTION_PORT_CONCENTRATION_THRESHOLD: int = 20
+    DETECTION_PORT_CONCENTRATION_WINDOW_SECONDS: int = 60
+    DETECTION_ALERT_COOLDOWN_MINUTES: int = 15
 
 
 settings = Settings()

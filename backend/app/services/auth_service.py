@@ -41,7 +41,7 @@ def _issue_tokens(conn, user_row) -> tuple[str, str]:
     return access, refresh
 
 
-def login(conn, identifier: str, password: str, ip: str | None, response):
+def login(conn, identifier: str, password: str, selected_role: str | None, ip: str | None, response):
     rate_key = f"{ip or 'unknown'}:{identifier.lower()}"
     if is_rate_limited(rate_key):
         raise HTTPException(
@@ -80,6 +80,26 @@ def login(conn, identifier: str, password: str, ip: str | None, response):
             detail="Account is not active. Contact an administrator.",
         )
 
+    profile = user_repo.get_user_auth_profile(conn, user["id"])
+    if selected_role is not None:
+        selected_names = {
+            "administrator": "administrator",
+            "security_analyst": "security_analyst",
+            "team_lead": "team_lead",
+        }
+        if selected_names[selected_role] not in profile["roles"]:
+            record_attempt(rate_key)
+            audit_service.log(
+                conn, actor_user_id=user["id"], action="auth.login", status="failure",
+                details={"reason": "selected_role_not_assigned", "selected_role": selected_role},
+                ip_address=ip,
+            )
+            conn.commit()
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="The selected role is not assigned to this account",
+            )
+
     reset_attempts(rate_key)
     access, refresh = _issue_tokens(conn, user)
     audit_service.log(
@@ -88,7 +108,6 @@ def login(conn, identifier: str, password: str, ip: str | None, response):
     conn.commit()
     _set_refresh_cookie(response, refresh)
 
-    profile = user_repo.get_user_auth_profile(conn, user["id"])
     return {
         "access_token": access,
         "token_type": "bearer",
@@ -146,6 +165,66 @@ def logout(conn, user: CurrentUser, raw_refresh: str | None, response, ip: str |
     conn.commit()
     _clear_refresh_cookie(response)
     return {"message": "Logged out"}
+
+
+def register(conn, data, ip: str | None):
+    if data.password != data.confirm_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password and confirmation password do not match",
+        )
+
+    try:
+        user_id = user_repo.create_user(
+            conn,
+            data.username,
+            data.email,
+            data.full_name,
+            hash_password(data.password),
+        )
+    except Exception as e:
+        conn.rollback()
+        if "unique" in str(e).lower() or "duplicate" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Username or email already exists",
+            )
+        raise
+
+    with conn.cursor() as cur:
+        cur.execute(
+            "SELECT id FROM roles WHERE role_name = 'security_analyst'"
+        )
+        role = cur.fetchone()
+        if role is None:
+            conn.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Security Analyst role is unavailable",
+            )
+        cur.execute(
+            """
+            INSERT INTO user_roles (user_id, role_id)
+            VALUES (%s, %s)
+            ON CONFLICT DO NOTHING
+            """,
+            (user_id, role["id"]),
+        )
+
+    audit_service.log(
+        conn,
+        actor_user_id=user_id,
+        action="user.create",
+        target_type="user",
+        target_id=user_id,
+        details={"registration": "public", "assigned_roles": ["security_analyst"]},
+        ip_address=ip,
+    )
+    conn.commit()
+    return {
+        "message": "Registration successful. You can now sign in.",
+        "role": "security_analyst",
+    }
 
 
 def change_password(conn, user: CurrentUser, current_password: str, new_password: str, ip: str | None):

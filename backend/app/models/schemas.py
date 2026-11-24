@@ -22,6 +22,15 @@ EmailAddress = Annotated[str, BeforeValidator(_validate_email)]
 class LoginRequest(BaseModel):
     identifier: str = Field(min_length=1, max_length=255)
     password: str = Field(min_length=1, max_length=255)
+    role: str | None = Field(default=None, pattern=r"^(administrator|security_analyst|team_lead)$")
+
+
+class RegisterRequest(BaseModel):
+    full_name: str = Field(min_length=1, max_length=150)
+    username: str = Field(min_length=3, max_length=50, pattern=r"^[a-zA-Z0-9_.-]+$")
+    email: EmailAddress
+    password: str = Field(min_length=8, max_length=255)
+    confirm_password: str = Field(min_length=8, max_length=255)
 
 
 class ChangePasswordRequest(BaseModel):

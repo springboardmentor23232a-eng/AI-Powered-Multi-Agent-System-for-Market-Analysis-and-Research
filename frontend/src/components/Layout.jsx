@@ -9,6 +9,8 @@ import {
   ScrollText,
   Shield,
   ShieldCheck,
+  RadioTower,
+  Siren,
   User,
   Users,
   UsersRound,
@@ -18,6 +20,8 @@ import { useAuth } from '../context/AuthContext'
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, permission: 'dashboard.view', end: true },
+  { to: '/traffic', label: 'Traffic Monitor', icon: RadioTower, permission: 'network.view' },
+  { to: '/alerts', label: 'Network Alerts', icon: Siren, permission: 'alerts.view' },
   { to: '/users', label: 'User Management', icon: Users, permission: 'users.view' },
   { to: '/roles', label: 'Roles & Permissions', icon: ShieldCheck, permission: 'roles.view' },
   { to: '/teams', label: 'Team Management', icon: UsersRound, permission: 'teams.view' },
@@ -131,7 +135,7 @@ export default function Layout() {
           <div className="flex items-center gap-4">
             <div className="hidden md:flex items-center gap-2 text-xs font-mono text-soc-green bg-soc-green/10 border border-soc-green/30 rounded-full px-3 py-1">
               <span className="w-1.5 h-1.5 rounded-full bg-soc-green animate-pulse" />
-              ALL SYSTEMS NOMINAL
+              SECURE SESSION ACTIVE
             </div>
             <div className="text-right">
               <div className="text-sm font-medium text-soc-text">{user?.full_name}</div>

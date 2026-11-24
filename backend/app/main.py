@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .database import close_pool, init_pool
-from .routers import audit, auth, dashboard, roles, teams, users
+from .routers import audit, auth, dashboard, roles, teams, users, network
+from .services.capture_service import capture_manager
 
 app = FastAPI(
     title="NetShield AI API",
@@ -25,6 +26,7 @@ app.include_router(users.router, prefix=API_PREFIX)
 app.include_router(roles.router, prefix=API_PREFIX)
 app.include_router(teams.router, prefix=API_PREFIX)
 app.include_router(audit.router, prefix=API_PREFIX)
+app.include_router(network.router, prefix=API_PREFIX)
 app.include_router(dashboard.router, prefix=API_PREFIX)
 
 
@@ -35,6 +37,7 @@ def startup():
 
 @app.on_event("shutdown")
 def shutdown():
+    capture_manager.shutdown()
     close_pool()
 
 
