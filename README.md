@@ -45,6 +45,13 @@ A full-stack stock market analysis app. Users register and log in, search NSE/BS
 └── LICENSE
 ```
 
+## Local URLs
+
+| Service  | URL |
+|----------|-----|
+| Frontend (Dashboard) | http://localhost:5173/dashboard#dashboard |
+| Backend API | http://127.0.0.1:8000 |
+
 ## Getting Started
 
 ### 1. Backend
@@ -69,7 +76,7 @@ Run the server:
 uvicorn app.main:app --reload
 ```
 
-API runs at `http://localhost:8000` (interactive docs at `/docs`).
+Backend runs at **http://127.0.0.1:8000** (interactive API docs at http://127.0.0.1:8000/docs).
 
 ### 2. Frontend
 
@@ -79,7 +86,7 @@ npm install
 npm run dev
 ```
 
-App runs at `http://localhost:5173`. To point at a different backend, set `VITE_API_URL` in `frontend/.env`.
+Frontend runs at **http://localhost:5173**, and the dashboard is at **http://localhost:5173/dashboard#dashboard**. To point at a different backend, set `VITE_API_URL` in `frontend/.env`.
 
 ### 3. Tests
 
