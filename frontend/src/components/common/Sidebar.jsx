@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
+  Compass,
   History,
   Bookmark,
   Sliders,
@@ -17,6 +18,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen, onOpenLogoutModal }
 
   const navItems = [
     { name: 'Overview', to: '/dashboard', icon: LayoutDashboard },
+    { name: 'Stock Explorer', to: '/explorer', icon: Compass },
     { name: 'Research History', to: '/history', icon: History },
     { name: 'My Watchlist', to: '/watchlist', icon: Bookmark },
     { name: 'Preferences', to: '/preferences', icon: Sliders },
@@ -46,7 +48,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen, onOpenLogoutModal }
           </div>
           <div>
             <h1 className="text-base font-bold text-white tracking-tight flex items-center gap-1.5">
-              QuantAgent <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 font-mono border border-blue-500/30">M1</span>
+              QuantAgent <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 font-mono border border-blue-500/30">M1-4</span>
             </h1>
             <p className="text-[11px] text-slate-400 font-medium">Multi-Agent Stock Analyst</p>
           </div>

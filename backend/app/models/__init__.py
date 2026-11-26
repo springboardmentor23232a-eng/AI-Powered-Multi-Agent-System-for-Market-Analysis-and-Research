@@ -3,6 +3,8 @@ from app.models.preference import UserPreference
 from app.models.saved_stock import SavedStock
 from app.models.research_task import ResearchTask
 from app.models.research_report import ResearchReport
+from app.models.agent_result import AgentResult
+from app.models.source_document import SourceDocument
 
 __all__ = [
     "User",
@@ -10,5 +12,6 @@ __all__ = [
     "SavedStock",
     "ResearchTask",
     "ResearchReport",
+    "AgentResult",
+    "SourceDocument",
 ]
-

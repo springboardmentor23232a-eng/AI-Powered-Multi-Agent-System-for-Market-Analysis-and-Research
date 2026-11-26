@@ -205,14 +205,14 @@ export default function DashboardOverviewPage() {
           </Link>
 
           <Link
-            to="/watchlist"
+            to="/explorer"
             className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:border-blue-500/50 hover:shadow-md transition-all text-left group block"
           >
             <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-              <Bookmark className="w-4 h-4" />
+              <TrendingUp className="w-4 h-4" />
             </div>
-            <p className="text-sm font-bold text-slate-900">Manage Watchlist</p>
-            <p className="text-xs text-slate-500 mt-0.5">Add & track companies</p>
+            <p className="text-sm font-bold text-slate-900">Stock Explorer</p>
+            <p className="text-xs text-slate-500 mt-0.5">Live fundamental & technical charts</p>
           </Link>
 
           <Link

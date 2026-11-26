@@ -49,6 +49,7 @@ class ResearchTaskResponse(BaseModel):
     status: str
     created_at: datetime
     updated_at: datetime
+    completed_at: Optional[datetime] = None
     error_message: Optional[str] = None
     has_report: bool = False
 
@@ -59,7 +60,35 @@ class ResearchReportResponse(BaseModel):
     report_id: int
     task_id: int
     report_content: Dict[str, Any] | str
+    summary: Optional[str] = None
+    limitations: Optional[str] = None
     created_at: datetime
+
+
+class AgentResultResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    result_id: int
+    task_id: int
+    agent_name: str
+    status: str
+    output_json: Optional[Dict[str, Any] | str] = None
+    error_message: Optional[str] = None
+    execution_time_ms: Optional[int] = None
+    created_at: datetime
+
+
+class SourceDocumentResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    source_id: int
+    task_id: int
+    source_type: str
+    title: str
+    source_url: Optional[str] = None
+    published_at: Optional[datetime] = None
+    retrieved_at: datetime
+    content_hash: Optional[str] = None
 
 
 class DashboardOverviewResponse(BaseModel):

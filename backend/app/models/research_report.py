@@ -9,6 +9,8 @@ class ResearchReport(Base):
     report_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     task_id = Column(Integer, ForeignKey("research_tasks.task_id", ondelete="CASCADE"), unique=True, nullable=False, index=True)
     report_content = Column(Text, nullable=False)  # JSON or structured markdown
+    summary = Column(Text, nullable=True)
+    limitations = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     # Relationships

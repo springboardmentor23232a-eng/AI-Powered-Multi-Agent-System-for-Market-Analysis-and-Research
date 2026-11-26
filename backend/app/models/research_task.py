@@ -15,9 +15,12 @@ class ResearchTask(Base):
     status = Column(String(50), nullable=False, default="Pending", index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    completed_at = Column(DateTime(timezone=True), nullable=True)
     error_message = Column(Text, nullable=True)
 
     # Relationships
     user = relationship("User", back_populates="research_tasks")
     report = relationship("ResearchReport", back_populates="task", uselist=False, cascade="all, delete-orphan")
+    agent_results = relationship("AgentResult", back_populates="task", cascade="all, delete-orphan")
+    source_documents = relationship("SourceDocument", back_populates="task", cascade="all, delete-orphan")
 

@@ -4,21 +4,21 @@ import {
   ArrowLeft,
   Building2,
   Calendar,
-  Globe2,
   TrendingUp,
   TrendingDown,
   ShieldCheck,
   Cpu,
-  Layers,
-  FileText,
   AlertTriangle,
-  ExternalLink,
-  DollarSign,
+  Download,
   Activity,
-  BarChart3,
+  PieChart,
+  Database,
+  FileText,
 } from 'lucide-react';
 import api from '../api/client';
-import StatusBadge from '../components/common/StatusBadge';
+import FundamentalPanel from '../components/analysis/FundamentalPanel';
+import TechnicalPanel from '../components/analysis/TechnicalPanel';
+import DataQualityPanel from '../components/analysis/DataQualityPanel';
 
 export default function ReportViewPage() {
   const { taskId } = useParams();
@@ -28,6 +28,7 @@ export default function ReportViewPage() {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeSection, setActiveSection] = useState('overview'); // overview | fundamental | technical | provenance
 
   useEffect(() => {
     const fetchReportData = async () => {
@@ -49,6 +50,23 @@ export default function ReportViewPage() {
 
     fetchReportData();
   }, [taskId]);
+
+  const handleDownloadMarkdown = async () => {
+    try {
+      const res = await api.get(`/research/${taskId}/export/markdown`, { responseType: 'blob' });
+      const blob = new Blob([res.data], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${task?.ticker || 'stock'}_${task?.market || 'market'}_research_report.md`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Markdown download failed:', err);
+    }
+  };
 
   if (loading) {
     return (
@@ -83,15 +101,18 @@ export default function ReportViewPage() {
   const content = report?.report_content || {};
   const meta = content.meta || {};
   const metrics = content.market_metrics || {};
-  const perf = content.period_performance || {};
   const pipeline = content.multi_agent_pipeline || {};
+  const fundamental = content.fundamental_analysis || null;
+  const technical = content.technical_analysis || null;
+  const dataQuality = content.data_quality || null;
+  const sources = content.sources || [];
 
   const isPositiveChange = (metrics.period_change_pct || 0) >= 0;
 
   return (
-    <div className="space-y-8 animate-fade-in pb-16 max-w-6xl mx-auto">
-      {/* Top Navigation */}
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 animate-fade-in pb-16 max-w-6xl mx-auto">
+      {/* Top Navigation & Export */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <button
           onClick={() => navigate('/history')}
           className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm"
@@ -100,10 +121,16 @@ export default function ReportViewPage() {
           Back to History
         </button>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-400">Dossier ID:</span>
-          <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700">
-            QA-TASK-{task?.task_id}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleDownloadMarkdown}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Export Markdown (.md)
+          </button>
+          <span className="font-mono text-xs font-bold px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-700">
+            TASK-{task?.task_id}
           </span>
         </div>
       </div>
@@ -118,6 +145,12 @@ export default function ReportViewPage() {
               </span>
               <span className="text-slate-400 text-xs">•</span>
               <span className="text-slate-300 text-xs font-medium">Horizon: {task?.analysis_period}</span>
+              {meta.pipeline_version && (
+                <>
+                  <span className="text-slate-400 text-xs">•</span>
+                  <span className="text-xs font-mono text-emerald-300">{meta.pipeline_version}</span>
+                </>
+              )}
             </div>
             <h1 className="text-3xl font-extrabold tracking-tight flex items-baseline gap-3">
               <span>{task?.company_name}</span>
@@ -138,7 +171,7 @@ export default function ReportViewPage() {
             </span>
             <div className="text-2xl font-black text-white mt-0.5">
               {metrics.currency === 'INR' ? '₹' : '$'}
-              {metrics.current_price !== undefined ? metrics.current_price : 'N/A'}
+              {metrics.current_price !== undefined && metrics.current_price !== null ? metrics.current_price : 'N/A'}
             </div>
             {metrics.period_change_pct !== undefined && metrics.period_change_pct !== null && (
               <div
@@ -163,164 +196,195 @@ export default function ReportViewPage() {
         </div>
       </div>
 
-      {/* Key Metrics Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-            P/E Ratio
-          </span>
-          <div className="text-xl font-extrabold text-slate-900">
-            {metrics.pe_ratio && metrics.pe_ratio !== 'N/A'
-              ? typeof metrics.pe_ratio === 'number'
-                ? metrics.pe_ratio.toFixed(2)
-                : metrics.pe_ratio
-              : 'N/A'}
-          </div>
-          <p className="text-[11px] text-slate-500 mt-0.5">Valuation multiple</p>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-            Market Capitalization
-          </span>
-          <div className="text-xl font-extrabold text-slate-900">
-            {metrics.market_cap && typeof metrics.market_cap === 'number'
-              ? metrics.currency === 'INR'
-                ? `₹${(metrics.market_cap / 1e7).toFixed(1)} Cr`
-                : `$${(metrics.market_cap / 1e9).toFixed(2)}B`
-              : 'N/A'}
-          </div>
-          <p className="text-[11px] text-slate-500 mt-0.5">Total equity value</p>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-            52-Week Range
-          </span>
-          <div className="text-sm font-bold text-slate-900">
-            {metrics.fifty_two_week_low ? `${metrics.currency === 'INR' ? '₹' : '$'}${metrics.fifty_two_week_low}` : 'N/A'} -{' '}
-            {metrics.fifty_two_week_high ? `${metrics.currency === 'INR' ? '₹' : '$'}${metrics.fifty_two_week_high}` : 'N/A'}
-          </div>
-          <p className="text-[11px] text-slate-500 mt-0.5">Annual price bounds</p>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-            Industry / Sector
-          </span>
-          <div className="text-sm font-bold text-slate-900 truncate" title={metrics.sector}>
-            {metrics.sector || 'General Equity'}
-          </div>
-          <p className="text-[11px] text-slate-500 mt-0.5 truncate">{metrics.industry || 'Capital Markets'}</p>
-        </div>
+      {/* Section Navigation Tabs */}
+      <div className="flex flex-wrap gap-2">
+        {[
+          { id: 'overview', label: 'Executive Summary & Profile', icon: FileText },
+          { id: 'fundamental', label: 'Fundamental Analysis', icon: PieChart },
+          { id: 'technical', label: 'Technical Charts & Indicators', icon: Activity },
+          { id: 'provenance', label: 'Data Validation & Sources', icon: Database },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveSection(tab.id)}
+              className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 border transition-all ${
+                activeSection === tab.id
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                  : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Company Business Overview */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-3">
-        <div className="flex items-center gap-2.5 pb-2 border-b border-slate-100">
-          <Building2 className="w-5 h-5 text-blue-600" />
-          <h2 className="text-base font-bold text-slate-900">Company Profile & Operations</h2>
-        </div>
-        <p className="text-sm text-slate-700 leading-relaxed pt-1">
-          {content.company_overview || 'No extended business summary provided by market feed.'}
-        </p>
-      </div>
-
-      {/* Historical Trend Sample */}
-      {perf.recent_history && perf.recent_history.length > 0 && (
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-            <div className="flex items-center gap-2.5">
-              <BarChart3 className="w-5 h-5 text-indigo-600" />
-              <h2 className="text-base font-bold text-slate-900">
-                Recent Trading Trend ({task?.analysis_period} horizon)
-              </h2>
+      {activeSection === 'overview' && (
+        <div className="space-y-6">
+          {/* Key Metrics Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                P/E Ratio
+              </span>
+              <div className="text-xl font-extrabold text-slate-900">
+                {metrics.pe_ratio && metrics.pe_ratio !== 'N/A'
+                  ? typeof metrics.pe_ratio === 'number'
+                    ? metrics.pe_ratio.toFixed(2)
+                    : metrics.pe_ratio
+                  : 'N/A'}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5">Valuation multiple</p>
             </div>
-            <span className="text-xs text-slate-400 font-medium">Verified Historical Samples</span>
+
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                Market Capitalization
+              </span>
+              <div className="text-xl font-extrabold text-slate-900">
+                {metrics.market_cap && typeof metrics.market_cap === 'number'
+                  ? metrics.currency === 'INR'
+                    ? `₹${(metrics.market_cap / 1e7).toFixed(1)} Cr`
+                    : `$${(metrics.market_cap / 1e9).toFixed(2)}B`
+                  : 'N/A'}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5">Total equity value</p>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                52-Week Range
+              </span>
+              <div className="text-sm font-bold text-slate-900">
+                {metrics.fifty_two_week_low ? `${metrics.currency === 'INR' ? '₹' : '$'}${metrics.fifty_two_week_low}` : 'N/A'} -{' '}
+                {metrics.fifty_two_week_high ? `${metrics.currency === 'INR' ? '₹' : '$'}${metrics.fifty_two_week_high}` : 'N/A'}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5">Annual price bounds</p>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                Industry / Sector
+              </span>
+              <div className="text-sm font-bold text-slate-900 truncate" title={metrics.sector}>
+                {metrics.sector || 'General Equity'}
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5 truncate">{metrics.industry || 'Capital Markets'}</p>
+            </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="text-xs font-semibold text-slate-400 border-b border-slate-100">
-                  <th className="py-2.5 px-3">Date</th>
-                  <th className="py-2.5 px-3">Close Price</th>
-                  <th className="py-2.5 px-3">Volume</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-medium">
-                {perf.recent_history.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/50">
-                    <td className="py-2.5 px-3 text-xs text-slate-600 font-mono">{row.date}</td>
-                    <td className="py-2.5 px-3 text-xs font-bold text-slate-900">
-                      {metrics.currency === 'INR' ? '₹' : '$'}
-                      {row.close}
-                    </td>
-                    <td className="py-2.5 px-3 text-xs text-slate-500 font-mono">
-                      {row.volume.toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          {/* Executive Summary */}
+          {(content.executive_summary || report?.summary) && (
+            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-3">
+              <div className="flex items-center gap-2.5 pb-2 border-b border-slate-100">
+                <FileText className="w-5 h-5 text-indigo-600" />
+                <h2 className="text-base font-bold text-slate-900">Executive Research Summary</h2>
+              </div>
+              <p className="text-sm text-slate-700 leading-relaxed">
+                {content.executive_summary || report?.summary}
+              </p>
+            </div>
+          )}
+
+          {/* Company Business Overview */}
+          <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-3">
+            <div className="flex items-center gap-2.5 pb-2 border-b border-slate-100">
+              <Building2 className="w-5 h-5 text-blue-600" />
+              <h2 className="text-base font-bold text-slate-900">Company Profile & Operations</h2>
+            </div>
+            <p className="text-sm text-slate-700 leading-relaxed pt-1">
+              {content.company_overview || 'No extended business summary provided by market feed.'}
+            </p>
+          </div>
+
+          {/* Multi-Agent Execution Logs */}
+          <div className="bg-slate-900 text-white p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-xl space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  <Cpu className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold">Multi-Agent Pipeline Execution</h2>
+                  <p className="text-xs text-slate-400">
+                    Specialized agents executed and persisted to PostgreSQL
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                Pipeline Verified
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {pipeline.active_agents?.map((agent) => (
+                <div
+                  key={agent.agent_id}
+                  className="p-4 rounded-2xl bg-slate-800/60 border border-slate-700/60 space-y-2"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs font-bold text-blue-400 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-blue-500" />
+                      {agent.agent_id}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      {agent.execution_time_ms !== undefined && (
+                        <span className="text-[10px] font-mono text-slate-400">{agent.execution_time_ms}ms</span>
+                      )}
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          agent.status === 'COMPLETED'
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                            : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                        }`}
+                      >
+                        {agent.status}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-xs font-bold text-white">{agent.role}</p>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">{agent.summary}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="p-4 rounded-2xl bg-blue-950/40 border border-blue-900/60 text-xs text-blue-200 flex items-start gap-3">
+              <ShieldCheck className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+              <p className="leading-relaxed">
+                This research report combines verified market data collection, quantitative fundamental analysis, and technical indicator evaluations stored with full provenance in PostgreSQL.
+              </p>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Multi-Agent Architecture Execution Dossier */}
-      <div className="bg-slate-900 text-white p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-xl space-y-6">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30">
-              <Cpu className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold">Multi-Agent Pipeline Orchestration</h2>
-              <p className="text-xs text-slate-400">
-                Modular multi-agent coordination architecture (Module 1 Integration Interface)
-              </p>
-            </div>
+      {activeSection === 'fundamental' && (
+        fundamental ? (
+          <FundamentalPanel fundamental={fundamental} />
+        ) : (
+          <div className="p-8 bg-white rounded-3xl border border-slate-200 text-center text-sm text-slate-500">
+            Fundamental analysis data was not recorded for this legacy task. Re-run research to generate full fundamental metrics.
           </div>
-          <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-            Pipeline Verified
-          </span>
-        </div>
+        )
+      )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {pipeline.active_agents?.map((agent, index) => (
-            <div
-              key={agent.agent_id}
-              className="p-4 rounded-2xl bg-slate-800/60 border border-slate-700/60 space-y-2"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold text-blue-400 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-blue-500" />
-                  {agent.agent_id}
-                </span>
-                <span
-                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    agent.status === 'COMPLETED'
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                      : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
-                  }`}
-                >
-                  {agent.status}
-                </span>
-              </div>
-              <p className="text-xs font-bold text-white">{agent.role}</p>
-              <p className="text-[11px] text-slate-400 leading-relaxed">{agent.summary}</p>
-            </div>
-          ))}
-        </div>
+      {activeSection === 'technical' && (
+        technical ? (
+          <TechnicalPanel technical={technical} />
+        ) : (
+          <div className="p-8 bg-white rounded-3xl border border-slate-200 text-center text-sm text-slate-500">
+            Technical analysis data was not recorded for this legacy task. Re-run research to generate interactive technical charts.
+          </div>
+        )
+      )}
 
-        <div className="p-4 rounded-2xl bg-blue-950/40 border border-blue-900/60 text-xs text-blue-200 flex items-start gap-3">
-          <ShieldCheck className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-          <p className="leading-relaxed">
-            This analytical dossier is generated by the Module 1 integration pipeline using real market data feeds. Additional autonomous multi-agent stock analysis modules (e.g. LLM Valuation Agents, SEC Filing Scrapers, Social Sentiment Swarms) connect directly into this service layer without architectural restructuring.
-          </p>
-        </div>
-      </div>
+      {activeSection === 'provenance' && (
+        <DataQualityPanel dataQuality={dataQuality} sources={sources} />
+      )}
     </div>
   );
 }
-

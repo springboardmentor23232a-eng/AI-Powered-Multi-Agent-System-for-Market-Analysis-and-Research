@@ -47,7 +47,7 @@ VERIFIED_STOCKS: List[Dict[str, str]] = [
     {"ticker": "RELIANCE", "company_name": "Reliance Industries Limited", "market": "NSE", "exchange": "NSE", "currency": "INR", "sector": "Energy & Retail"},
     {"ticker": "HDFCBANK", "company_name": "HDFC Bank Limited", "market": "NSE", "exchange": "NSE", "currency": "INR", "sector": "Financial Services"},
     {"ticker": "ICICIBANK", "company_name": "ICICI Bank Limited", "market": "NSE", "exchange": "NSE", "currency": "INR", "sector": "Financial Services"},
-    {"ticker": "TATAMOTORS", "company_name": "Tata Motors Limited", "market": "NSE", "exchange": "NSE", "bullet": "Automotive", "sector": "Automotive"},
+    {"ticker": "TATAMOTORS", "company_name": "Tata Motors Limited", "market": "NSE", "exchange": "NSE", "currency": "INR", "sector": "Automotive"},
     {"ticker": "WIPRO", "company_name": "Wipro Limited", "market": "NSE", "exchange": "NSE", "currency": "INR", "sector": "Technology"},
     {"ticker": "HINDUNILVR", "company_name": "Hindustan Unilever Limited", "market": "NSE", "exchange": "NSE", "currency": "INR", "sector": "Consumer Goods"},
     {"ticker": "BHARTIARTL", "company_name": "Bharti Airtel Limited", "market": "NSE", "exchange": "NSE", "currency": "INR", "sector": "Telecom"},
@@ -88,18 +88,21 @@ class StockDataService:
         return None
 
     @classmethod
-    async def search_stocks(cls, query: str) -> List[StockSearchResult]:
+    async def search_stocks(cls, query: str, market: Optional[str] = None) -> List[StockSearchResult]:
         """Search stocks using market data provider with verified local fallback."""
         query_str = query.strip()
         if not query_str:
             return []
 
+        market_filter = market.strip().upper() if market else None
         results: List[StockSearchResult] = []
         seen = set()
 
         # 1. Search verified local catalog first for immediate match
         q_lower = query_str.lower()
         for item in VERIFIED_STOCKS:
+            if market_filter and item["market"].upper() != market_filter:
+                continue
             if (q_lower in item["ticker"].lower() or q_lower in item["company_name"].lower()):
                 key = (item["ticker"], item["market"])
                 if key not in seen:
@@ -125,19 +128,19 @@ class StockDataService:
                     for q in quotes:
                         raw_symbol = q.get("symbol", "")
                         exch = q.get("exchange", "")
-                        market = cls._map_exchange_to_market(exch, raw_symbol)
-                        if market:
+                        mapped_market = cls._map_exchange_to_market(exch, raw_symbol)
+                        if mapped_market and (not market_filter or mapped_market == market_filter):
                             clean_symbol = raw_symbol.replace(".NS", "").replace(".BO", "")
                             name = q.get("shortname") or q.get("longname") or clean_symbol
-                            key = (clean_symbol, market)
+                            key = (clean_symbol, mapped_market)
                             if key not in seen:
                                 seen.add(key)
                                 results.append(StockSearchResult(
                                     ticker=clean_symbol,
                                     company_name=name,
-                                    market=market,
-                                    exchange=exch or market,
-                                    currency="INR" if market in ["NSE", "BSE"] else "USD",
+                                    market=mapped_market,
+                                    exchange=exch or mapped_market,
+                                    currency="INR" if mapped_market in ["NSE", "BSE"] else "USD",
                                     sector=q.get("sector")
                                 ))
         except Exception as e:

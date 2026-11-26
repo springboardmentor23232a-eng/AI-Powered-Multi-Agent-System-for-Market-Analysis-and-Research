@@ -10,6 +10,7 @@ import ReportViewPage from './pages/ReportViewPage';
 import WatchlistPage from './pages/WatchlistPage';
 import PreferencesPage from './pages/PreferencesPage';
 import ProfilePage from './pages/ProfilePage';
+import StockExplorerPage from './pages/StockExplorerPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -80,6 +81,7 @@ export default function App() {
             }
           >
             <Route path="/dashboard" element={<DashboardOverviewPage />} />
+            <Route path="/explorer" element={<StockExplorerPage />} />
             <Route path="/history" element={<ResearchHistoryPage />} />
             <Route path="/history/:taskId/report" element={<ReportViewPage />} />
             <Route path="/watchlist" element={<WatchlistPage />} />
