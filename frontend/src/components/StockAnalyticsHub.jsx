@@ -25,6 +25,7 @@ export const StockAnalyticsHub = ({
   onClose,
   onAddToWatchlist,
   onOpenResearch,
+  onOpenFundamental,
 }) => {
   const [activeTab, setActiveTab] = useState('charts'); // 'charts' | 'ohlcv' | 'profile' | 'financials'
   const [financialSubTab, setFinancialSubTab] = useState('income'); // 'income' | 'balance' | 'cashflow'
@@ -411,6 +412,17 @@ export const StockAnalyticsHub = ({
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2.5 flex-wrap">
+          {onOpenFundamental && (
+            <button
+              onClick={() => onOpenFundamental(historicalData?.ticker || ticker)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 transition-all"
+              title="Launch Fundamental Analysis Agent"
+            >
+              <TrendingUp className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Fundamental Agent</span>
+            </button>
+          )}
+
           {onAddToWatchlist && (
             <button
               onClick={() => onAddToWatchlist(historicalData?.ticker || ticker)}

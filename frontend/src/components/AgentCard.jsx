@@ -13,13 +13,14 @@ const CandlestickIcon = () => (
   </svg>
 );
 
-export const AgentCard = ({ title, description, iconType }) => {
+export const AgentCard = ({ title, description, iconType, status = 'coming_soon', onClick }) => {
+  const isActive = status === 'active';
   const renderIcon = () => {
     switch (iconType) {
       case 'fundamental':
         return (
-          <div className="w-10 h-10 rounded-lg bg-[#141b25] border border-[#232f42] flex items-center justify-center shrink-0">
-            <TrendingUp className="w-5 h-5 text-slate-100" />
+          <div className="w-10 h-10 rounded-lg bg-[#141b25] border border-emerald-500/30 flex items-center justify-center shrink-0">
+            <TrendingUp className="w-5 h-5 text-emerald-400" />
           </div>
         );
       case 'technical':
@@ -46,7 +47,14 @@ export const AgentCard = ({ title, description, iconType }) => {
   };
 
   return (
-    <div className="bg-[#0b0f15] hover:bg-[#0e141d] border border-[#1c2533] hover:border-slate-600/70 rounded-2xl p-5 sm:p-6 transition-all duration-200 cursor-default shadow-sm group">
+    <div
+      onClick={isActive ? onClick : undefined}
+      className={`bg-[#0b0f15] border rounded-2xl p-5 sm:p-6 transition-all duration-200 shadow-sm group ${
+        isActive
+          ? 'cursor-pointer hover:bg-[#0e1622] border-emerald-500/30 hover:border-emerald-500/60 ring-1 ring-emerald-500/10'
+          : 'cursor-default hover:bg-[#0e141d] border-[#1c2533] hover:border-slate-600/70'
+      }`}
+    >
       <div className="flex items-start justify-between gap-4 mb-3">
         <div className="flex items-center gap-3.5">
           {renderIcon()}
@@ -54,9 +62,15 @@ export const AgentCard = ({ title, description, iconType }) => {
             {title}
           </h3>
         </div>
-        <span className="shrink-0 px-2.5 py-1 text-[11px] font-medium rounded-full bg-[#161d28] text-slate-300 border border-[#232f42]">
-          Coming Soon
-        </span>
+        {isActive ? (
+          <span className="shrink-0 px-2.5 py-1 text-[11px] font-semibold rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/40 group-hover:bg-emerald-500/25 transition-colors">
+            Launch Agent
+          </span>
+        ) : (
+          <span className="shrink-0 px-2.5 py-1 text-[11px] font-medium rounded-full bg-[#161d28] text-slate-300 border border-[#232f42]">
+            Coming Soon
+          </span>
+        )}
       </div>
       <p className="text-xs sm:text-sm text-slate-400 leading-relaxed pl-[54px]">
         {description}

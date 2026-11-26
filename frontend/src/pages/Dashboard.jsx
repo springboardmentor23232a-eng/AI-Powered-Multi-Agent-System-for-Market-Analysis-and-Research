@@ -28,6 +28,8 @@ import StockSearch from '../components/StockSearch';
 import AgentCard from '../components/AgentCard';
 import StockAnalyticsHub from '../components/StockAnalyticsHub';
 import StructuredReportViewer from '../components/StructuredReportViewer';
+import FundamentalAnalysisModal from '../components/FundamentalAnalysisModal';
+import { jsPDF } from 'jspdf';
 import { useAuth } from '../context/AuthContext';
 import { dashboardService } from '../services/api';
 
@@ -49,11 +51,267 @@ export const Dashboard = () => {
   // Modal states
   const [isResearchModalOpen, setIsResearchModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isFundamentalModalOpen, setIsFundamentalModalOpen] = useState(false);
+  const [fundamentalTicker, setFundamentalTicker] = useState('INFY.NS');
   const [selectedTask, setSelectedTask] = useState(null);
   const [activeReport, setActiveReport] = useState(null);
   const [loadingReport, setLoadingReport] = useState(false);
   const [launchingResearch, setLaunchingResearch] = useState(false);
-  const [pdfNotice, setPdfNotice] = useState(false);
+
+  const handleDownloadPDF = () => {
+    if (!activeReport) return;
+    try {
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'pt',
+        format: 'a4'
+      });
+
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 44;
+      const contentWidth = pageWidth - margin * 2;
+      const bulletIndent = 16;
+      const textPaddingRight = 12;
+      const bulletTextWidth = contentWidth - bulletIndent - textPaddingRight;
+      let y = margin;
+
+      // Robust sanitizer for typography, currency symbols, and emojis
+      const cleanText = (str) => {
+        if (!str) return '';
+        return str
+          .replace(/\[COMING SOON\]/gi, '')
+          // Currency symbol normalization for Helvetica PDF fonts
+          .replace(/₹/g, 'Rs. ')
+          .replace(/\u20B9/g, 'Rs. ')
+          .replace(/INR\s*\([¹₹]\)/gi, 'INR (Rs.)')
+          .replace(/\(¹\)/g, '(Rs.)')
+          .replace(/¹/g, 'Rs. ')
+          // Keep bracket content clean
+          .replace(/\[([^\]]+)\]/g, '$1')
+          // Strip emojis & unicode symbols
+          .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2300}-\u{23FF}\u{2B50}\u{FE0F}]/gu, '')
+          .replace(/[🟢📰🛡️⚖️📈🤖⚠️💡▸•►✓✔✕]/gu, '')
+          .replace(/\*\*(.*?)\*\*/g, '$1')
+          .replace(/\*(.*?)\*/g, '$1')
+          .replace(/_{1,2}(.*?)_{1,2}/g, '$1')
+          .replace(/`{1,3}(.*?)`{1,3}/g, '$1')
+          .replace(/Rs\.\s*Rs\./g, 'Rs.')
+          .replace(/[ \t]+/g, ' ')
+          .trim();
+      };
+
+      const checkPageBreak = (neededHeight) => {
+        if (y + neededHeight > pageHeight - margin - 25) {
+          doc.addPage();
+          y = margin;
+          renderHeader();
+        }
+      };
+
+      const renderHeader = () => {
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(140, 150, 160);
+        doc.text(`AI-Powered Multi-Agent Research Analyst | ${selectedTask?.ticker || 'Stock'} Research Report`, margin, 25);
+      };
+
+      // Header Banner Box
+      doc.setFillColor(15, 23, 42);
+      doc.roundedRect(margin, y, contentWidth, 70, 3, 3, 'F');
+
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
+      doc.text(`${selectedTask?.ticker || 'EQUITY'} - Research Report`, margin + 14, y + 26);
+
+      doc.setFontSize(9.5);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(56, 189, 248);
+      doc.text(`${cleanText(selectedTask?.company_name)} | Market: ${selectedTask?.market || 'NSE'} | Horizon: ${selectedTask?.requested_period || '6 Months'}`, margin + 14, y + 43);
+
+      doc.setFontSize(8);
+      doc.setTextColor(148, 163, 184);
+      const genDate = new Date(activeReport?.created_at || selectedTask?.created_at || Date.now()).toLocaleString();
+      doc.text(`Report Generated: ${genDate} | Data Source: yfinance Market Data Feed`, margin + 14, y + 58);
+
+      y += 84;
+
+      // Executive Summary
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(16, 185, 129);
+      doc.text('EXECUTIVE SYNTHESIS', margin, y);
+      y += 14;
+
+      doc.setFontSize(8.5);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(51, 65, 85);
+
+      const rawSummary = cleanText(
+        (activeReport.summary || '')
+          .replace(/Currency Notice.*?\./gi, '')
+          .replace(/All valuation multiples and metrics for .*? are denominated in .*?\./gi, '')
+      );
+
+      const summaryLines = doc.splitTextToSize(rawSummary, contentWidth - textPaddingRight);
+      checkPageBreak(summaryLines.length * 12 + 10);
+      doc.text(summaryLines, margin, y);
+      y += summaryLines.length * 12 + 16;
+
+      // Detailed Sections
+      const content = activeReport.report_content || '';
+      const rawSections = content.split(/(?=### \d+\.)/);
+
+      rawSections.forEach((sec) => {
+        const trimmed = sec.trim();
+        if (!trimmed) return;
+
+        const lines = trimmed.split('\n');
+        const headerLine = lines[0] || '';
+        const bodyLines = lines.slice(1);
+
+        const cleanHeading = cleanText(headerLine.replace(/^###\s+/, ''));
+        if (!cleanHeading) return;
+
+        checkPageBreak(45);
+        doc.setFillColor(241, 245, 249);
+        doc.roundedRect(margin, y, contentWidth, 18, 2, 2, 'F');
+        doc.setFontSize(9.5);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(15, 23, 42);
+        doc.text(cleanHeading, margin + 8, y + 12.5);
+        y += 33; // Clear 15 pt separation between heading box and first bullet point
+
+        bodyLines.forEach((bLine) => {
+          const bTrim = bLine.trim();
+          if (!bTrim) return;
+
+          // Suppress duplicate currency notices
+          if (bTrim.toLowerCase().includes('currency notice')) return;
+
+          let isBullet = bTrim.startsWith('- ') || bTrim.startsWith('* ');
+          let cleanedLine = cleanText(bTrim.replace(/^[-*]\s+/, ''));
+          if (!cleanedLine) return;
+
+          const textX = isBullet ? margin + bulletIndent : margin + 4;
+          const availableWidth = isBullet ? bulletTextWidth : (contentWidth - textPaddingRight);
+          const splitLines = doc.splitTextToSize(cleanedLine, availableWidth);
+
+          checkPageBreak(splitLines.length * 12 + 4);
+
+          if (isBullet) {
+            // Draw clean, perfectly vertically centered emerald bullet dot
+            doc.setFillColor(16, 185, 129);
+            doc.circle(margin + 6, y - 2.8, 1.8, 'F');
+          }
+
+          // Check if line has a bold key: value label
+          const colonIdx = cleanedLine.indexOf(':');
+          if (isBullet && colonIdx > 0 && colonIdx < 35) {
+            const label = cleanedLine.slice(0, colonIdx + 1);
+            const val = cleanedLine.slice(colonIdx + 1).trim();
+
+            doc.setFontSize(8.5);
+            doc.setFont('helvetica', 'bold');
+            const labelWidth = doc.getTextWidth(label + ' ');
+
+            if (splitLines.length === 1) {
+              doc.setTextColor(30, 41, 59);
+              doc.text(label, textX, y);
+              doc.setFont('helvetica', 'normal');
+              doc.setTextColor(51, 65, 85);
+              doc.text(val, textX + labelWidth, y);
+              y += 12 + 3.5;
+            } else {
+              // Multi-line bullet: bold label followed by value wrapped with clean hanging indent
+              const firstLineRemainingWidth = availableWidth - labelWidth;
+              const valWords = val.split(' ');
+              let line1 = '';
+              let wIdx = 0;
+              doc.setFont('helvetica', 'normal');
+              while (wIdx < valWords.length) {
+                const test = line1 ? line1 + ' ' + valWords[wIdx] : valWords[wIdx];
+                if (doc.getTextWidth(test) <= firstLineRemainingWidth) {
+                  line1 = test;
+                  wIdx++;
+                } else {
+                  break;
+                }
+              }
+              const remText = valWords.slice(wIdx).join(' ');
+              const remLines = remText ? doc.splitTextToSize(remText, availableWidth) : [];
+
+              checkPageBreak((remLines.length + 1) * 12 + 4);
+
+              // Print Line 1: Bold label + first line of val
+              doc.setFont('helvetica', 'bold');
+              doc.setTextColor(30, 41, 59);
+              doc.text(label, textX, y);
+
+              doc.setFont('helvetica', 'normal');
+              doc.setTextColor(51, 65, 85);
+              if (line1) {
+                doc.text(line1, textX + labelWidth, y);
+              }
+
+              // Print Remaining lines: Clean hanging indent under textX
+              remLines.forEach((rLine, rIdx) => {
+                doc.text(rLine, textX, y + (rIdx + 1) * 12);
+              });
+
+              y += (remLines.length + 1) * 12 + 3.5;
+            }
+          } else {
+            // Multi-line non-bullet or unstructured text
+            doc.setFontSize(8.5);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(51, 65, 85);
+            doc.text(splitLines, textX, y);
+            y += splitLines.length * 12 + 3.5;
+          }
+        });
+
+        y += 14; // Clean separation between sections
+      });
+
+      // Limitations & Disclaimer Box
+      if (activeReport.limitations) {
+        checkPageBreak(45);
+        doc.setFillColor(254, 243, 199);
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(180, 83, 9);
+        doc.text('DISCLAIMER & LIMITATIONS', margin, y);
+        y += 13;
+
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(120, 53, 15);
+        const limClean = cleanText(activeReport.limitations);
+        const limLines = doc.splitTextToSize(limClean, contentWidth - textPaddingRight);
+        checkPageBreak(limLines.length * 11 + 10);
+        doc.text(limLines, margin, y);
+        y += limLines.length * 11 + 14;
+      }
+
+      // Page Numbers and Footer
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(7.5);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(148, 163, 184);
+        doc.text(`Page ${i} of ${totalPages}`, pageWidth - margin - 45, pageHeight - 15);
+        doc.text('Confidential - For Research & Educational Purposes Only', margin, pageHeight - 15);
+      }
+
+      doc.save(`${selectedTask?.ticker || 'Stock'}_Research_Report.pdf`);
+    } catch (err) {
+      console.error('Failed to generate PDF:', err);
+      window.print();
+    }
+  };
 
   const handleDownloadMarkdown = () => {
     if (!activeReport) return;
@@ -234,6 +492,23 @@ ${activeReport.limitations}
     }
   };
 
+  const handleDeleteResearch = async (taskId) => {
+    if (!window.confirm('Are you sure you want to delete this research report?')) {
+      return;
+    }
+    try {
+      await dashboardService.deleteResearch(taskId);
+      setRecentResearch((prev) => prev.filter((t) => t.task_id !== taskId));
+      if (selectedTask?.task_id === taskId) {
+        setIsReportModalOpen(false);
+        setActiveReport(null);
+        setSelectedTask(null);
+      }
+    } catch (err) {
+      console.error('Failed to delete research report:', err);
+    }
+  };
+
   const isUSMarket = (market) => market === 'NASDAQ' || market === 'NYSE';
 
   const displayName = user?.full_name || 'Stock Researcher';
@@ -372,6 +647,10 @@ ${activeReport.limitations}
               onClose={() => setAnalyticsTicker(null)}
               onAddToWatchlist={handleQuickAddWatchlist}
               onOpenResearch={openResearchModal}
+              onOpenFundamental={(t) => {
+                setFundamentalTicker(t);
+                setIsFundamentalModalOpen(true);
+              }}
             />
           </section>
         )}
@@ -386,8 +665,14 @@ ${activeReport.limitations}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <AgentCard
               title="Fundamental Analysis Agent"
-              description="Analyzes company revenue, earnings, profitability, debt, and financial ratios."
+              description="Analyzes company revenue, earnings, profitability, debt, financial ratios, peer benchmarks, and data audits."
               iconType="fundamental"
+              status="active"
+              onClick={() => {
+                const defaultTicker = analyticsTicker || (preferences.preferred_market === 'NASDAQ' || preferences.preferred_market === 'NYSE' ? 'AAPL' : 'INFY.NS');
+                setFundamentalTicker(defaultTicker);
+                setIsFundamentalModalOpen(true);
+              }}
             />
             <AgentCard
               title="Technical Analysis Agent"
@@ -560,6 +845,15 @@ ${activeReport.limitations}
                         >
                           <FileText className="w-3 h-3 text-emerald-400" />
                           <span>Report</span>
+                        </button>
+
+                        {/* Delete research report individually */}
+                        <button
+                          onClick={() => handleDeleteResearch(task.task_id)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-950/30 transition-colors"
+                          title="Delete research report"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
@@ -751,64 +1045,96 @@ ${activeReport.limitations}
         </div>
       )}
 
-      {/* ── MODAL 3: View Generated Research Report ── */}
+      {/* ── FULL SIZE WINDOW: View Generated Research Report ── */}
       {isReportModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
-          <div className="w-full max-w-3xl bg-[#0b0f15] border border-[#1c2533] rounded-3xl p-6 sm:p-8 shadow-2xl relative max-h-[90vh] flex flex-col justify-between">
+        <div className="fixed inset-0 z-50 bg-[#090d14] flex flex-col w-screen h-screen overflow-hidden">
 
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-[#1c2533] pb-4 mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                  <FileText className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                    <span>{selectedTask?.ticker}</span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-500/30">
-                      Report Complete
-                    </span>
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    {selectedTask?.company_name} • {selectedTask?.market} ({selectedTask?.requested_period})
-                  </p>
-                  {/* Report Generated Date, Data Source & Retrieval Time Badges */}
-                  <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-2.5 flex-wrap">
-                    <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#121924] border border-[#1e293b] text-emerald-300 font-medium">
-                      <Calendar className="w-3 h-3 text-emerald-400" />
-                      <span>Generated: <strong className="text-white">{new Date(activeReport?.created_at || selectedTask?.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</strong></span>
-                    </span>
-                    <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#121924] border border-[#1e293b] text-slate-300 font-medium">
-                      <Database className="w-3 h-3 text-emerald-400" />
-                      <span>Source: <strong className="text-white">yfinance API</strong></span>
-                    </span>
-                    <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#121924] border border-[#1e293b] text-slate-300 font-mono">
-                      <Clock className="w-3 h-3 text-cyan-400" />
-                      <span>Retrieved: {new Date(selectedTask?.created_at).toLocaleString()}</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
+          {/* Top Full-Width Navigation Bar */}
+          <div className="flex items-center justify-between px-5 sm:px-8 py-3.5 border-b border-[#1c2533] bg-[#0b0f15] shrink-0">
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => {
                   setIsReportModalOpen(false);
                   setPdfNotice(false);
                 }}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#141b25] hover:bg-[#1a2332] text-xs font-semibold text-slate-200 border border-[#222e40] transition-colors"
               >
-                <X className="w-5 h-5" />
+                <span>← Back to Dashboard</span>
               </button>
+              <div className="h-6 w-px bg-[#1c2533] mx-1" />
+              <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                <FileText className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                  <span>{selectedTask?.ticker}</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-500/30">
+                    Report Complete
+                  </span>
+                </h3>
+                <p className="text-xs text-slate-400">
+                  {selectedTask?.company_name} • {selectedTask?.market} ({selectedTask?.requested_period})
+                </p>
+              </div>
             </div>
 
-            {/* Content Body */}
-            <div className="flex-1 overflow-y-auto pr-2 space-y-4 text-xs sm:text-sm">
-              {/* PDF Export Banner Notice */}
-              {pdfNotice && (
-                <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/40 text-amber-300 text-xs flex items-center justify-between animate-fade-in">
-                  <span>📄 <strong>PDF Export Notice:</strong> PDF report download option is currently a placeholder. Markdown report download is active below!</span>
-                  <button onClick={() => setPdfNotice(false)} className="text-amber-400 hover:text-white ml-2 text-sm">✕</button>
-                </div>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              {/* Option to delete research report individually */}
+              {selectedTask?.task_id && (
+                <button
+                  type="button"
+                  onClick={() => handleDeleteResearch(selectedTask.task_id)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-950/40 hover:bg-red-900/50 text-red-300 border border-red-500/30 text-xs font-semibold transition-colors"
+                  title="Delete this research report"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Delete Report</span>
+                </button>
               )}
+
+              {/* Download PDF Button */}
+              <button
+                type="button"
+                onClick={handleDownloadPDF}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-950/40 hover:bg-red-900/50 text-xs font-semibold text-red-300 border border-red-500/30 hover:border-red-500/50 transition-colors shadow-sm"
+                title="Download formatted PDF report"
+              >
+                <FileDown className="w-3.5 h-3.5 text-red-400" />
+                <span className="hidden sm:inline">Download PDF</span>
+              </button>
+
+              {/* Download Markdown Report Button */}
+              <button
+                type="button"
+                onClick={handleDownloadMarkdown}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-xs font-semibold text-emerald-300 border border-emerald-500/40 transition-colors shadow-sm"
+                title="Download report as Markdown (.md)"
+              >
+                <Download className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="hidden sm:inline">Markdown</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Full-Screen Scrollable Body */}
+          <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-[#090d14]">
+            <div className="max-w-6xl mx-auto space-y-6 text-xs sm:text-sm">
+
+              {/* Metadata Badges */}
+              <div className="flex items-center gap-2.5 text-xs text-slate-400 flex-wrap pb-2 border-b border-[#141d2a]">
+                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#121924] border border-[#1e293b] text-emerald-300 font-medium">
+                  <Calendar className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Generated: <strong className="text-white">{new Date(activeReport?.created_at || selectedTask?.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</strong></span>
+                </span>
+                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#121924] border border-[#1e293b] text-slate-300 font-medium">
+                  <Database className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Source: <strong className="text-white">yfinance API</strong></span>
+                </span>
+                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#121924] border border-[#1e293b] text-slate-300 font-mono">
+                  <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Retrieved: {new Date(selectedTask?.created_at).toLocaleString()}</span>
+                </span>
+              </div>
 
               {loadingReport ? (
                 <div className="flex items-center justify-center py-16 gap-3 text-slate-400">
@@ -893,54 +1219,27 @@ ${activeReport.limitations}
                 </div>
               )}
             </div>
-
-            {/* Footer */}
-            <div className="pt-4 border-t border-[#1c2533] mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-[11px] text-slate-400 order-2 sm:order-1 flex-wrap">
-                <span>Generated: <strong className="text-emerald-400">{new Date(activeReport?.created_at || selectedTask?.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</strong></span>
-                <span>•</span>
-                <span>Source: <strong className="text-white">yfinance API</strong></span>
-                <span>•</span>
-                <span>Retrieved: <strong className="text-slate-300">{new Date(selectedTask?.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong></span>
-              </div>
-              <div className="flex items-center gap-2 order-1 sm:order-2 flex-wrap">
-                {/* Dummy Download PDF Button (Module 8 Feature) */}
-                <button
-                  type="button"
-                  onClick={() => setPdfNotice(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#141b25] hover:bg-[#1a2330] text-xs font-semibold text-slate-300 border border-[#222e40] hover:border-slate-500 transition-colors shadow-sm"
-                  title="Export report as formatted PDF (Module 8 Feature)"
-                >
-                  <FileDown className="w-3.5 h-3.5 text-red-400" />
-                  <span>Download PDF</span>
-                </button>
-
-                {/* Download Markdown Report Button */}
-                <button
-                  type="button"
-                  onClick={handleDownloadMarkdown}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-xs font-semibold text-emerald-300 border border-emerald-500/40 transition-colors shadow-sm"
-                  title="Download report as Markdown (.md)"
-                >
-                  <Download className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Download Markdown</span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    setIsReportModalOpen(false);
-                    setPdfNotice(false);
-                  }}
-                  className="px-4 py-1.5 rounded-lg bg-[#141b25] hover:bg-[#1a2330] text-xs font-medium text-slate-200 border border-[#222e40] transition-colors"
-                >
-                  Close Report
-                </button>
-              </div>
-            </div>
-
           </div>
+
+          {/* Full-Screen Footer Bar */}
+          <div className="px-6 py-3 border-t border-[#1c2533] bg-[#0b0f15] flex items-center justify-between text-xs text-slate-400 shrink-0">
+            <div className="flex items-center gap-2">
+              <span>Research Report • {selectedTask?.ticker}</span>
+              <span>•</span>
+              <span>Source: <strong className="text-white">yfinance API</strong></span>
+            </div>
+          </div>
+
         </div>
       )}
+
+      {/* ── MODAL 4: Fundamental Analysis Agent Screen ── */}
+      <FundamentalAnalysisModal
+        isOpen={isFundamentalModalOpen}
+        onClose={() => setIsFundamentalModalOpen(false)}
+        initialTicker={fundamentalTicker || (preferences.preferred_market === 'NASDAQ' || preferences.preferred_market === 'NYSE' ? 'AAPL' : 'INFY.NS')}
+        preferredMarket={preferences.preferred_market}
+      />
 
       {/* Footer */}
       <footer className="w-full bg-[#070a0e] border-t border-[#1c2533] py-4 mt-8">

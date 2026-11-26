@@ -2,8 +2,8 @@
 
 > **Intern Name:** SANJANAA SRINIVASAN  
 > **Project Purpose:** Infosys Springboard Virtual Internship 7.0 Batch 5 Project  
-> **Module Milestone:** Module 1 & Module 2 - User Authentication, Research Workspace & Market Data Collection  
-> **Tech Stack:** React.js, Tailwind CSS, Vite, FastAPI (Python 3.12), PostgreSQL 18, SQLAlchemy 2.0, Alembic, Docker/Uvicorn, yfinance  
+> **Module Milestone:** Module 1, Module 2 & Module 3 – User Authentication, Research Workspace, Market Data Collection & Fundamental Analysis Agent  
+> **Tech Stack:** React.js, Tailwind CSS, Vite, FastAPI (Python 3.12), PostgreSQL 18, SQLAlchemy 2.0, Alembic, Docker/Uvicorn, yfinance, Scikit-Learn, Jupyter  
 
 ---
 
@@ -11,20 +11,23 @@
 1. [Project Overview](#1-project-overview)
 2. [What is Done (Module 1 Achievements)](#2-what-is-done-module-1-achievements)
 3. [What is Done (Module 2 Achievements)](#3-what-is-done-module-2-achievements)
-4. [System Architecture](#4-system-architecture)
-5. [User Interface Design & Layouts](#5-user-interface-design--layouts)
+4. [What is Done (Module 3 Achievements - Fundamental Analysis Agent)](#4-what-is-done-module-3-achievements---fundamental-analysis-agent)
+5. [Machine Learning Engine (`ml_engine/`) Architecture](#5-machine-learning-engine-ml_engine-architecture)
+6. [System Architecture](#6-system-architecture)
+7. [User Interface Design & Layouts](#7-user-interface-design--layouts)
    - [Registration Page Wireframe Layout](#registration-page-wireframe-layout)
    - [Stock Research Workspace Dashboard Layout](#stock-research-workspace-dashboard-layout)
    - [Market Analytics & Financial Intelligence Hub Layout](#market-analytics--financial-intelligence-hub-layout)
-6. [Prerequisites & Requirements](#6-prerequisites--requirements)
-7. [Step-by-Step Installation & Setup](#7-step-by-step-installation--setup)
-8. [Project Folder Structure & File-by-File Dictionary](#8-project-folder-structure--file-by-file-dictionary)
-9. [Database Schema & Entity Relationships](#9-database-schema--entity-relationships)
-10. [Implementation Guide (How It Was Built)](#10-implementation-guide-how-it-was-built)
-11. [Google & Apple OAuth 2.0 Configuration](#11-google--apple-oauth-20-configuration)
-12. [API Endpoints Reference](#12-api-endpoints-reference)
-13. [Automated Testing Suite (14 Tests)](#13-automated-testing-suite-14-tests)
-14. [License & Acknowledgments](#14-license--acknowledgments)
+   - [Fundamental Analysis Agent Screen Layout](#fundamental-analysis-agent-screen-layout)
+8. [Prerequisites & Requirements](#8-prerequisites--requirements)
+9. [Step-by-Step Installation & Setup](#9-step-by-step-installation--setup)
+10. [Project Folder Structure & File-by-File Dictionary](#10-project-folder-structure--file-by-file-dictionary)
+11. [Database Schema & Entity Relationships](#11-database-schema--entity-relationships)
+12. [Implementation Guide (How It Was Built)](#12-implementation-guide-how-it-was-built)
+13. [Google & Apple OAuth 2.0 Configuration](#13-google--apple-oauth-20-configuration)
+14. [API Endpoints Reference](#14-api-endpoints-reference)
+15. [Automated Testing Suite (Modules 1, 2 & 3)](#15-automated-testing-suite-modules-1-2--3)
+16. [License & Acknowledgments](#16-license--acknowledgments)
 
 ---
 
@@ -32,12 +35,13 @@
 
 The **AI-Powered Multi Agent System for Market Analysis and Research** is an enterprise-grade financial intelligence platform. Designed as part of the **Infosys Springboard Virtual Internship 7.0 (Batch 5)**, the system is designed to coordinate multiple specialized autonomous AI agents (Fundamental Analysis, Technical Analysis, News Sentiment Analysis, and Risk Assessment) to conduct rigorous stock market research across global exchanges (NSE, BSE, NASDAQ, NYSE).
 
-**Module 1 & Module 2 Foundation:**
+**Core System Milestones (Modules 1, 2 & 3):**
 - **Authentication Engine:** Multi-factor authentication with bcrypt 12-round password hashing and OAuth 2.0 (Google & Apple) identity federation.
 - **Session Security:** Cryptographically signed JSON Web Tokens (JWT) transmitted inside tamper-proof, HTTP-only cookies with strict CORS protection.
 - **Relational Data Layer:** PostgreSQL schema with 8 relational tables linked via UUIDs, foreign keys, and cascade deletion rules.
 - **Fintech Research Workspace:** Dark-theme responsive UI with live password validation, company and ticker search without fabricated data, watchlist management, user research history, and user preferences persistence.
-- **Market Data Pipeline & Analytics Hub:** Real-time market data ingestion across global exchanges (NSE, BSE, NASDAQ, NYSE), instant keystroke auto-suggest, multi-timeframe OHLCV historical candlestick data collection, Time Series Analysis (SMA 20, SMA 50, annualized rolling volatility, trend direction), return distribution histograms, company profiles, and multi-year financial statements.
+- **Market Data Pipeline & Analytics Hub (Module 2):** Real-time market data ingestion across global exchanges (NSE, BSE, NASDAQ, NYSE), instant keystroke auto-suggest, multi-timeframe OHLCV historical candlestick data collection, Time Series Analysis (SMA 20, SMA 50, annualized rolling volatility, trend direction), return distribution histograms, company profiles, and multi-year financial statements.
+- **Fundamental Analysis Agent & ML Engine (Module 3):** Full-screen autonomous financial condition analysis across 7 core pillars (Revenue/Earnings Trajectory, Profitability Margins, Debt & Solvency Risk Gauges, Valuation Multiples, Historical Financial Statements Breakdown, Peer Benchmarking with Dual Search Autocomplete, and Transparent Data Audit). Powered by a structured Machine Learning repository (`ml_engine/`) containing financial ratio datasets, a training Jupyter notebook, and serialized model/scaler artifacts.
 
 ---
 
@@ -67,11 +71,7 @@ The **AI-Powered Multi Agent System for Market Analysis and Research** is an ent
 ### 4. Fintech Research Workspace Dashboard
 - Personalized user greeting displaying the authenticated user's name derived strictly from the backend JWT session.
 - Frameless, seamless dark fintech aesthetic matching official UI specifications (`#05080a`, `#0b0f15`, `#00d084`).
-- **Research Agents Section:** 4 interactive agent cards with "Coming Soon" status badges:
-  1. Fundamental Analysis Agent
-  2. Technical Analysis Agent
-  3. News Sentiment Agent
-  4. Risk Assessment Agent
+- **Research Agents Section:** 4 interactive agent cards with status indicators (Fundamental Analysis Agent active; Technical, News, and Risk agents scheduled).
 
 ### 5. Real Stock Search, Live Market Pricing & Currency Awareness
 - **Real-Time Ticker Search:** Search by company name or ticker symbol across NSE, BSE, NASDAQ, and NYSE (e.g., Apple `AAPL`, Reliance `RELIANCE`, Infosys `INFY`, Tata Consultancy Services `TCS`, Microsoft `MSFT`).
@@ -134,9 +134,118 @@ The **AI-Powered Multi Agent System for Market Analysis and Research** is an ent
 
 ---
 
-## 4. System Architecture
+## 4. What is Done (Module 3 Achievements - Fundamental Analysis Agent)
 
-The full-stack application follows a decoupled 4-tier integration architecture:
+### Autonomous Financial Reasoning & 7 Core Features
+
+#### Official Specification Overview:
+> **Fundamental Analysis Agent:**  
+> This agent analyzes the financial performance and condition of a company.  
+> **Features:**  
+> • Revenue and earnings analysis.  
+> • Profitability analysis.  
+> • Debt and financial stability analysis.  
+> • Calculation of financial ratios such as P/E, P/B, and ROE when the required data is available.  
+> • Historical financial performance comparison.  
+> • Peer comparison where comparable data is available.  
+> • Identification of missing or inconsistent financial information.  
+>  
+> **Example:** When a user searches for a company, the agent retrieves available financial data and explains its revenue growth, profitability, debt levels, and relevant valuation metrics.
+
+#### 0. Company Overview Header Card
+- Displays live stock price, currency indicator (`$`, `₹`), 52-week high/low range meter with visual percentile gradient bar, market capitalization, employee count, sector, industry, and corporate website.
+- Features an expandable corporate summary toggle (`"Read more / Show less"`) preserving sleek visual density.
+
+#### 1. Revenue and Earnings Analysis (Feature 1)
+- Multi-year revenue and net income trajectory chart across up to 4 consecutive fiscal years.
+- Interactive metric switcher tabs allowing the analyst to toggle between **`[All]`**, **`[Revenue]`**, **`[Net Income]`**, and **`[EBITDA]`**.
+- Features prominent YoY revenue momentum badge (e.g. `↗ +4.57% YoY`) and dynamic hover tooltips displaying exact formatted figures (`₹1,821.20 Cr`).
+- Built with CSS flexbox `h-full justify-end` and percentage clamping, guaranteeing that bars render visibly across all selected tabs without collapsing.
+
+#### 2. Profitability Analysis (Feature 2)
+- Evaluates operational return efficiencies across Gross Margin, Operating Margin, Net Profit Margin, Return on Equity (ROE), and Return on Assets (ROA).
+- Each progress bar incorporates vertical industry benchmark reference lines and assigns green `"Above avg"` tags to outperforming metrics.
+
+#### 3. Debt and Financial Stability Analysis (Feature 3)
+- **Debt-to-Equity Meter:** Visual risk gauge evaluating balance sheet leverage across `Safe` (< 0.5), `Moderate` (0.5–1.0), and `Elevated` (> 1.0) zones.
+- **Current Ratio (Liquidity) Meter:** Evaluates short-term solvency across `Strong` (≥ 2.0x), `Healthy` (≥ 1.5x), `Adequate` (≥ 1.0x), and `Weak` (< 1.0x) liquidity zones.
+- Validates reported accounting profits against real Operating Cash Flow.
+
+#### 4. Calculation of Financial Ratios (Feature 4)
+- Responsive 6-card valuation and efficiency grid displaying **P/E Ratio** (TTM), **P/B Ratio**, **EPS** (Earnings Per Share), **ROA**, **Gross Margin**, and **Solvency Assessment**.
+
+#### 5. Historical Financial Performance Comparison (Feature 5)
+- Tabular breakdown comparing historical fiscal years side-by-side with Total Revenue, Net Income, EBITDA, and Operating Cash Flow.
+- Summary trajectory cards breaking down annual milestones and operational growth trends.
+
+#### 6. Peer Comparison & Dual Search Engine (Feature 6)
+- **Sector Peer Catalog:** Pre-configures verified peers across technology, financial, automotive, and healthcare sectors.
+- **Dual-Search Autocomplete Engine:** Typing in custom peer search (e.g. "Apple", "TCS", "Wipro") offers 0ms local catalog matching + debounced live API search (`stockService.search`), supporting both US and Indian markets.
+- **Plain-English Competitive Narrative:** Automatically synthesizes a plain-English explanation of valuation discount/premiums, margin standing, and balance sheet safety.
+- **Comparative Visual Bars & Advantage Badges:** Side-by-side metric comparison bars with green advantage pills indicating the market leader for each metric.
+
+#### 7. Identification of Missing or Inconsistent Information (Feature 7)
+- Scans filing statements for mandatory line items.
+- When specific non-mandatory items (such as standalone R&D breakdown) are absent, it renders a transparent amber notice:
+  > *"We retrieved all available information from official filings, but unfortunately we could not find data for [Research & Development (R&D) Expense Breakdown]. All other fundamental metrics were verified."*
+- Features an accounting footnote clarifying that under Indian GAAP / Ind AS, IT engineering costs are filed under *Employee Benefit Expenses* and *Cost of Technical Subcontractors*.
+- Equipped with an **`X`** close button to dismiss the banner once reviewed.
+
+#### 8. Research Report Synthesis Integration & Individual Deletion
+- Section 2 of the Multi-Agent Research Dossier is updated dynamically with the Fundamental Agent's findings.
+- Users can delete research reports individually with cascading deletion across database records.
+
+#### 9. Corporate-Grade PDF Engine
+- Generates publication-ready PDF exports with proper hanging indents for multi-line bullets, bold key labels, 15 pt separation below section headers, and clean ASCII currency formatting (`INR (Rs.)`).
+
+---
+
+## 5. Machine Learning Engine (`ml_engine/`) Architecture
+
+The project contains a dedicated Machine Learning and financial data modeling repository located under **`ml_engine/`**:
+
+```
+MULTI-AGENT STOCK RESEARCH ANALYST/
+└── ml_engine/
+    ├── data/
+    │   └── Financial Statements.csv          <- Kaggle: Financial Statements of Major Companies (2009-2023)
+    ├── notebooks/
+    │   └── Fundamental_Analysis_ML.ipynb     <- Jupyter notebook for EDA, training & validation
+    └── models/
+        ├── fundamental_analysis_model.pkl    <- Trained scikit-learn classifier / scoring estimator
+        ├── fundamental_features.pkl          <- Serialized list of input feature names
+        └── fundamental_scaler.pkl            <- Pre-fitted StandardScaler normalization transformer
+```
+
+### 1. Dataset (`ml_engine/data/Financial Statements.csv`)
+- **Source:** [Financial Statements of Major Companies (2009-2023)](https://www.kaggle.com/datasets/rish59/financial-statements-of-major-companies2009-2023) — sourced from Kaggle, used to train the Fundamental Analysis Agent's Logistic Regression financial health classifier.
+- **Coverage:** Comprehensive multi-company tabular dataset compiling audited financial statement metrics across global equities.
+- **Attributes:** Total Revenue, Gross Margin, Operating Margin, Net Profit Margin, Debt-to-Equity, Current Ratio, P/E Ratio, P/B Ratio, Return on Equity (ROE), and assigned financial health classification.
+- **Purpose:** Supplies statistical distributions and baseline ratios for model training and comparative benchmarking.
+
+### 2. Jupyter Notebook (`ml_engine/notebooks/Fundamental_Analysis_ML.ipynb`)
+- **Exploratory Data Analysis (EDA):** Statistical summary of financial ratios, skewness analysis, and correlation heatmaps between debt leverage, operating margins, and corporate return on equity.
+- **Data Preprocessing:** Imputation of missing disclosures, outlier mitigation, and feature standardization via Scikit-Learn `StandardScaler`:
+  $$z = \frac{x - \mu}{\sigma}$$
+- **Model Training & Evaluation:** Evaluates classification algorithms (Logistic Regression, K-Nearest Neighbors, Random Forest), performs stratified 80/20 train-test split, and serializes the champion Logistic Regression model weights.
+
+### 3. Serialized Model Artifacts (`ml_engine/models/*.pkl`)
+- **`fundamental_analysis_model.pkl`:** The trained Logistic Regression estimator (`max_iter=1000, random_state=42`) predicting financial health reliability scores (e.g. `96.97% Reliability Score`).
+- **`fundamental_scaler.pkl`:** Preserves feature means and standard deviations to transform incoming live metrics into the model's standardized feature space.
+- **`fundamental_features.pkl`:** Preserves exact feature column ordering, guaranteeing consistency during inference.
+
+### 4. Real-Time yfinance Inference Bridge
+- In `backend/app/utils/fundamental_agent.py`, the backend bridges live market data into the financial model:
+  1. Fetches real-time financial statements and ratios via `yfinance`.
+  2. Computes the ratio vector (Revenue Growth, Operating Margin, Debt-to-Equity, Current Ratio, P/E, P/B, ROE).
+  3. Applies `fundamental_scaler.transform()` and executes `fundamental_analysis_model.predict()`.
+  4. Synthesizes the statistical verdict with live fundamental rules into verified health scores.
+
+---
+
+## 6. System Architecture
+
+The full-stack application follows a decoupled 5-layer integration architecture:
 
 ```
 +------------------------------------------------------------------------+
@@ -145,44 +254,43 @@ The full-stack application follows a decoupled 4-tier integration architecture:
 |  - Auth Pages (Login/Register) with Live 5-Rule Password Validation    |
 |  - Research Workspace (Watchlist, Preferences, Search, Recent Tasks)   |
 |  - Market Analytics Hub (Interactive Charts, OHLCV, Profile, Fin.)     |
-|  - Axios HTTP Client with withCredentials: true (Cookie Forwarding)    |
+|  - Fundamental Analysis Agent Screen (7 Features, Dynamic Charts)      |
+|  - Axios HTTP Client with withCredentials: true & jsPDF Report Export  |
 +-----------------------------------+------------------------------------+
                                     | HTTP / JSON (via Vite /api Reverse Proxy)
                                     v
 +------------------------------------------------------------------------+
 |             2. API GATEWAY & SECURITY (FastAPI + Uvicorn)              |
 |  - Routers: /api/auth, /api/stocks, /api/dashboard                     |
+|  - Fundamental Agent Engine: /api/stocks/{ticker}/fundamental          |
 |  - Bcrypt 12-Round Salt Password Hashing & Verification                |
 |  - JWT Cookie Session Guard: Set-Cookie (HttpOnly, SameSite=Lax)       |
 |  - Dependency Injection: get_current_user Authenticated Principal      |
-+-------------------+--------------------------------+-------------------+
-                    |                                |
-                    v                                v
-+------------------------------------+   +-------------------------------+
-|     3. RELATIONAL DATA LAYER       |   |    4. EXTERNAL INTEGRATIONS   |
-|         (PostgreSQL 18)            |   |                               |
-|  - SQLAlchemy 2.0 ORM Engine       |   |  - Google Cloud Identity      |
-|  - 8 Connected Relational Tables   |   |    OAuth 2.0 Redirect & Code  |
-|  - UUID Primary Keys (as_uuid=True)|   |  - Apple Sign-In OAuth Flow   |
-|  - Cascade Deletions & Constraints |   |  - Live Stock Market Feeds    |
-|                                    |   |   (yfinance API & Market Feeds)|
-+------------------------------------+   +-------------------------------+
++-------------------+--------------------+-------------------------------+
+                    |                    |                               |
+                    v                    v                               v
++------------------------------------+ +-------------------------------+ +-------------------------------+
+|     3. RELATIONAL DATA LAYER       | |    4. EXTERNAL INTEGRATIONS   | |     5. MACHINE LEARNING       |
+|         (PostgreSQL 18)            | |                               | |       ENGINE (ml_engine/)     |
+|  - SQLAlchemy 2.0 ORM Engine       | |  - Google Cloud Identity      | |  - Financial Statements.csv   |
+|    (Kaggle Dataset 2009-2023) |
+|  - 8 Connected Relational Tables   | |    OAuth 2.0 Redirect & Code  | |  - Fundamental_Analysis_ML.ipynb|
+|  - UUID Primary Keys & Cascades    | |  - Apple Sign-In OAuth Flow   | |  - Serialized Models (*.pkl)  |
+|  - agent_results & research_reports| |  - Live Stock Market Feeds    | |  - Logistic Regression Inference|
++------------------------------------+ +-------------------------------+ +-------------------------------+
 ```
 
 ---
 
-## 5. User Interface Design & Layouts
+## 7. User Interface Design & Layouts
 
 ### Registration Page Wireframe Layout
-
-The registration interface features a 2-column responsive layout built with Tailwind CSS:
-
 ```
 +--------------------------------------+------------------------------------------+
 | LEFT COLUMN: Branding & Value        | RIGHT COLUMN: Interactive Form           |
 |                                      |                                          |
 | Multi-Agent Stock Research Analyst   |  Create Your Research Account            |
-| "Empowering investors through        |  Full Name       [ John Doe            ] |
+| "Empowering investors through        |  Full Name       [ Sanjanaa Srinivasan ] |
 |  collaborative AI intelligence"      |  Email Address   [ user@example.com    ] |
 |                                      |  Password        [ ****************    ] |
 | - Multi-Agent Analysis               |  Confirm Pass    [ ****************    ] |
@@ -201,49 +309,43 @@ The registration interface features a 2-column responsive layout built with Tail
 ---
 
 ### Stock Research Workspace Dashboard Layout
-
-The master research workspace offers immediate access to market data and multi-agent workflows:
-
 ```
 +---------------------------------------------------------------------------------+
-| [Logo] Multi-Agent Stock Analyst          [Search Shortcut]   (JD) [ Sign Out ] |
+| [Logo] Multi-Agent Stock Analyst          [Search Shortcut]   (SS) [ Sign Out ] |
 +---------------------------------------------------------------------------------+
-| Welcome back, John Doe!                                                         |
+| Welcome back, Sanjanaa Srinivasan!                                              |
 | Track saved stocks, analyze companies across exchanges, and run AI research.   |
 +---------------------------------------------------------------------------------+
-| PREFERENCES:  Market: [ NSE (India) v ]   Horizon: [ 1 Year v ]   [ Save ]      |
+| PREFERENCES:  Market: [ NSE (India) v ]   Horizon: [ 6 Months v ]   [ Save ]    |
 +---------------------------------------------------------------------------------+
 | SEARCH: [ Enter company name or ticker (e.g. INFY, AAPL, TCS) ... ]             |
-| Live Auto-Suggest: [ Apple Inc. (AAPL) - NASDAQ - $182.50 USD ]                 |
+| Live Auto-Suggest: [ Infosys Limited (INFY.NS) - NSE - Rs.1,103.40 INR ]        |
 | Quick Picks: [ RELIANCE ]  [ TCS ]  [ INFY.NS ]  [ AAPL ]  [ MSFT ]             |
 |                                                                                 |
 | +-----------------------------------------------------------------------------+ |
-| | INFY.NS  Infosys Limited   [NSE (India)]  [INR]   Rs.1,845.20 (+1.25%)      | |
+| | INFY.NS  Infosys Limited   [NSE (India)]  [INR]   Rs.1,103.40 (+1.25%)      | |
 | | (Direct-click card to view Market Analytics Hub)                            | |
-| | [ Research ]   [ + Watchlist ]                                              | |
+| | [ Launch Fundamental Agent ]   [ Research ]   [ + Watchlist ]               | |
 | +-----------------------------------------------------------------------------+ |
 +---------------------------------------------------------------------------------+
 | AI RESEARCH AGENTS (Module Pipeline)                                            |
-| +---------------+ +---------------+ +---------------+ +---------------+         |
-| | Fundamental   | | Technical     | | News/Sentiment| | Risk Analyst  |         |
-| | [Coming Soon] | | [Coming Soon] | | [Coming Soon] | | [Coming Soon] |         |
-| +---------------+ +---------------+ +---------------+ +---------------+         |
+| +------------------+ +------------------+ +------------------+ +--------------+ |
+| | Fundamental Agent| | Technical Agent  | | Sentiment Agent  | | Risk Analyst | |
+| | [ACTIVE - Launch]| | [Coming Soon]    | | [Coming Soon]    | | [Coming Soon]| |
+| +------------------+ +------------------+ +------------------+ +--------------+ |
 +----------------------------------------+----------------------------------------+
 | WATCHLIST (SAVED STOCKS)               | RECENT RESEARCH HISTORY                |
-| - INFY.NS  Rs.1,845.20 [Analyze] [Del] | - AAPL | NASDAQ | 1 Year | [Completed] |
-| - AAPL     $182.50     [Analyze] [Del] | - INFY | NSE    | 6 Mo   | [Completed] |
+| - INFY.NS  Rs.1,103.40 [Analyze] [Del] | - AAPL | NASDAQ | 1 Year | [Completed] |
+| - AAPL     $228.40     [Analyze] [Del] | - INFY | NSE    | 6 Mo   | [Completed] |
 +----------------------------------------+----------------------------------------+
 ```
 
 ---
 
 ### Market Analytics & Financial Intelligence Hub Layout
-
-The Market Analytics Hub modal provides comprehensive charts, historical tables, company fundamentals, and financial statements:
-
 ```
 +---------------------------------------------------------------------------------+
-| [INFY.NS] Infosys Limited               NSE (India) - INR - Current: Rs.1,842.50 |
+| [INFY.NS] Infosys Limited               NSE (India) - INR - Current: Rs.1,103.40|
 | [BULLISH TREND]                         Horizon: [1M] [3M] [6M] [1Y] [5Y] [X]   |
 +---------------------------------------------------------------------------------+
 | [SUB-TAB 1: CHARTS] [SUB-TAB 2: OHLCV] [SUB-TAB 3: PROFILE] [SUB-TAB 4: FIN.]   |
@@ -255,19 +357,54 @@ The Market Analytics Hub modal provides comprehensive charts, historical tables,
 | - Company Profile: Business summary, Sector, Industry, Multiples, Officers     |
 | - Financial Statements: Income Statement, Balance Sheet, Cash Flow multi-year  |
 +---------------------------------------------------------------------------------+
-| Data Source: yfinance API  |  Retrieved At: 2026-11-17 17:00:00 IST             |
+| Data Source: yfinance API  |  Retrieved At: 2026-11-24 19:47:11 IST             |
 +---------------------------------------------------------------------------------+
 ```
 
 ---
 
-## 6. Prerequisites & Requirements
+### Fundamental Analysis Agent Screen Layout
+```
++---------------------------------------------------------------------------------+
+| [<- Back to Dashboard]  INFOSYS LIMITED (INFY.NS)     [HEALTHY CONDITION]  [R]  |
++---------------------------------------------------------------------------------+
+| [COMPANY OVERVIEW CARD]                                                         |
+| Price: Rs.1,103.40 | 52W Range: [========|===] (Rs.980 - Rs.1,728) | MCap: 4.8L |
+| Summary: Leading provider of digital consulting, cloud & AI-first solutions...  |
++---------------------------------------------------------------------------------+
+| ⚠️ DATA AUDIT NOTICE: Missing Standalone R&D Breakdown (Ind AS Reporting)   [X] |
++----------------------------------------+----------------------------------------+
+| [REVENUE & EARNINGS TRAJECTORY]        | [PROFITABILITY MARGINS]                |
+| Metric Tabs: [All] [Rev] [NI] [EBITDA] | Gross Margin: 34.50% [Above avg]       |
+| YoY Growth: ↗ +4.57%                   | Operating: 21.14% | Net Margin: 16.44% |
+| Bar Chart (FY23 -> FY26) with Tooltips | ROE: 33.85% | ROA: 18.20%              |
++----------------------------------------+----------------------------------------+
+| [SOLVENCY & FINANCIAL HEALTH GAUGES]   | [VALUATION MULTIPLES GRID]             |
+| Debt-to-Equity: 0.10 (Safe Zone)       | P/E: 14.70x | P/B: 4.59x | EPS: Rs.75  |
+| Current Ratio: 1.98x (Strong Liquidity)| ROA: 18.20% | Gross Margin: 34.50%     |
++----------------------------------------+----------------------------------------+
+| [PEER BENCHMARKING & DUAL SEARCH AUTOCOMPLETE]                                  |
+| Peer: [Tata Consultancy Services (TCS.NS) v] or [+ Custom Peer Search...]       |
+| Narrative: "INFY.NS trades at P/E 14.70x (-45.2% discount) vs TCS.NS 26.80x..." |
+| Side-by-Side Comparative Metric Bars with Leading Advantage Badges              |
++---------------------------------------------------------------------------------+
+| [HISTORICAL FINANCIAL STATEMENTS BREAKDOWN TABLE]                               |
+| FY23 | Revenue: Rs.1,821 Cr | Net Income: Rs.298 Cr | EBITDA: Rs.468 Cr | OCF   |
+| FY24 | Revenue: Rs.1,856 Cr | Net Income: Rs.317 Cr | EBITDA: Rs.497 Cr | OCF   |
+| FY25 | Revenue: Rs.1,928 Cr | Net Income: Rs.316 Cr | EBITDA: Rs.507 Cr | OCF   |
+| FY26 | Revenue: Rs.2,015 Cr | Net Income: Rs.331 Cr | EBITDA: Rs.511 Cr | OCF   |
++---------------------------------------------------------------------------------+
+```
+
+---
+
+## 8. Prerequisites & Requirements
 
 Before running the project, verify that the following dependencies are installed:
 
 | Requirement | Minimum Version | Verified Version | Purpose |
 |---|---|---|---|
-| **Python** | 3.10+ | 3.12.x | Backend runtime & FastAPI server |
+| **Python** | 3.10+ | 3.12.x | Backend runtime, FastAPI server & Scikit-Learn |
 | **Node.js** | 18.0+ | 20.x / 22.x | Frontend runtime environment |
 | **npm** or **pnpm** | 9.0+ | npm 10.x | Package manager |
 | **PostgreSQL** | 14.0+ | PostgreSQL 18 | Relational database management system |
@@ -275,7 +412,7 @@ Before running the project, verify that the following dependencies are installed
 
 ---
 
-## 7. Step-by-Step Installation & Setup
+## 9. Step-by-Step Installation & Setup
 
 ### Step 1: Clone the Repository
 ```bash
@@ -310,10 +447,10 @@ cd "MULTI-AGENT STOCK RESEARCH ANALYST"
 
 4. Create the `.env` configuration file inside `backend/.env`:
    ```env
-   # PostgreSQL connection string (Change username/password to your Postgres credentials)
+   # PostgreSQL connection string
    DATABASE_URL=postgresql+psycopg://postgres:your_password@localhost:5432/multi_agent_stock_db
 
-   # Cryptographic JWT Secret Key (Generate via: openssl rand -hex 32)
+   # Cryptographic JWT Secret Key
    SECRET_KEY=your_secure_jwt_secret_key_here
    ALGORITHM=HS256
    ACCESS_TOKEN_EXPIRE_MINUTES=60
@@ -323,12 +460,12 @@ cd "MULTI-AGENT STOCK RESEARCH ANALYST"
    FRONTEND_URL=http://localhost:5173
    BACKEND_URL=http://localhost:8000
 
-   # Google OAuth 2.0 Credentials (obtain from Google Cloud Console)
+   # Google OAuth 2.0 Credentials
    GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
    GOOGLE_CLIENT_SECRET=your-google-client-secret
    GOOGLE_REDIRECT_URI=http://localhost:8000/api/auth/google/callback
 
-   # Apple Sign-In Credentials (optional for local testing)
+   # Apple Sign-In Credentials (optional)
    APPLE_CLIENT_ID=
    APPLE_TEAM_ID=
    APPLE_KEY_ID=
@@ -340,7 +477,6 @@ cd "MULTI-AGENT STOCK RESEARCH ANALYST"
    ```bash
    python verify_db.py
    ```
-   *(This script automatically creates all 8 required tables in `multi_agent_stock_db` if they do not exist).*
 
 6. Start the FastAPI server:
    ```bash
@@ -365,7 +501,6 @@ cd "MULTI-AGENT STOCK RESEARCH ANALYST"
 
 3. Create the `.env` file in `frontend/.env`:
    ```env
-   # Leave empty to utilize the Vite reverse proxy (avoids Windows IPv6 cookie issues)
    VITE_API_BASE_URL=
    ```
 
@@ -377,7 +512,7 @@ cd "MULTI-AGENT STOCK RESEARCH ANALYST"
 
 ---
 
-## 8. Project Folder Structure & File-by-File Dictionary
+## 10. Project Folder Structure & File-by-File Dictionary
 
 ```
 MULTI-AGENT STOCK RESEARCH ANALYST/
@@ -397,12 +532,13 @@ MULTI-AGENT STOCK RESEARCH ANALYST/
 |   |   |-- dependencies.py                    # get_current_user security guard reading cookie/header
 |   |   |-- oauth.py                           # Google & Apple OAuth flow helpers and token exchange
 |   |   |-- utils/
+|   |   |   |-- fundamental_agent.py           # Module 3 Fundamental Analysis Agent & ratio engine
 |   |   |   `-- time_series_analysis.py        # TSA engine (SMA 20/50, volatility, histogram bins)
 |   |   `-- routes/
 |   |       |-- __init__.py                    # Route package marker
 |   |       |-- auth_routes.py                 # /register, /login, /logout, /me endpoints
 |   |       |-- oauth_routes.py                # Google & Apple login and callback redirect endpoints
-|   |       |-- stock_routes.py                # /search, /historical, /profile, /financials endpoints
+|   |       |-- stock_routes.py                # /search, /historical, /profile, /financials, /fundamental
 |   |       `-- dashboard_routes.py            # /watchlist, /research, and /preferences endpoints
 |   |-- alembic.ini                            # Alembic database migration settings
 |   |-- requirements.txt                       # Backend Python dependencies list
@@ -410,7 +546,8 @@ MULTI-AGENT STOCK RESEARCH ANALYST/
 |   |-- .env                                   # Active backend environment variables (Postgres & OAuth)
 |   |-- verify_db.py                           # Verification script to inspect tables and connectivity
 |   |-- test_e2e_full.py                       # Automated test suite with 14 end-to-end integration tests
-|   `-- test_module_2.py                       # Module 2 verification suite (OHLCV, TSA, Profile, Fin.)
+|   |-- test_module_2.py                       # Module 2 verification suite (OHLCV, TSA, Profile, Fin.)
+|   `-- test_module_3.py                       # Module 3 verification suite (Fundamental Agent & 7 features)
 |
 |-- frontend/
 |   |-- public/
@@ -422,9 +559,10 @@ MULTI-AGENT STOCK RESEARCH ANALYST/
 |   |   |   |-- AuthLayout.jsx                 # 2-column responsive layout with branding and graphic
 |   |   |   |-- Navbar.jsx                     # Top navigation bar with logo, user avatar & logout
 |   |   |   |-- ProtectedRoute.jsx             # React Router guard redirecting unauthenticated users
-|   |   |   |-- AgentCard.jsx                  # UI card for research agents with "Coming Soon" badge
+|   |   |   |-- AgentCard.jsx                  # UI card for research agents (Active Fundamental Agent)
 |   |   |   |-- StockSearch.jsx                # Search bar, 0ms auto-suggest, card direct-click
-|   |   |   |-- StockAnalyticsHub.jsx          # Multi-tab financial analytics hub modal
+|   |   |   |-- StockAnalyticsHub.jsx          # Multi-tab financial analytics hub modal (Module 2)
+|   |   |   |-- FundamentalAnalysisModal.jsx   # Module 3 Fundamental Agent Interface (7 features & tabs)
 |   |   |   |-- StructuredReportViewer.jsx     # Clean 8-section research report viewer
 |   |   |   `-- SocialLogin.jsx                # "Continue with Google" and "Sign in with Apple" buttons
 |   |   |-- pages/
@@ -445,14 +583,24 @@ MULTI-AGENT STOCK RESEARCH ANALYST/
 |   |-- .env.example                           # Frontend environment template
 |   `-- .env                                   # Frontend active environment variables
 |
-|-- generate_diagrams.py                       # Automated diagram engine generating all 8 PNG diagrams
+|-- ml_engine/                                 # Machine Learning & Financial Modeling Engine
+|   |-- data/
+|   |   `-- Financial Statements.csv           # Kaggle: Financial Statements of Major Companies (2009-2023) - Training data for Fundamental Analysis Agent
+|   |-- notebooks/
+|   |   `-- Fundamental_Analysis_ML.ipynb         # Jupyter Notebook for EDA, data preprocessing, scaling, training
+|   `-- models/
+|       |-- fundamental_analysis_model.pkl     # Trained Scikit-Learn financial condition estimator
+|       |-- fundamental_features.pkl           # Serialized feature column ordering schema
+|       `-- fundamental_scaler.pkl             # Pre-fitted StandardScaler normalization artifact
+|
+|-- generate_diagrams.py                       # Automated diagram engine generating all 9 PNG diagrams
 |-- .gitignore                                 # Git ignore file for Python cache, node_modules, and .env
 `-- README.md                                  # Complete Project Master Documentation
 ```
 
 ---
 
-## 9. Database Schema & Entity Relationships
+## 11. Database Schema & Entity Relationships
 
 The PostgreSQL database `multi_agent_stock_db` stores all information using relational tables connected via UUID primary keys and foreign keys:
 
@@ -460,16 +608,16 @@ The PostgreSQL database `multi_agent_stock_db` stores all information using rela
 |---|---|---|---|
 | `users` | `user_id` (UUID) | `email` (UNIQUE, Indexed) | Core user identity table. Stores user profile information, full name, unique email address, and 12-round bcrypt password hash. Used to authenticate users, protect sessions, and isolate personal workspace data. |
 | `user_auth_accounts` | `auth_id` (UUID) | `user_id` -> `users.user_id`<br>`UNIQUE(provider, provider_user_id)` | Federated social login table. Stores third-party OAuth 2.0 account associations (Google subject ID and Apple ID) linked to the primary user record for single sign-on access. |
-| `user_preferences` | `preference_id` (UUID) | `user_id` -> `users.user_id`<br>`UNIQUE(user_id)` | User settings persistence table. Stores each user's default preferred market exchange (NSE, BSE, NASDAQ, NYSE) and analysis time horizon (1 Month, 3 Months, 6 Months, 1 Year, 5 Years). Used to pre-populate research parameters and dashboard views. |
+| `user_preferences` | `preference_id` (UUID) | `user_id` -> `users.user_id`<br>`UNIQUE(user_id)` | User settings persistence table. Stores each user's default preferred market exchange (NSE, BSE, NASDAQ, NYSE) and analysis time horizon (1 Month, 3 Months, 6 Months, 1 Year, 5 Years). Auto-selects default ticker in Fundamental Agent. |
 | `saved_stocks` | `saved_stock_id` (UUID) | `user_id` -> `users.user_id`<br>`UNIQUE(user_id, ticker)` | User watchlist table. Stores stock ticker symbols bookmarked by the user. The unique constraint prevents duplicate stocks per user. Used by the dashboard to render the user's active watchlist with live pricing and daily percentage movements. |
 | `research_tasks` | `task_id` (UUID) | `user_id` -> `users.user_id` | Research execution audit table. Tracks stock research requests launched by users, storing the ticker, exchange, requested period, execution status (Pending, Completed, Failed), and timestamps. |
-| `research_reports` | `report_id` (UUID) | `task_id` -> `research_tasks.task_id` | Research synthesis storage table. Stores the comprehensive research report content, executive summary, analytical limitations, and data source timestamps. Maintains an immutable audit record of generated research notes. |
-| `agent_results` | `result_id` (UUID) | `task_id` -> `research_tasks.task_id` | Agent payload table. Stores structured JSON outputs and execution status from individual autonomous agent pipelines (Fundamental, Technical, Sentiment, and Risk agents). |
-| `source_documents` | `source_id` (UUID) | `task_id` -> `research_tasks.task_id` | Provenance and source audit table. Stores references to external financial data sources, company filings, financial news URLs, publication dates, and SHA256 content hashes to guarantee data integrity. |
+| `research_reports` | `report_id` (UUID) | `task_id` -> `research_tasks.task_id` | Research synthesis storage table. Stores the comprehensive research report content, executive summary, analytical limitations, and data source timestamps. Section 2 is populated with Fundamental Agent findings. |
+| `agent_results` | `result_id` (UUID) | `task_id` -> `research_tasks.task_id` | Agent payload table. Actively persisted on `POST /api/dashboard/research` storing `agent_name="Fundamental Analysis Agent"`, `status`, and the full `output_json` (JSONB) payload. |
+| `source_documents` | `source_id` (UUID) | `task_id` -> `research_tasks.task_id` | Provenance and source audit table. Actively persisted on `POST /api/dashboard/research` storing `source_type="yfinance API"`, `title`, `source_url`, and `retrieved_at` timestamps. |
 
 ---
 
-## 10. Implementation Guide (How It Was Built)
+## 12. Implementation Guide (How It Was Built)
 
 ### 1. Data Integrity & Password Security
 - **Bcrypt Hashing:** Passwords are never stored in plaintext. When a user registers, `bcrypt.hashpw()` creates a 60-character cryptographic hash with a random 12-round salt.
@@ -484,32 +632,24 @@ The PostgreSQL database `multi_agent_stock_db` stores all information using rela
       "exp": datetime.utcnow() + timedelta(minutes=60)
   }
   ```
-- The token is placed inside an HTTP-only cookie named `access_token`:
-  ```python
-  response.set_cookie(
-      key="access_token",
-      value=f"Bearer {token}",
-      httponly=True,
-      samesite="lax",
-      secure=False # Set to True in production HTTPS
-  )
-  ```
+- The token is placed inside an HTTP-only cookie named `access_token` with `httponly=True`, `samesite="lax"`.
 - **Why this is secure:** JavaScript running in the browser cannot access HTTP-only cookies, making the session completely immune to Cross-Site Scripting (XSS) token theft.
 
 ### 3. Server-Side Identity Derivation
 - To prevent privilege escalation attacks, the frontend **never** sends `user_id` in request bodies.
-- FastAPI's `get_current_user` dependency automatically extracts and decodes the JWT from the cookie:
-  ```python
-  current_user = Depends(get_current_user)
-  ```
-- The user ID is derived directly from the verified cryptographic signature.
+- FastAPI's `get_current_user` dependency automatically extracts and decodes the JWT from the cookie.
 
-### 4. Real-Time Time Series Analysis Pipeline
+### 4. Real-Time Time Series Analysis Pipeline (Module 2)
 - Historical candlestick data is analyzed on the fly by `compute_time_series_analysis()`. The engine calculates rolling 20-day and 50-day Simple Moving Averages, annualized volatility from daily return variance, directional trend momentum, and 10-bin frequency distribution histograms.
+
+### 5. Fundamental Analysis Agent & Ratio Engine (Module 3)
+- Implemented in `backend/app/utils/fundamental_agent.py` and accessed via `GET /api/stocks/{ticker}/fundamental`.
+- Computes all 7 core features with real-time financial statements, balance sheets, and cash flows.
+- Features graceful fallbacks, narrative comparative synthesis, and accounting-aware data audit notices.
 
 ---
 
-## 11. Google & Apple OAuth 2.0 Configuration
+## 13. Google & Apple OAuth 2.0 Configuration
 
 ### How to Configure Google OAuth 2.0
 1. Open the [Google Cloud Console](https://console.cloud.google.com/).
@@ -528,9 +668,9 @@ The PostgreSQL database `multi_agent_stock_db` stores all information using rela
 
 ---
 
-## 12. API Endpoints Reference
+## 14. API Endpoints Reference
 
-The FastAPI backend exposes **23 API endpoints** structured across 5 modular routers:
+The FastAPI backend exposes **23 unique REST API endpoints** structured across 5 route modules (with `10e` documenting the optional `?peer=` query mode):
 
 ### 1. Root & Health Check (1 Endpoint)
 | # | HTTP Method | Endpoint URL | Description | Access Level |
@@ -561,7 +701,13 @@ The FastAPI backend exposes **23 API endpoints** structured across 5 modular rou
 | 10b | `GET` | `/api/stocks/{ticker}/profile` | Retrieve company profile, sector, industry, valuation ratios & executives | Public |
 | 10c | `GET` | `/api/stocks/{ticker}/financials` | Retrieve Income Statement, Balance Sheet, and Cash Flow statements | Public |
 
-### 5. Dashboard, Watchlist & Research Workspace (`/api/dashboard`) (8 Endpoints)
+### 5. Fundamental Analysis Agent (`/api/stocks`) (1 Endpoint + Peer Query Mode - Module 3)
+| # | HTTP Method | Endpoint URL | Description | Access Level |
+|---|---|---|---|---|
+| 10d | `GET` | `/api/stocks/{ticker}/fundamental` | Comprehensive fundamental financial analysis across 7 core features | Public |
+| 10e | `GET` | `/api/stocks/{ticker}/fundamental?peer={peer}` | Fundamental analysis with competitive peer benchmarking & narrative | Public |
+
+### 6. Dashboard, Watchlist & Research Workspace (`/api/dashboard`) (9 Endpoints)
 | # | HTTP Method | Endpoint URL | Description | Access Level |
 |---|---|---|---|---|
 | 11 | `GET` | `/api/dashboard/watchlist` | Get user's saved watchlist enriched with live pricing & currencies | Authenticated |
@@ -570,122 +716,76 @@ The FastAPI backend exposes **23 API endpoints** structured across 5 modular rou
 | 14 | `POST` | `/api/dashboard/research` | Launch multi-agent research task and generate report | Authenticated |
 | 15 | `GET` | `/api/dashboard/recent-research` | Retrieve past research tasks and status history | Authenticated |
 | 16 | `GET` | `/api/dashboard/research/{id}/report` | Retrieve generated report (synthesis, fundamentals, limitations) | Authenticated |
+| 16a| `DELETE`| `/api/dashboard/research/{id}` | Delete an individual research report and associated task records | Authenticated |
 | 17 | `GET` | `/api/dashboard/preferences` | Load user's default market exchange and horizon | Authenticated |
 | 18 | `PUT` | `/api/dashboard/preferences` | Update and persist user preferences in database | Authenticated |
 
-> **Endpoint Summary:** **23 Total Endpoints** (9 Public, 14 Protected by JWT Cookie Guard).  
-> **Automated API Testing:** All endpoints are verified with automated test assertions and dynamic variable chaining.
-
-### Postman Collection Runner - What Happens in Each Request
-
-When you click **Run Collection** in Postman, all requests execute sequentially. Here is what happens under the hood:
-
-| # | Request | What Happens |
-|---|---|---|
-| **1** | `GET Health Check` | Pings `/`. FastAPI checks the PostgreSQL connection pool and returns `200 OK` with `{"status": "online", "database": "multi_agent_stock_db"}`. |
-| **2** | `POST Register User` | Pydantic validates payload (name, email, password, confirm_password). `bcrypt.hashpw(salt=12)` scrambles the password into a 60-char hash and inserts a new UUID user into `users` (`201 Created` or `400` if already registered). |
-| **3** | `POST Login User` | Queries `users` by email, verifies hash with `bcrypt.checkpw()`, mints a signed HS256 JWT, and sets `Set-Cookie: access_token=...; HttpOnly; SameSite=Lax`. Postman automatically stores this cookie. |
-| **4** | `GET /me` | Sends the stored cookie. `get_current_user` extracts + verifies JWT, queries PostgreSQL, and returns the user profile. |
-| **5** | `GET Google Login Redirect` | Builds the Google OAuth consent URL with `client_id`, `redirect_uri`, and `state`. Returns `307 Redirect` - no login session needed (public endpoint). |
-| **6** | `GET Google Callback` | Public endpoint. Validates the callback structure and simulates the code-exchange handshake with Google. |
-| **7** | `GET Apple Login Redirect` | Builds the Apple Sign-In authorization URL and returns `307 Redirect`. Public endpoint - passes even without a user session. |
-| **8** | `POST Apple Callback` | Validates the inbound Apple identity token structure. Public endpoint - passes even without a user session. |
-| **9** | `GET Search INFY` | FastAPI queries the market feed for `INFY`. Returns INR currency, NSE exchange, live price, and % change. |
-| **10** | `GET Search AAPL` | Same as above for Apple Inc. Returns USD currency and `is_us_market: true`. |
-| **10a**| `GET Historical OHLCV` | Ingests OHLCV candle matrix across selected horizons (1M-5Y), computes 20/50 SMA trend lines, rolling volatility, and daily return distribution histogram. |
-| **10b**| `GET Company Profile` | Fetches corporate summary, sector, industry, valuation multiples, and executive officers. |
-| **10c**| `GET Financial Statements`| Fetches multi-year Income Statement, Balance Sheet, and Cash Flow statements. |
-| **11** | `GET User Watchlist` | Reads user UUID from JWT cookie. Queries `saved_stocks WHERE user_id = :id`. Enriches results with live prices and currency tags. |
-| **12** | `POST Add Watchlist` | Inserts `INFY.NS` into `saved_stocks` linked to the user UUID. Test script saves the returned `saved_stock_id` into the `{{savedStockId}}` variable. |
-| **13** | `DELETE Watchlist Item` | Calls `/api/dashboard/watchlist/{{savedStockId}}`. Backend verifies ownership and hard-deletes the row from PostgreSQL. |
-| **14** | `POST Launch Research` | Creates a row in `research_tasks`, fetches real fundamentals (P/E, market cap, 52-week range) via market feed, writes report into `research_reports`. Test script saves `task_id` into `{{taskId}}`. |
-| **15** | `GET Recent Research` | Queries `research_tasks` for the logged-in user and returns all history entries with their status. |
-| **16** | `GET View Report` | Calls `/api/dashboard/research/{{taskId}}/report`. Retrieves the multi-agent synthesis, fundamentals, and limitations from `research_reports`. |
-| **17** | `GET Preferences` | Loads user's saved market preference and analysis horizon from `user_preferences`. |
-| **18** | `PUT Preferences` | Updates and persists market + period settings in `user_preferences`. Validates values server-side. |
-| **19** | `POST Logout` | **Final Step:** Calls `response.delete_cookie("access_token")`, revoking the JWT session. Runs last so the cookie stays active through all prior requests. |
-
-### Why Apple OAuth Endpoints Pass Without a Login Session
-
-The Apple OAuth endpoints (#7 and #8) are **fully public, stateless endpoints**. They test redirect URL generation and Apple authorization token exchange without reading any JWT cookie. This means:
-- They succeed regardless of whether register/login succeeded earlier.
-- **Google endpoints (#5, #6)** behave identically for the same reason.
-- **Protected endpoints (#4, #11-#18)** depend on a valid JWT cookie from a successful login - if login fails (e.g. due to a failed register), they will cascade-fail with `401 Unauthorized`.
-
-> **Common Failure Pattern:** If Register returns `422` (e.g. missing `confirm_password`) -> Login returns `401` -> all protected endpoints return `401`. Always verify Register succeeds first when troubleshooting a full collection run.
+> **Endpoint Summary:** **23 Unique Endpoints** (12 Public, 11 Protected by JWT Cookie Guard) — tested across **27 requests** in Postman.  
+> **Automated API Testing:** All endpoints are verified in Postman and automated Python test suites.
 
 ---
 
-## 13. Automated Testing Suite (14 Tests)
+## 15. Automated Testing Suite (Modules 1, 2 & 3)
 
-The backend includes a comprehensive automated end-to-end integration test suite (`backend/test_e2e_full.py`).
+The project includes 3 standalone automated integration verification suites:
 
-To run the full test suite:
+### 1. Module 1: Core E2E & Authentication Suite (`test_e2e_full.py`):
 ```bash
-cd "MULTI-AGENT STOCK RESEARCH ANALYST/backend"
 python test_e2e_full.py
 ```
+- Verifies health check, registration complexity, duplicate handling, login credential checks, JWT issuance, profile retrieval, watchlist CRUD, and research task logging.
 
-### Verified Test Cases:
-```
-================================================================================
-           MULTI-AGENT STOCK RESEARCH ANALYST - E2E VERIFICATION SUITE          
-================================================================================
-[PASS]  1. Health check online status and database identification.
-[PASS]  2. User registration with full name, email, and password complexity.
-[PASS]  3. Duplicate registration rejection (400 Bad Request).
-[PASS]  4. Weak password validation rejection (422 Unprocessable Entity).
-[PASS]  5. Invalid password login rejection (401 Unauthorized).
-[PASS]  6. Valid login and HTTP-only JWT cookie issuance.
-[PASS]  7. Profile retrieval via /api/auth/me.
-[PASS]  8. Real company ticker search.
-[PASS]  9. Watchlist creation with PostgreSQL persistence.
-[PASS] 10. Watchlist retrieval isolated to authenticated user.
-[PASS] 11. Watchlist stock deletion.
-[PASS] 12. Recent research history retrieval.
-[PASS] 13. Logout and subsequent 401 Unauthorized rejection on protected endpoints.
-[PASS] 14. Direct PostgreSQL record verification in table users confirming bcrypt hashing.
-================================================================================
-                     ALL 14 INTEGRATION TESTS PASSED (100%)                    
-================================================================================
-```
-
-### Module 2 Financial Analytics & Time Series Engine Verification:
+### 2. Module 2: Market Analytics & Time Series Engine (`test_module_2.py`):
 ```bash
 python test_module_2.py
 ```
+- Verifies historical OHLCV data collection, TSA momentum indicators (SMA 20, SMA 50), volatility, 10-bin return histogram, company profile, financial statements, and research report generation.
+
+### 3. Module 3: Fundamental Analysis Agent Verification Suite (`test_module_3.py`):
+```bash
+python test_module_3.py
+```
 ```
 ===========================================================================
-MODULE 2 VERIFICATION SUITE: FINANCIAL ANALYTICS & TIME SERIES ENGINE
-Data Source: yfinance API | Ingesting OHLCV, TSA, Histograms & Market Feeds
+MODULE 3 VERIFICATION SUITE: FUNDAMENTAL ANALYSIS AGENT & RATIOS ENGINE
+Features: Revenue/Earnings, Profitability, Debt/Stability, Ratios (P/E, P/B, ROE),
+          Historical Performance, Peer Benchmarking, Data Audit Notice
 ===========================================================================
 
-[TEST 1] Testing GET /api/stocks/INFY.NS/historical?period=1y ...
-  --> [PASS] OHLCV retrieved. Data Source: 'yfinance API', Timestamp: '2026-11-18 19:47:11 IST'.
+[TEST 1] Testing GET /api/stocks/INFY.NS/fundamental ...
+  --> [PASS] Company Profile: Price=Rs.1162.4, Market Cap=Rs.470,856.24 Cr, 52W Range=980.4 - 1728.0.
 
-[TEST 2] Verifying Time Series Analysis (SMA 20, SMA 50, Volatility, Trend, Histogram) ...
-  --> [PASS] TSA Verified: SMA20=INR 1139.86, SMA50=INR 1070.38, Volatility=31.81%, Trend=Bullish.
-  --> [PASS] Histogram: Generated 10 return frequency bins.
+[TEST 2] Verifying Feature 1: Revenue and Earnings Trajectory ...
+  --> [PASS] Feature 1 Verified: YoY Growth=4.57%, Multi-Year Statements Count=4 years.
 
-[TEST 3] Testing GET /api/stocks/AAPL/historical?period=6mo (US Stock) ...
-  --> [PASS] US Market Support Verified: AAPL on NASDAQ (US) with USD ($) currency.
+[TEST 3] Verifying Feature 2: Profitability Margins (Operating, Net, ROE, ROA) ...
+  --> [PASS] Feature 2 Verified: Operating Margin=25.32%, Net Margin=16.44%, ROE=33.85%, ROA=20.14%.
 
-[TEST 4] Testing GET /api/stocks/INFY.NS/profile ...
-  --> [PASS] Profile: Sector='Technology', Industry='Information Technology Services', Market Cap=INR 449,105.78 Cr.
+[TEST 4] Verifying Feature 3: Debt & Financial Stability (Debt/Equity, Current Ratio) ...
+  --> [PASS] Feature 3 Verified: Debt-to-Equity=0.1, Current Ratio=1.98x (Low Debt Leverage / Safe Solvency).
 
-[TEST 5] Testing GET /api/stocks/INFY.NS/financials ...
-  --> [PASS] Financials: Income Statement (10 items), Balance Sheet (10 items), Cash Flow (10 items).
+[TEST 5] Verifying Feature 4: Financial Ratios (P/E, P/B, EPS) ...
+  --> [PASS] Feature 4 Verified: P/E Ratio=15.12x, P/B Ratio=4.83x, EPS=76.91.
 
-[TEST 6] Testing Structured Multi-Tier Research Report Generation ...
-  --> [PASS] 8 Research Report Sections Verified with Real yfinance Data & Scheduled Agents.
+[TEST 6] Verifying Feature 5: Historical Financial Statements Breakdown & YoY ...
+  --> [PASS] Feature 5 Verified: 3 historical performance milestones tracked.
+
+[TEST 7] Verifying Feature 6: Peer Benchmarking (INFY.NS vs AAPL) ...
+  --> [PASS] Feature 6 Verified: Selected Peer='AAPL', Table Rows=5, Narrative Length=566 chars.
+
+[TEST 8] Verifying Feature 7: Data Audit Notice & Missing Disclosures ...
+  --> [PASS] Feature 7 Verified: Data Audit Notice: 'We retrieved all available information from official filings, but unfortunately ...'.
+
+[TEST 9] Verifying Fundamental Analysis for US Equity (AAPL vs MSFT) ...
+  --> [PASS] US Equity Verified: Ticker='AAPL', Currency='USD', Peer='MSFT'.
 
 ===========================================================================
-ALL MODULE 2 AUTOMATED INTEGRATION TESTS PASSED SUCCESSFULLY! (100%)
+ALL MODULE 3 AUTOMATED INTEGRATION TESTS PASSED SUCCESSFULLY! (100%)
 ===========================================================================
 ```
 
 ---
 
-## 14. License & Acknowledgments
+## 16. License & Acknowledgments
 
 This project was developed as part of the **Infosys Springboard Virtual Internship 7.0 (Batch 5)** under the project track **AI-Powered Multi Agent System for Market Analysis and Research**.

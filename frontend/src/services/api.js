@@ -59,6 +59,12 @@ export const stockService = {
     const response = await api.get(`/api/stocks/${encodeURIComponent(ticker)}/financials`);
     return response.data;
   },
+
+  getFundamentalAnalysis: async (ticker, peer = null) => {
+    const params = peer ? { peer } : {};
+    const response = await api.get(`/api/stocks/${encodeURIComponent(ticker)}/fundamental`, { params });
+    return response.data;
+  },
 };
 
 export const dashboardService = {
@@ -89,6 +95,11 @@ export const dashboardService = {
 
   getResearchReport: async (taskId) => {
     const response = await api.get(`/api/dashboard/research/${taskId}/report`);
+    return response.data;
+  },
+
+  deleteResearch: async (taskId) => {
+    const response = await api.delete(`/api/dashboard/research/${taskId}`);
     return response.data;
   },
 

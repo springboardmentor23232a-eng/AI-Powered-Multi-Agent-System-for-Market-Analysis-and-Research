@@ -11,6 +11,7 @@ from app.schemas import (
     OHLCVRecord
 )
 from app.utils.time_series_analysis import compute_time_series_analysis
+from app.utils.fundamental_agent import analyze_fundamentals
 
 router = APIRouter(prefix="/api/stocks", tags=["Stock Search"])
 
@@ -585,4 +586,27 @@ def get_company_financial_statements(ticker: str):
         data_source="yfinance API",
         retrieved_at=f"{retrieval_time} IST"
     )
+
+
+@router.get("/{ticker}/fundamental", response_model=dict)
+def get_fundamental_analysis(
+    ticker: str,
+    peer: Optional[str] = Query(None, description="Optional peer ticker symbol for comparative analysis")
+):
+    """
+    Fundamental Analysis Agent:
+    Evaluates revenue & earnings trajectory, profitability, debt & financial stability,
+    valuation multiples (P/E, P/B, ROE), multi-year historical comparison,
+    interactive peer comparison with selectable peers, and missing data audit notices.
+    """
+    cleaned_ticker = ticker.strip().upper()
+    try:
+        result = analyze_fundamentals(cleaned_ticker, peer)
+        return result
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Fundamental analysis failed for '{cleaned_ticker}': {str(e)}"
+        )
+
 
