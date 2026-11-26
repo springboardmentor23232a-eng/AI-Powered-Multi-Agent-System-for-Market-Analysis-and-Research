@@ -57,7 +57,7 @@ export default function StockView({ active, data, range, onRange, saved, onAddWa
 
       <ProfilePanel profile={profile} />
       <Statements ticker={ticker} market={market} currency={currency} />
-      <FundamentalCard profile={profile} />
+      <FundamentalCard ticker={ticker} market={market} currency={currency} />
     </div>
   );
 }

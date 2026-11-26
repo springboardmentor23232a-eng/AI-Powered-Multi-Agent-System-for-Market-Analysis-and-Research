@@ -6,6 +6,7 @@ from ..models import User
 from ..schemas import Market, Period, _clean_ticker
 from ..services.tickers import normalize_ticker
 from ..services import market_data as md
+from ..agents import fundamental as fundamental_agent
 
 router = APIRouter(prefix="/market", tags=["market"])
 
@@ -62,3 +63,18 @@ def statements(ticker: str, market: Market = Query("NSE"),
                frequency: Literal["annual", "quarterly"] = Query("annual"),
                user: User = Depends(get_current_user)):
     return _call(md.get_statements, _resolve(ticker, market), frequency)
+
+
+@router.get("/{ticker}/fundamental")
+def fundamental(ticker: str, market: Market = Query("NSE"),
+                peers: str = Query("", max_length=200),
+                user: User = Depends(get_current_user)):
+    t = _resolve(ticker, market)
+    peer_list, invalid = [], []
+    for p in [x.strip() for x in peers.split(",") if x.strip()][:8]:
+        try:
+            peer_list.append(_resolve(p, market))
+        except HTTPException:
+            invalid.append(p)
+    result = _call(fundamental_agent.analyze, t, market, peer_list)
+    return {**result, "peers_invalid": invalid}
