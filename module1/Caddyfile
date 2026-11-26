@@ -1,0 +1,12 @@
+# Production HTTPS example (automatic certificates):  caddy run --config Caddyfile
+# Build the frontend first (npm run build), set COOKIE_SECURE=true and a real SECRET_KEY in backend/.env
+your-domain.example {
+    handle /api/* {
+        reverse_proxy localhost:8000
+    }
+    handle {
+        root * frontend/dist
+        try_files {path} /index.html
+        file_server
+    }
+}
