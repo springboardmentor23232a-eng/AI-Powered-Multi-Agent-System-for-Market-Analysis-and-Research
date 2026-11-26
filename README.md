@@ -2,7 +2,7 @@
 
 A full-stack stock market analysis app. Users register and log in, search NSE/BSE stocks, view live quotes, price history charts, company profiles, fundamentals and financial statements, and manage a personal watchlist and preferences.
 
-> **Status:** Milestone 1 (data layer, authentication, dashboard)
+> **Status:** Milestone 1 (data layer, authentication, dashboard) complete. Week 3: Fundamental Analysis Agent added.
 
 ## Features
 
@@ -13,6 +13,7 @@ A full-stack stock market analysis app. Users register and log in, search NSE/BS
 - Watchlist, preferences and profile panel
 - Data integrity checks on provider data (missing columns, short history)
 - Short in-memory cache to avoid hitting the data provider repeatedly
+- **Fundamental Analysis Agent** (Week 3): revenue, profitability and debt analysis, P/E, P/B and ROE, historical and peer comparison, missing-data detection
 
 ## Tech Stack
 
@@ -21,7 +22,7 @@ A full-stack stock market analysis app. Users register and log in, search NSE/BS
 | Frontend | React 18, Vite, React Router, Plotly |
 | Backend  | FastAPI, SQLAlchemy-style models, pandas, yfinance (Yahoo Finance) |
 | Database | SQLite (`app.db`, created locally) |
-| Testing  | pytest |
+| Testing  | pytest (27 tests) |
 
 ## Project Structure
 
@@ -29,6 +30,7 @@ A full-stack stock market analysis app. Users register and log in, search NSE/BS
 .
 ├── backend/
 │   ├── app/
+│   │   ├── agents/         # fundamental.py (Fundamental Analysis Agent)
 │   │   ├── routers/        # API routes (auth, market, ...)
 │   │   └── services/       # market data, ticker helpers
 │   ├── tests/
@@ -37,7 +39,7 @@ A full-stack stock market analysis app. Users register and log in, search NSE/BS
 ├── frontend/
 │   ├── public/
 │   ├── src/
-│   │   ├── components/
+│   │   ├── components/     # incl. FundamentalCard.jsx
 │   │   └── pages/          # Login, Register, Dashboard
 │   ├── index.html
 │   ├── package.json
@@ -95,6 +97,8 @@ cd backend
 pytest
 ```
 
+All 27 tests pass.
+
 ## API Overview (market)
 
 All routes need a logged-in user.
@@ -106,8 +110,25 @@ All routes need a logged-in user.
 | GET    | `/market/{ticker}/profile`       | Company profile |
 | GET    | `/market/{ticker}/financials`    | Key financial metrics |
 | GET    | `/market/{ticker}/statements`    | Statements (`frequency`: annual / quarterly) |
+| GET    | `/market/{ticker}/fundamental`   | Fundamental analysis report (optional peer tickers) |
 
 Query param `market` accepts `NSE` (default) or `BSE`.
+
+## Week 3: Fundamental Analysis Agent
+
+The agent analyses a company's financial performance and condition from its annual statements (Yahoo Finance via yfinance).
+
+- **Revenue and earnings:** growth, 3-year CAGR, net income trend
+- **Profitability:** gross, operating and net margin, ROE, ROA
+- **Debt and stability:** debt-to-equity, net debt, current ratio, interest coverage, free cash flow
+- **Valuation:** P/E, P/B and ROE, shown next to the provider's own figures for comparison
+- **Historical comparison:** last 4 fiscal years
+- **Peer comparison:** up to 4 peers, with peer median and above/below position
+- **Data quality:** missing or inconsistent data detection with a data-confidence rating
+
+Code: `backend/app/agents/fundamental.py`, tests in `backend/tests/test_fundamental.py`, UI in `frontend/src/components/FundamentalCard.jsx`.
+
+*This is an analysis aid, not investment advice.*
 
 ## Notes
 
