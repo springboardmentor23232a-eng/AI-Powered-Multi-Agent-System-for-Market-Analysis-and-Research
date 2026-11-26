@@ -87,5 +87,28 @@ export const api = {
   getReport: (taskId) =>
     request(`/api/research-tasks/${taskId}/report`),
 
+  // Stock Search & Market Data Collection (Module 2)
+  searchMarket: (query, market = "ALL") =>
+    request(`/api/market/search?q=${encodeURIComponent(query)}&market=${encodeURIComponent(market)}`),
+  getHistoricalData: (ticker, market = "NSE", period = "1y", interval = "1d") =>
+    request(
+      `/api/market/historical/${encodeURIComponent(ticker)}?market=${encodeURIComponent(market)}&period=${encodeURIComponent(period)}&interval=${encodeURIComponent(interval)}`
+    ),
+  getCompanyProfile: (ticker, market = "NSE") =>
+    request(`/api/market/profile/${encodeURIComponent(ticker)}?market=${encodeURIComponent(market)}`),
+  getFinancialStatements: (ticker, market = "NSE") =>
+    request(`/api/market/financials/${encodeURIComponent(ticker)}?market=${encodeURIComponent(market)}`),
+  collectMarketData: (payload) =>
+    request("/api/market/collect", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+  getRecordedMarketData: () => request("/api/market/records"),
+  getRecordedMarketDataDetail: (recordId) =>
+    request(`/api/market/records/${recordId}`),
+  deleteRecordedMarketData: (recordId) =>
+    request(`/api/market/records/${recordId}`, { method: "DELETE" }),
+  getMarketApiConfig: () => request("/api/market/config"),
+
   googleLoginUrl: `${API_URL}/api/auth/google/login`
 };

@@ -1,0 +1,27 @@
+ .gitignore                       |    8 [32m+[m
+ CODE_WALKTHROUGH.md              |   48 [32m+[m
+ README.md                        |  238 [32m+++++[m
+ backend/.gitignore               |   20 [32m+[m
+ backend/app/__init__.py          |    0
+ backend/app/config.py            |   29 [32m+[m
+ backend/app/database.py          |   30 [32m+[m
+ backend/app/dependencies.py      |   57 [32m++[m
+ backend/app/main.py              |   49 [32m++[m
+ backend/app/models.py            |  264 [32m++++++[m
+ backend/app/oauth.py             |   17 [32m+[m
+ backend/app/routers/__init__.py  |    0
+ backend/app/routers/auth.py      |  348 [32m++++++++[m
+ backend/app/routers/workspace.py |  277 [32m++++++[m
+ backend/app/schemas.py           |  122 [32m+++[m
+ backend/app/security.py          |   48 [32m+[m
+ backend/requirements.txt         |   12 [32m+[m
+ frontend/.gitignore              |    3 [32m+[m
+ frontend/index.html              |   14 [32m+[m
+ frontend/package-lock.json       | 1812 [32m++++++++++++++++++++++++++++++++++++++[m
+ frontend/package.json            |   19 [32m+[m
+ frontend/src/App.jsx             |  446 [32m++++++++++[m
+ frontend/src/api.js              |   91 [32m++[m
+ frontend/src/main.jsx            |   10 [32m+[m
+ frontend/src/styles.css          |  194 [32m++++[m
+ frontend/vite.config.js          |    7 [32m+[m
+ 26 files changed, 4163 insertions(+)

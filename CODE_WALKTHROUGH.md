@@ -13,20 +13,40 @@ This note explains the main request flow in plain language. It is intended to he
 
 ## Backend files
 
-- `config.py`: reads environment variables such as the database URL, cookie settings, and Google OAuth credentials.
+- `config.py`: reads environment variables such as the database URL, cookie settings, Yahoo Finance configuration, and Google OAuth credentials.
 - `database.py`: creates the SQLAlchemy engine and provides a database session to API routes.
-- `models.py`: describes the seven PostgreSQL tables and their relationships.
-- `schemas.py`: validates request bodies and shapes API responses.
+- `models.py`: describes the PostgreSQL tables (including `market_data_records`, `users`, `user_preferences`, `saved_stocks`, `research_tasks`, `research_reports`, `agent_results`, `source_documents`) and their relationships.
+- `schemas.py`: validates request bodies and shapes API responses for auth, workspace, OHLCV bars, company profiles, financial statements, and market snapshots.
 - `security.py`: hashes and verifies passwords, creates JWTs, and prepares authentication cookies.
 - `dependencies.py`: checks the signed-in user and protects cookie-based write requests against CSRF.
 - `oauth.py`: configures the Google OpenID Connect client.
+- `services/yahoo_finance.py`: coordinates direct data retrieval from Yahoo Finance via the `yfinance` library (no API key required, strictly zero artificial/simulated data). Provides:
+  - Search by company name or ticker symbol via `yf.Search`
+  - Historical stock price retrieval via `yf.Ticker(symbol).history()`
+  - OHLCV collection (Open, High, Low, Close, Volume, Timestamp)
+  - Company profiles via `ticker.info` and `ticker.fast_info` (officers, valuation, P/E, market cap)
+  - Financial statements via `ticker.income_stmt`, `ticker.balance_sheet`, and `ticker.cashflow`
+  - Data source labels (`Yahoo Finance via yfinance`) & ISO-8601 UTC retrieval timestamps
+  - Multi-market ticker normalization (NSE `.NS`, BSE `.BO`, NASDAQ, NYSE)
+  - Meaningful error handling on failure (StockNotFoundError, NoHistoricalDataError, RateLimitError, MarketDataProviderError)
 - `routers/auth.py`: handles registration, email/password login, Google login, current-session lookup, and logout.
 - `routers/workspace.py`: handles preferences, stock search, watchlists, research tasks, and report retrieval.
+- `routers/market_data.py`: exposes `/api/market` endpoints for search, historical prices, profiles, financials, and recording snapshots to PostgreSQL.
 - `main.py`: creates the FastAPI application, configures middleware, and registers the route groups.
 
 ## Frontend files
 
-- `src/App.jsx`: renders the registration/login screens and the signed-in workspace.
+- `src/App.jsx`: renders the registration/login screens and the signed-in workspace, sidebar navigation, watchlist, preferences, and research history.
+- `src/MarketDataView.jsx`: provides the interactive market intelligence dashboard:
+  - Multi-market company and ticker search
+  - Quick stock selectors (TCS, Reliance, Infosys, Apple, Microsoft, NVIDIA)
+  - Real-time and historical price summary cards
+  - SVG interactive price chart with volume bars and hover crosshair
+  - Complete OHLCV table with CSV download
+  - Comprehensive company profile and executive leadership directory
+  - Switchable financial statement tables (Income Statement, Balance Sheet, Cash Flow, Key Ratios)
+  - Audit trail badges showing data source and UTC retrieval timestamp
+  - Database snapshot recorder and saved collections viewer
 - `src/api.js`: keeps HTTP calls in one place so components do not repeat request details.
 - `src/main.jsx`: mounts the React application.
 - `src/styles.css`: contains the responsive page styling.

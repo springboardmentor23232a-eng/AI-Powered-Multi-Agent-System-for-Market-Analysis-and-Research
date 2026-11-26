@@ -62,6 +62,11 @@ class User(Base):
         cascade="all, delete-orphan"
     )
 
+    market_data_records: Mapped[list["MarketDataRecord"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
 
 
 class UserPreference(Base):
@@ -262,3 +267,53 @@ class SourceDocument(Base):
     )
 
     task: Mapped["ResearchTask"] = relationship(back_populates="source_documents")
+
+
+class MarketDataRecord(Base):
+    __tablename__ = "market_data_records"
+    __table_args__ = (
+        Index("ix_market_data_records_user_created", "user_id", "created_at"),
+        Index("ix_market_data_records_ticker", "ticker"),
+    )
+
+    record_id: Mapped[uuid.UUID] = mapped_column(
+        PG_UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        server_default=text("gen_random_uuid()"),
+    )
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("users.user_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    task_id: Mapped[uuid.UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("research_tasks.task_id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    ticker: Mapped[str] = mapped_column(String(30), nullable=False)
+    company_name: Mapped[str] = mapped_column(String(200), nullable=False)
+    market: Mapped[str] = mapped_column(String(20), nullable=False)
+    data_source: Mapped[str] = mapped_column(
+        String(150), nullable=False, default="Yahoo Finance API"
+    )
+    retrieval_timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, nullable=False
+    )
+    period: Mapped[str] = mapped_column(String(20), nullable=False, default="1y")
+    interval: Mapped[str] = mapped_column(String(20), nullable=False, default="1d")
+    currency: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    latest_price: Mapped[float | None] = mapped_column(nullable=True)
+    change: Mapped[float | None] = mapped_column(nullable=True)
+    change_percent: Mapped[float | None] = mapped_column(nullable=True)
+    ohlcv_data: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
+    profile_data: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
+    financials_data: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, nullable=False
+    )
+
+    user: Mapped["User"] = relationship(back_populates="market_data_records")
+    task: Mapped["ResearchTask | None"] = relationship()
+

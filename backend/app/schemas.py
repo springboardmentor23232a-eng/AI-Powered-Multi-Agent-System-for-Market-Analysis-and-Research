@@ -120,3 +120,149 @@ class ResearchReportResponse(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class StockSearchItem(BaseModel):
+    ticker: str
+    company_name: str
+    market: str
+    exchange: str
+    quote_type: str = "EQUITY"
+    currency: str = "USD"
+    data_source: str = "Yahoo Finance via yfinance"
+    retrieved_at: datetime
+
+
+class OHLCVBar(BaseModel):
+    date: str
+    timestamp: int
+    open: float
+    high: float
+    low: float
+    close: float
+    adj_close: float | None = None
+    volume: int
+
+
+class HistoricalDataResponse(BaseModel):
+    ticker: str
+    company_name: str
+    market: str
+    period: str
+    interval: str
+    currency: str = "USD"
+    current_price: float | None = None
+    previous_close: float | None = None
+    change: float | None = None
+    change_percent: float | None = None
+    price_status: str | None = None
+    day_high: float | None = None
+    day_low: float | None = None
+    fifty_two_week_high: float | None = None
+    fifty_two_week_low: float | None = None
+    volume: int | None = None
+    average_volume: int | None = None
+    ohlcv: list[OHLCVBar] = []
+    data_source: str = "Yahoo Finance via yfinance"
+    retrieval_timestamp: datetime
+
+
+class CompanyOfficer(BaseModel):
+    name: str
+    title: str
+    age: int | None = None
+    total_pay: str | None = None
+
+
+class CompanyProfileResponse(BaseModel):
+    ticker: str
+    company_name: str
+    market: str
+    sector: str | None = None
+    industry: str | None = None
+    country: str | None = None
+    city: str | None = None
+    address: str | None = None
+    website: str | None = None
+    phone: str | None = None
+    full_time_employees: int | None = None
+    summary: str | None = None
+    officers: list[CompanyOfficer] = []
+    market_cap: str | None = None
+    enterprise_value: str | None = None
+    trailing_pe: float | None = None
+    forward_pe: float | None = None
+    peg_ratio: float | None = None
+    price_to_book: float | None = None
+    beta: float | None = None
+    dividend_rate: float | None = None
+    dividend_yield: float | None = None
+    fifty_two_week_range: str | None = None
+    data_source: str = "Yahoo Finance via yfinance"
+    retrieval_timestamp: datetime
+
+
+class FinancialStatementsResponse(BaseModel):
+    ticker: str
+    company_name: str
+    market: str
+    income_statement: list[dict] = []
+    balance_sheet: list[dict] = []
+    cash_flow: list[dict] = []
+    key_ratios: dict = {}
+    data_source: str = "Yahoo Finance via yfinance"
+    retrieval_timestamp: datetime
+
+
+class MarketDataCollectRequest(BaseModel):
+    ticker: str = Field(min_length=1, max_length=30)
+    company_name: str = Field(min_length=1, max_length=200)
+    market: str = "NSE"
+    period: str = "1y"
+    interval: str = "1d"
+    task_id: UUID | None = None
+
+
+class MarketDataRecordResponse(BaseModel):
+    record_id: UUID
+    user_id: UUID
+    task_id: UUID | None = None
+    ticker: str
+    company_name: str
+    market: str
+    period: str
+    interval: str
+    currency: str | None = None
+    latest_price: float | None = None
+    change: float | None = None
+    change_percent: float | None = None
+    data_source: str
+    retrieval_timestamp: datetime
+    created_at: datetime
+    ohlcv_count: int = 0
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class MarketDataFullResponse(BaseModel):
+    record_id: UUID
+    user_id: UUID
+    task_id: UUID | None = None
+    ticker: str
+    company_name: str
+    market: str
+    period: str
+    interval: str
+    currency: str | None = None
+    latest_price: float | None = None
+    change: float | None = None
+    change_percent: float | None = None
+    data_source: str
+    retrieval_timestamp: datetime
+    created_at: datetime
+    ohlcv_data: list[dict] = []
+    profile_data: dict = {}
+    financials_data: dict = {}
+
+    model_config = ConfigDict(from_attributes=True)
+

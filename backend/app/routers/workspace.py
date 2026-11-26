@@ -16,6 +16,8 @@ from ..models import (
     User,
     UserPreference,
 )
+from ..services.yahoo_finance import yahoo_finance_service
+
 from ..schemas import (
     MARKETS,
     PERIODS,
@@ -55,56 +57,21 @@ def get_or_create_preferences(db: Session, user_id: UUID) -> UserPreference:
 
 
 @router.get("/stocks/search")
-async def search_stocks(
+def search_stocks(
     q: str = Query(min_length=1, max_length=80),
     market: str = Query(default="NSE"),
     current_user: User = Depends(get_current_user),
 ):
     market = market.strip().upper()
-    if market not in MARKETS:
+    if market != "ALL" and market not in MARKETS:
         raise HTTPException(status_code=422, detail="Unsupported stock market.")
 
-    # Yahoo Finance search is used only to find symbols and company names.
-    # It is not a recommendation or a source of investment advice.
-    url = "https://query1.finance.yahoo.com/v1/finance/search"
-    params = {"q": q.strip(), "quotesCount": 12, "newsCount": 0}
-    headers = {"User-Agent": "Mozilla/5.0 StockResearchAnalyst/1.0"}
-
     try:
-        async with httpx.AsyncClient(timeout=8.0) as client:
-            response = await client.get(url, params=params, headers=headers)
-            response.raise_for_status()
-            payload = response.json()
-    except (httpx.HTTPError, ValueError):
-        raise HTTPException(
-            status_code=502,
-            detail="Stock search is temporarily unavailable. You can try again shortly.",
-        )
+        results = yahoo_finance_service.search(q.strip(), market=market)
+        return results[:10]
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Market data provider unavailable: {e}")
 
-    expected_exchanges = MARKET_EXCHANGES[market]
-    results = []
-    for quote in payload.get("quotes", []):
-        if quote.get("quoteType") not in {"EQUITY", "ETF"}:
-            continue
-        exchange = str(quote.get("exchange", ""))
-        exchange_display = str(quote.get("exchDisp", ""))
-        if not any(
-            item.lower() in (exchange + " " + exchange_display).lower()
-            for item in expected_exchanges
-        ):
-            continue
-
-        symbol = quote.get("symbol")
-        name = quote.get("longname") or quote.get("shortname")
-        if symbol and name:
-            results.append({
-                "ticker": symbol,
-                "company_name": name,
-                "market": market,
-                "exchange": exchange_display or exchange,
-            })
-
-    return results[:10]
 
 
 @router.get("/watchlist", response_model=list[SavedStockResponse])

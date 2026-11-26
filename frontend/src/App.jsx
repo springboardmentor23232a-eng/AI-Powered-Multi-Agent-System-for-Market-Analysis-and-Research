@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { api } from "./api";
+import { MarketDataView } from "./MarketDataView";
+import { LandingPage } from "./LandingPage";
 
 const MARKETS = ["NSE", "BSE", "NASDAQ", "NYSE"];
+
 const PERIODS = ["1 Month", "3 Months", "6 Months", "1 Year", "5 Years"];
 
 function dateLabel(value) {
@@ -17,6 +20,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [checkingSession, setCheckingSession] = useState(true);
   const [authMode, setAuthMode] = useState("login");
+  const [unauthView, setUnauthView] = useState("landing");
   const [activePage, setActivePage] = useState("overview");
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
@@ -43,6 +47,16 @@ function App() {
   const [searchBusy, setSearchBusy] = useState(false);
   const [taskTicker, setTaskTicker] = useState("");
   const [report, setReport] = useState(null);
+  const [marketTarget, setMarketTarget] = useState({ ticker: "AAPL", market: "NASDAQ" });
+
+  const openMarketData = (stock) => {
+    setMarketTarget({
+      ticker: stock.ticker,
+      market: stock.market || preferences.market || "NSE",
+    });
+    setActivePage("market");
+    clearFeedback();
+  };
 
   const clearFeedback = () => {
     setNotice("");
@@ -165,6 +179,7 @@ async function handleLogin(event) {
       setWatchlist([]);
       setTasks([]);
       setActivePage("overview");
+      setUnauthView("landing");
       setNotice("You have been signed out.");
     } catch (err) {
       setError(err.message);
@@ -275,20 +290,82 @@ async function handleLogin(event) {
   }
 
   if (!user) {
+    if (unauthView === "landing") {
+      return (
+        <LandingPage
+          onNavigateAuth={(mode) => {
+            setAuthMode(mode);
+            setUnauthView("auth");
+            clearFeedback();
+          }}
+          onOpenWorkspace={() => {
+            setAuthMode("login");
+            setUnauthView("auth");
+            clearFeedback();
+          }}
+          user={null}
+        />
+      );
+    }
+
     return (
       <div className="auth-layout">
         <section className="auth-story">
-          <div className="brand"><span className="brand-icon">S</span> Stock Research Analyst</div>
+          <div
+            className="brand"
+            onClick={() => setUnauthView("landing")}
+            style={{ cursor: "pointer" }}
+            title="Return to Landing Page"
+          >
+            <span className="brand-icon">S</span> Stock Research Analyst
+          </div>
           <div className="story-copy">
             <span className="kicker">YOUR MARKET RESEARCH WORKSPACE</span>
             <h1>Make room for<br /><span>better questions.</span></h1>
             <p>Keep the companies you follow, your research activity and your preferred markets together in one workspace.</p>
           </div>
-          <div className="story-bottom"><span>Multi-Agent Stock Research Analyst</span><span>MODULE 01</span></div>
+          <div className="story-bottom">
+            <span>Multi-Agent Stock Research Analyst</span>
+            <button
+              type="button"
+              onClick={() => setUnauthView("landing")}
+              style={{
+                background: "none",
+                border: "none",
+                color: "var(--mint)",
+                cursor: "pointer",
+                fontSize: "11px",
+                fontWeight: "700"
+              }}
+            >
+              ← Back to Project Landing Page
+            </button>
+          </div>
         </section>
 
         <section className="auth-main">
           <div className="auth-card">
+            <div style={{ marginBottom: "14px" }}>
+              <button
+                type="button"
+                onClick={() => setUnauthView("landing")}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "#8ca0b6",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: 0
+                }}
+              >
+                ← Back to Landing Page
+              </button>
+            </div>
+
             <span className="kicker">{authMode === "login" ? "WELCOME BACK" : "GET STARTED"}</span>
             <h2>{authMode === "login" ? "Sign in to your account" : "Create your account"}</h2>
             <p className="muted">{authMode === "login" ? "Pick up where your research left off." : "A few details are all you need to get started."}</p>
@@ -329,17 +406,38 @@ async function handleLogin(event) {
     );
   }
 
+  // If authenticated user visits the landing page
+  if (activePage === "landing") {
+    return (
+      <LandingPage
+        onNavigateAuth={() => setActivePage("overview")}
+        onOpenWorkspace={() => setActivePage("overview")}
+        user={user}
+      />
+    );
+  }
+
   const navItems = [
     ["overview", "Overview", "⌂"],
     ["watchlist", "Watchlist", "☆"],
+    ["market", "Market Data", "📈"],
     ["history", "Research history", "◷"],
-    ["preferences", "Preferences", "⚙"]
+    ["preferences", "Preferences", "⚙"],
+    ["landing", "Landing Page", "🌐"]
   ];
 
   return (
     <div className="app-layout">
       <aside className="sidebar">
-        <div className="brand"><span className="brand-icon">S</span><span>Stock Research<br />Analyst</span></div>
+        <div
+          className="brand"
+          onClick={() => setActivePage("landing")}
+          style={{ cursor: "pointer" }}
+          title="Click to view Project Landing Page"
+        >
+          <span className="brand-icon">S</span>
+          <span>Stock Research<br />Analyst</span>
+        </div>
         <div className="side-caption">WORKSPACE</div>
         <nav>
           {navItems.map(([key, label, icon]) => (
@@ -358,7 +456,17 @@ async function handleLogin(event) {
       <main className="main-area">
         <header className="page-header">
           <div><span className="kicker">STOCK RESEARCH WORKSPACE</span><h1>{navItems.find((item) => item[0] === activePage)?.[1]}</h1></div>
-          <div className="header-user"><span className="online-dot" /> Signed in as {user.full_name.split(" ")[0]}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <button
+              className="text-button"
+              onClick={() => setActivePage("landing")}
+              style={{ fontSize: "12px", color: "var(--mint)", display: "flex", alignItems: "center", gap: "5px" }}
+              title="Switch to Landing Page"
+            >
+              🌐 Project Landing Page
+            </button>
+            <div className="header-user"><span className="online-dot" /> Signed in as {user.full_name.split(" ")[0]}</div>
+          </div>
         </header>
 
         {(notice || error) && (
@@ -372,7 +480,10 @@ async function handleLogin(event) {
           <section className="content">
             <div className="welcome-row">
               <div><span className="kicker">YOUR PERSONAL RESEARCH SPACE</span><h2>Good to have you here, {user.full_name.split(" ")[0]}.</h2><p className="muted">Your watchlist and recent research activity are ready when you are.</p></div>
-              <button className="btn primary compact" onClick={() => setActivePage("watchlist")}>Explore stocks <span>→</span></button>
+              <div style={{ display: "flex", gap: 10 }}>
+                <button className="btn outline compact" onClick={() => setActivePage("market")}>Market Intelligence 📈</button>
+                <button className="btn primary compact" onClick={() => setActivePage("watchlist")}>Explore stocks <span>→</span></button>
+              </div>
             </div>
             <div className="stat-grid">
               <div className="stat-card"><span>Saved stocks</span><strong>{watchlist.length}</strong><small>Companies in your watchlist</small></div>
@@ -393,10 +504,21 @@ async function handleLogin(event) {
               <select value={searchMarket} onChange={(e) => setSearchMarket(e.target.value)}>{MARKETS.map((market) => <option key={market}>{market}</option>)}</select>
               <button className="btn primary" disabled={searchBusy}>{searchBusy ? "Searching…" : "Search stocks"}</button>
             </form>
-            {searchResults.length > 0 && <div className="results-panel"><div className="section-heading"><h3>Search results</h3><span className="muted">{searchResults.length} matches</span></div>{searchResults.map((stock) => <div className="result-row" key={`${stock.ticker}-${stock.market}`}><div><strong>{stock.company_name}</strong><span>{stock.ticker} · {stock.exchange}</span></div><button className="btn outline compact" onClick={() => addStock(stock)}>＋ Add</button></div>)}</div>}
+            {searchResults.length > 0 && <div className="results-panel"><div className="section-heading"><h3>Search results</h3><span className="muted">{searchResults.length} matches</span></div>{searchResults.map((stock) => <div className="result-row" key={`${stock.ticker}-${stock.market}`}><div><strong>{stock.company_name}</strong><span>{stock.ticker} · {stock.exchange}</span></div><div style={{ display: "flex", gap: 8 }}><button className="btn outline compact" onClick={() => openMarketData(stock)}>Market Data 📈</button><button className="btn outline compact" onClick={() => addStock(stock)}>＋ Add</button></div></div>)}</div>}
             <div className="section-heading"><div><span className="kicker">YOUR SAVED COMPANIES</span><h3>Saved stocks <span className="count-pill">{watchlist.length}</span></h3></div></div>
-            {watchlist.length ? <div className="stock-grid">{watchlist.map((stock) => <article className="stock-card" key={stock.saved_stock_id}><div className="stock-symbol">{stock.ticker.slice(0, 2)}</div><div className="stock-details"><strong>{stock.company_name}</strong><span>{stock.ticker} · {stock.market}</span></div><div className="stock-actions"><button className="text-button" onClick={() => startResearch(stock)}>Research →</button><button className="icon-button" title="Remove stock" onClick={() => removeStock(stock.saved_stock_id)}>×</button></div></article>)}</div> : <EmptyState title="Your watchlist is empty" text="Use the search above to find a company and add it to your list." />}
+            {watchlist.length ? <div className="stock-grid">{watchlist.map((stock) => <article className="stock-card" key={stock.saved_stock_id}><div className="stock-symbol">{stock.ticker.slice(0, 2)}</div><div className="stock-details"><strong>{stock.company_name}</strong><span>{stock.ticker} · {stock.market}</span></div><div className="stock-actions"><button className="text-button" onClick={() => openMarketData(stock)}>Market Data →</button><button className="text-button" onClick={() => startResearch(stock)}>Research →</button><button className="icon-button" title="Remove stock" onClick={() => removeStock(stock.saved_stock_id)}>×</button></div></article>)}</div> : <EmptyState title="Your watchlist is empty" text="Use the search above to find a company and add it to your list." />}
           </section>
+        )}
+
+        {activePage === "market" && (
+          <MarketDataView
+            initialTicker={marketTarget.ticker}
+            initialMarket={marketTarget.market}
+            onAddToWatchlist={addStock}
+            onStartResearch={startResearch}
+            onError={(msg) => setError(msg)}
+            onNotice={(msg) => setNotice(msg)}
+          />
         )}
 
         {activePage === "history" && (
