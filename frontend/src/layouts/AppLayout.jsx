@@ -26,35 +26,29 @@ export default function AppLayout() {
     setResearchModalOpen(true);
   };
 
-  const handleTaskCreated = (newTask) => {
-    // Navigate to history so user immediately sees the running task
+  const handleTaskCreated = () => {
     navigate('/history');
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
-      {/* Sidebar */}
+    <div className="min-h-screen terminal-grid-bg text-slate-800 font-sans">
       <Sidebar
         mobileOpen={mobileOpen}
         setMobileOpen={setMobileOpen}
         onOpenLogoutModal={() => setLogoutModalOpen(true)}
       />
 
-      {/* Main Content Area */}
-      <div className="lg:pl-64 flex flex-col min-h-screen">
-        {/* Top Navbar */}
+      <div className="lg:pl-72 flex flex-col min-h-screen">
         <Navbar
           setMobileOpen={setMobileOpen}
           onOpenNewResearchModal={() => openResearchModal(null)}
         />
 
-        {/* Dynamic Page Content */}
-        <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto animate-fade-in">
+        <main className="flex-1 p-4 sm:p-7 max-w-[1440px] w-full mx-auto">
           <Outlet context={{ openResearchModal }} />
         </main>
       </div>
 
-      {/* Start Research Modal */}
       <StartResearchModal
         isOpen={researchModalOpen}
         onClose={() => setResearchModalOpen(false)}
@@ -62,11 +56,10 @@ export default function AppLayout() {
         onTaskCreated={handleTaskCreated}
       />
 
-      {/* Sign Out Confirmation Modal */}
       <ConfirmModal
         isOpen={logoutModalOpen}
-        title="Sign Out of QuantAgent"
-        message="Are you sure you want to end your current session? You will need to enter your credentials to access your dashboard again."
+        title="Sign Out of QuantAgent Studio"
+        message="Are you sure you want to end your current session? Your research dossiers and watchlists remain saved in PostgreSQL."
         confirmText="Sign Out"
         cancelText="Stay Signed In"
         onConfirm={handleConfirmLogout}
@@ -76,4 +69,3 @@ export default function AppLayout() {
     </div>
   );
 }
-

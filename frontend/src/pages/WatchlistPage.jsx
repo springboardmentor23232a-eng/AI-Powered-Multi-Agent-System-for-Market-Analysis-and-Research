@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import {
   Bookmark,
   Trash2,
   Play,
-  Calendar,
-  Building2,
   RefreshCw,
   FolderPlus,
-  AlertCircle,
-  TrendingUp,
+  Compass,
 } from 'lucide-react';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
@@ -19,13 +16,13 @@ import ConfirmModal from '../components/common/ConfirmModal';
 export default function WatchlistPage() {
   const { addToast } = useAuth();
   const { openResearchModal } = useOutletContext();
+  const navigate = useNavigate();
 
   const [watchlist, setWatchlist] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
 
-  // Deletion modal state
   const [stockToDelete, setStockToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -60,7 +57,7 @@ export default function WatchlistPage() {
       setWatchlist((prev) =>
         prev.filter((item) => item.saved_stock_id !== stockToDelete.saved_stock_id)
       );
-      addToast(`Removed ${stockToDelete.ticker} from your watchlist.`, 'info');
+      addToast(`Removed ${stockToDelete.ticker} from your radar.`, 'info');
       setStockToDelete(null);
     } catch (err) {
       const msg = err.response?.data?.detail || 'Failed to remove stock from watchlist.';
@@ -71,131 +68,111 @@ export default function WatchlistPage() {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in pb-12">
-      {/* Header */}
+    <div className="space-y-6 pb-12">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
-            <Bookmark className="w-6 h-6 text-blue-600" />
-            My Stock Watchlist
+          <span className="text-[10px] font-mono uppercase tracking-widest text-amber-700 font-semibold">
+            Monitored Securities
+          </span>
+          <h1 className="font-display text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
+            <Bookmark className="w-6 h-6 text-[#0A624C]" />
+            Radar Watchlist
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Curate and monitor equities across NSE, BSE, NASDAQ, and NYSE for automated research
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Curate equities across NSE, BSE, NASDAQ & NYSE for instant chart exploration and agent runs
           </p>
         </div>
 
         <button
           onClick={() => fetchWatchlist(true)}
-          className="self-start sm:self-auto p-2.5 bg-white border border-slate-200 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-50 shadow-sm transition-colors"
+          className="self-start sm:self-auto p-2.5 bg-white border border-[#E4E1D8] rounded-xl text-slate-600 hover:text-[#0A624C] transition-colors"
           title="Refresh Watchlist"
         >
           <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
         </button>
       </div>
 
-      {/* Stock Search Combobox */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm">
-        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-          Add Stock to Watchlist
+      <div className="glass-panel p-6 rounded-3xl">
+        <label className="block text-[11px] font-mono font-bold text-[#0A624C] uppercase tracking-wider mb-2">
+          Pin Security to Radar
         </label>
-        <StockSearchCombobox
-          onStockAdded={handleStockAdded}
-          existingTickers={watchlist}
-        />
-        <p className="mt-2 text-xs text-slate-400">
-          Search real market tickers or company names across supported exchanges.
-        </p>
+        <StockSearchCombobox onStockAdded={handleStockAdded} existingTickers={watchlist} />
       </div>
 
       {error && (
-        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-medium">
+        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-mono">
           {error}
         </div>
       )}
 
-      {/* Watchlist Cards/Table */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
-        {loading ? (
-          <div className="p-12 text-center space-y-3">
-            <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-xs text-slate-500 font-medium">Loading saved stocks...</p>
+      {loading ? (
+        <div className="glass-panel p-12 rounded-3xl text-center space-y-3">
+          <div className="w-6 h-6 border-2 border-[#0A624C] border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-xs font-mono text-slate-500">LOADING RADAR...</p>
+        </div>
+      ) : watchlist.length === 0 ? (
+        <div className="glass-panel p-16 rounded-3xl text-center">
+          <div className="w-14 h-14 rounded-2xl bg-[#FAF9F5] border border-[#E4E1D8] text-slate-400 flex items-center justify-center mx-auto mb-4">
+            <FolderPlus className="w-7 h-7" />
           </div>
-        ) : watchlist.length === 0 ? (
-          <div className="p-16 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-4">
-              <FolderPlus className="w-7 h-7" />
-            </div>
-            <h3 className="text-base font-bold text-slate-800">Your watchlist is empty</h3>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 leading-relaxed">
-              You haven't saved any stocks yet. Use the search field above to search for companies (like Apple, Nvidia, Infosys, Reliance) and add them to your watchlist.
-            </p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="border-b border-slate-100 text-xs font-semibold text-slate-400 bg-slate-50/70">
-                  <th className="py-3.5 px-6">Company / Ticker</th>
-                  <th className="py-3.5 px-4">Market</th>
-                  <th className="py-3.5 px-4">Date Added</th>
-                  <th className="py-3.5 px-6 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-medium">
-                {watchlist.map((stock) => (
-                  <tr key={stock.saved_stock_id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="py-4 px-6">
-                      <div className="font-extrabold text-slate-900 flex items-center gap-2">
-                        <span>{stock.ticker}</span>
-                      </div>
-                      <div className="text-xs text-slate-500 truncate max-w-[280px]">
-                        {stock.company_name}
-                      </div>
-                    </td>
-                    <td className="py-4 px-4">
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">
-                        {stock.market}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4 text-xs text-slate-500 whitespace-nowrap">
-                      {new Date(stock.created_at).toLocaleDateString(undefined, {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })}
-                    </td>
-                    <td className="py-4 px-6 text-right whitespace-nowrap">
-                      <div className="inline-flex items-center gap-2">
-                        <button
-                          onClick={() => openResearchModal(stock)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-blue-600 hover:text-white bg-blue-50 hover:bg-blue-600 transition-all border border-blue-200 hover:border-transparent shadow-sm"
-                        >
-                          <Play className="w-3.5 h-3.5 fill-current" />
-                          <span>Start Research</span>
-                        </button>
-                        <button
-                          onClick={() => setStockToDelete(stock)}
-                          className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 transition-colors"
-                          title="Remove from Watchlist"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+          <h3 className="text-base font-bold text-slate-900">Your radar is empty</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
+            Search for companies above (AAPL, NVDA, INFY, Reliance) and pin them to launch 1-click analysis.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {watchlist.map((stock) => (
+            <div key={stock.saved_stock_id} className="glass-card p-5 rounded-3xl flex flex-col justify-between gap-4">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-lg font-extrabold text-slate-900">{stock.ticker}</span>
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-50 text-[#0A624C] border border-emerald-200">
+                      {stock.market}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-600 mt-1 font-medium">{stock.company_name}</p>
+                  <p className="text-[10px] font-mono text-slate-400 mt-1">
+                    PINNED {new Date(stock.created_at).toLocaleDateString()}
+                  </p>
+                </div>
 
-      {/* Confirmation Modal for Deletion */}
+                <button
+                  onClick={() => setStockToDelete(stock)}
+                  className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-[#E4E1D8] hover:border-rose-200 transition-colors"
+                  title="Remove from Watchlist"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2 pt-3 border-t border-[#E4E1D8]">
+                <button
+                  onClick={() => navigate(`/explorer?ticker=${stock.ticker}&market=${stock.market}`)}
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-mono font-semibold text-[#1E3A5F] bg-[#FAF9F5] hover:bg-[#EFECE4] border border-[#DCD8CD] transition-all"
+                >
+                  <Compass className="w-3.5 h-3.5" />
+                  CHARTS
+                </button>
+                <button
+                  onClick={() => openResearchModal(stock)}
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-mono font-bold text-white bg-[#0A624C] hover:bg-[#084C3B] transition-all"
+                >
+                  <Play className="w-3.5 h-3.5 fill-white" />
+                  RUN AGENTS
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       <ConfirmModal
         isOpen={!!stockToDelete}
-        title="Remove Stock from Watchlist"
-        message={`Are you sure you want to remove ${stockToDelete?.ticker} (${stockToDelete?.company_name}) from your personal watchlist? This will not affect your existing research history.`}
-        confirmText="Remove Stock"
+        title="Remove Security from Radar"
+        message={`Remove ${stockToDelete?.ticker} (${stockToDelete?.company_name}) from your radar watchlist? Existing research dossiers remain unaffected.`}
+        confirmText="Remove"
         cancelText="Keep"
         onConfirm={handleConfirmDelete}
         onCancel={() => setStockToDelete(null)}
@@ -205,4 +182,3 @@ export default function WatchlistPage() {
     </div>
   );
 }
-

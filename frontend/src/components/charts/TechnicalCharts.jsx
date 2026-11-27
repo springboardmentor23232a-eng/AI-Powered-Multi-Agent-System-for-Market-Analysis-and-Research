@@ -51,7 +51,7 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
 
   if (!chartSeries || chartSeries.length === 0) {
     return (
-      <div className="p-8 text-center rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-500">
+      <div className="p-8 text-center rounded-2xl bg-[#FAF9F5] border border-[#E4E1D8] text-xs font-mono text-slate-500">
         No chart series available for the selected horizon.
       </div>
     );
@@ -75,7 +75,6 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
 
   const curSym = currency === 'INR' ? '₹' : '$';
 
-  // Main Price + Volume Traces
   const priceTraces = [];
   if (chartType === 'candlestick') {
     priceTraces.push({
@@ -86,8 +85,8 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
       low: lows,
       close: closes,
       name: `${ticker} OHLC`,
-      increasing: { line: { color: '#10b981' } },
-      decreasing: { line: { color: '#ef4444' } },
+      increasing: { line: { color: '#059669' }, fillcolor: 'rgba(16, 185, 129, 0.75)' },
+      decreasing: { line: { color: '#E11D48' }, fillcolor: 'rgba(225, 29, 72, 0.75)' },
       yaxis: 'y',
     });
   } else {
@@ -97,9 +96,9 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
       x: dates,
       y: closes,
       name: `${ticker} Close`,
-      line: { color: '#2563eb', width: 2.2 },
+      line: { color: '#0A624C', width: 2.2 },
       fill: 'tozeroy',
-      fillcolor: 'rgba(37, 99, 235, 0.08)',
+      fillcolor: 'rgba(10, 98, 76, 0.08)',
       yaxis: 'y',
     });
   }
@@ -111,7 +110,7 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
       x: dates,
       y: sma20,
       name: 'SMA 20',
-      line: { color: '#f59e0b', width: 1.5 },
+      line: { color: '#D97706', width: 1.5 },
       yaxis: 'y',
     });
   }
@@ -122,7 +121,7 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
       x: dates,
       y: sma50,
       name: 'SMA 50',
-      line: { color: '#8b5cf6', width: 1.6 },
+      line: { color: '#6366F1', width: 1.6 },
       yaxis: 'y',
     });
   }
@@ -133,7 +132,7 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
       x: dates,
       y: sma200,
       name: 'SMA 200',
-      line: { color: '#ec4899', width: 1.8, dash: 'dot' },
+      line: { color: '#BE185D', width: 1.8, dash: 'dot' },
       yaxis: 'y',
     });
   }
@@ -144,7 +143,7 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
       x: dates,
       y: ema12,
       name: 'EMA 12',
-      line: { color: '#06b6d4', width: 1.4, dash: 'dash' },
+      line: { color: '#0284C7', width: 1.4, dash: 'dash' },
       yaxis: 'y',
     });
   }
@@ -155,13 +154,13 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
       x: dates,
       y: ema26,
       name: 'EMA 26',
-      line: { color: '#6366f1', width: 1.4, dash: 'dash' },
+      line: { color: '#4F46E5', width: 1.4, dash: 'dash' },
       yaxis: 'y',
     });
   }
 
   const volColors = chartSeries.map((d) =>
-    d.close >= d.open ? 'rgba(16, 185, 129, 0.35)' : 'rgba(239, 68, 68, 0.35)'
+    d.close >= d.open ? 'rgba(5, 150, 105, 0.35)' : 'rgba(225, 29, 72, 0.35)'
   );
   priceTraces.push({
     type: 'bar',
@@ -174,21 +173,22 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
 
   const priceLayout = {
     height: 430,
-    margin: { t: 20, r: 20, b: 30, l: 55 },
+    margin: { t: 24, r: 20, b: 30, l: 58 },
     paper_bgcolor: 'transparent',
-    plot_bgcolor: '#ffffff',
+    plot_bgcolor: '#FFFFFF',
     hovermode: 'x unified',
-    legend: { orientation: 'h', y: 1.08, x: 0, font: { size: 11 } },
+    font: { family: 'JetBrains Mono, monospace', color: '#334155' },
+    legend: { orientation: 'h', y: 1.09, x: 0, font: { size: 11, color: '#334155' } },
     xaxis: {
       rangeslider: { visible: false },
-      gridcolor: '#f1f5f9',
-      tickfont: { size: 11, color: '#64748b' },
+      gridcolor: '#F1EFE8',
+      tickfont: { size: 10, color: '#64748b' },
     },
     yaxis: {
       domain: [0.24, 1.0],
       title: { text: `Price (${curSym})`, font: { size: 11, color: '#64748b' } },
-      gridcolor: '#f1f5f9',
-      tickfont: { size: 11, color: '#64748b' },
+      gridcolor: '#F1EFE8',
+      tickfont: { size: 10, color: '#64748b' },
     },
     yaxis2: {
       domain: [0.0, 0.18],
@@ -198,7 +198,6 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
     },
   };
 
-  // RSI Chart
   const rsiTraces = [
     {
       type: 'scatter',
@@ -206,20 +205,21 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
       x: dates,
       y: rsi14,
       name: 'RSI (14)',
-      line: { color: '#6366f1', width: 2 },
+      line: { color: '#1E3A5F', width: 2 },
     },
   ];
   const rsiLayout = {
     height: 210,
     margin: { t: 15, r: 20, b: 30, l: 50 },
     paper_bgcolor: 'transparent',
-    plot_bgcolor: '#ffffff',
+    plot_bgcolor: '#FFFFFF',
     hovermode: 'x unified',
     showlegend: false,
-    xaxis: { gridcolor: '#f1f5f9', tickfont: { size: 10, color: '#64748b' } },
+    font: { family: 'JetBrains Mono, monospace', color: '#334155' },
+    xaxis: { gridcolor: '#F1EFE8', tickfont: { size: 10, color: '#64748b' } },
     yaxis: {
       range: [0, 100],
-      gridcolor: '#f1f5f9',
+      gridcolor: '#F1EFE8',
       tickfont: { size: 10, color: '#64748b' },
       title: { text: 'RSI', font: { size: 11, color: '#64748b' } },
     },
@@ -231,7 +231,7 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
         x1: 1,
         y0: 70,
         y1: 70,
-        line: { color: '#ef4444', width: 1, dash: 'dash' },
+        line: { color: '#E11D48', width: 1, dash: 'dash' },
       },
       {
         type: 'line',
@@ -240,14 +240,13 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
         x1: 1,
         y0: 30,
         y1: 30,
-        line: { color: '#10b981', width: 1, dash: 'dash' },
+        line: { color: '#059669', width: 1, dash: 'dash' },
       },
     ],
   };
 
-  // MACD Chart
   const histColors = macdHist.map((v) =>
-    v === null || v === undefined ? '#cbd5e1' : v >= 0 ? 'rgba(16, 185, 129, 0.65)' : 'rgba(239, 68, 68, 0.65)'
+    v === null || v === undefined ? '#cbd5e1' : v >= 0 ? 'rgba(5, 150, 105, 0.55)' : 'rgba(225, 29, 72, 0.55)'
   );
   const macdTraces = [
     {
@@ -263,7 +262,7 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
       x: dates,
       y: macd,
       name: 'MACD',
-      line: { color: '#2563eb', width: 1.8 },
+      line: { color: '#0A624C', width: 1.8 },
     },
     {
       type: 'scatter',
@@ -271,19 +270,20 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
       x: dates,
       y: macdSig,
       name: 'Signal (9)',
-      line: { color: '#f97316', width: 1.5 },
+      line: { color: '#D97706', width: 1.5 },
     },
   ];
   const macdLayout = {
     height: 220,
     margin: { t: 25, r: 20, b: 30, l: 50 },
     paper_bgcolor: 'transparent',
-    plot_bgcolor: '#ffffff',
+    plot_bgcolor: '#FFFFFF',
     hovermode: 'x unified',
-    legend: { orientation: 'h', y: 1.15, x: 0, font: { size: 10 } },
-    xaxis: { gridcolor: '#f1f5f9', tickfont: { size: 10, color: '#64748b' } },
+    font: { family: 'JetBrains Mono, monospace', color: '#334155' },
+    legend: { orientation: 'h', y: 1.15, x: 0, font: { size: 10, color: '#334155' } },
+    xaxis: { gridcolor: '#F1EFE8', tickfont: { size: 10, color: '#64748b' } },
     yaxis: {
-      gridcolor: '#f1f5f9',
+      gridcolor: '#F1EFE8',
       tickfont: { size: 10, color: '#64748b' },
       title: { text: 'MACD', font: { size: 11, color: '#64748b' } },
     },
@@ -295,17 +295,16 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
 
   return (
     <div className="space-y-5">
-      {/* Chart Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#FAF9F5] border border-[#E4E1D8]">
         <div className="flex items-center gap-2">
-          <BarChart3 className="w-4 h-4 text-blue-600" />
-          <span className="text-xs font-bold text-slate-700">Price & Overlays</span>
-          <div className="ml-2 inline-flex rounded-xl bg-white p-0.5 border border-slate-200">
+          <BarChart3 className="w-4 h-4 text-[#0A624C]" />
+          <span className="text-xs font-mono font-bold text-slate-700">PRICE & OVERLAYS</span>
+          <div className="ml-2 inline-flex rounded-xl bg-white p-0.5 border border-[#E4E1D8]">
             <button
               type="button"
               onClick={() => setChartType('candlestick')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors ${
-                chartType === 'candlestick' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold transition-colors ${
+                chartType === 'candlestick' ? 'bg-[#0A624C] text-white' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Candlestick
@@ -313,8 +312,8 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
             <button
               type="button"
               onClick={() => setChartType('line')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors ${
-                chartType === 'line' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold transition-colors ${
+                chartType === 'line' ? 'bg-[#0A624C] text-white' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Close Line
@@ -325,20 +324,20 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
         <div className="flex flex-wrap items-center gap-1.5">
           <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400 mr-1" />
           {[
-            { key: 'sma20', label: 'SMA 20', color: 'text-amber-700 bg-amber-50 border-amber-200' },
-            { key: 'sma50', label: 'SMA 50', color: 'text-purple-700 bg-purple-50 border-purple-200' },
-            { key: 'sma200', label: 'SMA 200', color: 'text-pink-700 bg-pink-50 border-pink-200' },
-            { key: 'ema12', label: 'EMA 12', color: 'text-cyan-700 bg-cyan-50 border-cyan-200' },
-            { key: 'ema26', label: 'EMA 26', color: 'text-indigo-700 bg-indigo-50 border-indigo-200' },
+            { key: 'sma20', label: 'SMA 20', color: 'text-amber-800 bg-amber-50 border-amber-200' },
+            { key: 'sma50', label: 'SMA 50', color: 'text-indigo-800 bg-indigo-50 border-indigo-200' },
+            { key: 'sma200', label: 'SMA 200', color: 'text-pink-800 bg-pink-50 border-pink-200' },
+            { key: 'ema12', label: 'EMA 12', color: 'text-sky-800 bg-sky-50 border-sky-200' },
+            { key: 'ema26', label: 'EMA 26', color: 'text-violet-800 bg-violet-50 border-violet-200' },
           ].map((item) => (
             <button
               key={item.key}
               type="button"
               onClick={() => toggleOverlay(item.key)}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all ${
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold border transition-all ${
                 overlays[item.key]
                   ? item.color
-                  : 'text-slate-400 bg-white border-slate-200 opacity-70 hover:opacity-100'
+                  : 'text-slate-400 bg-white border-[#E4E1D8] hover:text-slate-700'
               }`}
             >
               {item.label}
@@ -347,31 +346,29 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
         </div>
       </div>
 
-      {/* Main Price + Volume Chart */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-3">
+      <div className="rounded-2xl border border-[#E4E1D8] bg-white p-3">
         <PlotlyPlot data={priceTraces} layout={priceLayout} className="w-full" />
       </div>
 
-      {/* RSI & MACD Subplots */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-4">
+        <div className="rounded-2xl border border-[#E4E1D8] bg-white p-4">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-              <Activity className="w-3.5 h-3.5 text-indigo-600" />
-              Relative Strength Index (RSI-14)
+            <span className="text-xs font-mono font-bold text-slate-800 flex items-center gap-1.5">
+              <Activity className="w-3.5 h-3.5 text-[#1E3A5F]" />
+              RSI (14) MOMENTUM
             </span>
-            <span className="text-[11px] text-slate-400">70 Overbought / 30 Oversold</span>
+            <span className="text-[11px] font-mono text-slate-400">70 OB / 30 OS</span>
           </div>
           <PlotlyPlot data={rsiTraces} layout={rsiLayout} className="w-full" />
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-4">
+        <div className="rounded-2xl border border-[#E4E1D8] bg-white p-4">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-              <Activity className="w-3.5 h-3.5 text-blue-600" />
+            <span className="text-xs font-mono font-bold text-slate-800 flex items-center gap-1.5">
+              <Activity className="w-3.5 h-3.5 text-[#0A624C]" />
               MACD (12, 26, 9)
             </span>
-            <span className="text-[11px] text-slate-400">Trend Momentum</span>
+            <span className="text-[11px] font-mono text-slate-400">SIGNAL & HISTOGRAM</span>
           </div>
           <PlotlyPlot data={macdTraces} layout={macdLayout} className="w-full" />
         </div>
@@ -379,4 +376,3 @@ export default function TechnicalCharts({ chartSeries = [], ticker = '', currenc
     </div>
   );
 }
-

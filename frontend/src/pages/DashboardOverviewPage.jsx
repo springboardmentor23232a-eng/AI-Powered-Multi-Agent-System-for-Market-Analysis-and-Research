@@ -1,31 +1,113 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useOutletContext } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate, useOutletContext } from 'react-router-dom';
+import Plotly from 'plotly.js-dist-min';
 import {
-  FileText,
-  CheckCircle2,
-  Clock,
-  AlertCircle,
-  Bookmark,
-  Plus,
-  History,
-  Sliders,
-  ExternalLink,
-  ArrowUpRight,
+  Zap,
   RefreshCw,
-  TrendingUp,
+  ArrowUpRight,
+  Compass,
+  Bookmark,
+  Database,
+  PieChart,
+  Activity,
+  FileCheck2,
+  Search,
+  Play,
+  Layers,
+  Clock,
 } from 'lucide-react';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import StatusBadge from '../components/common/StatusBadge';
 
+function MarketMixChart({ recentResearch = [], watchlistPreview = [] }) {
+  const chartRef = useRef(null);
+
+  useEffect(() => {
+    const el = chartRef.current;
+    if (!el) return;
+
+    const counts = { NASDAQ: 0, NYSE: 0, NSE: 0, BSE: 0 };
+    [...recentResearch, ...watchlistPreview].forEach((item) => {
+      const m = (item.market || '').toUpperCase();
+      if (m in counts) counts[m] += 1;
+    });
+
+    const labels = Object.keys(counts);
+    const values = Object.values(counts);
+    const total = values.reduce((a, b) => a + b, 0);
+
+    const plotData =
+      total > 0
+        ? [
+            {
+              type: 'pie',
+              hole: 0.64,
+              labels,
+              values,
+              textinfo: 'label+percent',
+              textfont: { family: 'JetBrains Mono, monospace', size: 11, color: '#1e293b' },
+              marker: {
+                colors: ['#0A624C', '#1E3A5F', '#D97706', '#0284C7'],
+                line: { color: '#FFFFFF', width: 2 },
+              },
+              hovertemplate: '%{label}: %{value} items (%{percent})<extra></extra>',
+            },
+          ]
+        : [
+            {
+              type: 'pie',
+              hole: 0.64,
+              labels: ['NASDAQ', 'NSE', 'NYSE', 'BSE'],
+              values: [1, 1, 1, 1],
+              textinfo: 'label',
+              textfont: { family: 'JetBrains Mono, monospace', size: 10, color: '#64748b' },
+              marker: {
+                colors: ['#EFECE4', '#E4E1D8', '#EFECE4', '#E4E1D8'],
+                line: { color: '#FFFFFF', width: 2 },
+              },
+              hoverinfo: 'label',
+            },
+          ];
+
+    Plotly.react(
+      el,
+      plotData,
+      {
+        height: 215,
+        margin: { t: 10, b: 10, l: 10, r: 10 },
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent',
+        showlegend: false,
+        annotations: [
+          {
+            text: total > 0 ? `<b>${total}</b><br><span style="font-size:10px;color:#64748b">COVERAGE</span>` : '<b>READY</b>',
+            showarrow: false,
+            font: { family: 'JetBrains Mono, monospace', size: 15, color: '#0f172a' },
+          },
+        ],
+      },
+      { displayModeBar: false, responsive: true }
+    );
+
+    return () => {
+      if (el) Plotly.purge(el);
+    };
+  }, [recentResearch, watchlistPreview]);
+
+  return <div ref={chartRef} className="w-full" />;
+}
+
 export default function DashboardOverviewPage() {
-  const { user } = useAuth();
+  const { user, preferences } = useAuth();
   const { openResearchModal } = useOutletContext();
+  const navigate = useNavigate();
 
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
+  const [quickTicker, setQuickTicker] = useState('');
 
   const fetchOverview = async (isManualRefresh = false) => {
     if (isManualRefresh) setRefreshing(true);
@@ -35,7 +117,7 @@ export default function DashboardOverviewPage() {
       setError(null);
     } catch (err) {
       console.error('Failed to load dashboard overview:', err);
-      setError('Could not connect to PostgreSQL backend to fetch dashboard analytics.');
+      setError('Could not connect to PostgreSQL backend to fetch dashboard telemetry.');
     } finally {
       setLoading(false);
       if (isManualRefresh) setRefreshing(false);
@@ -46,346 +128,405 @@ export default function DashboardOverviewPage() {
     fetchOverview();
   }, []);
 
+  const handleQuickExplore = (e) => {
+    e.preventDefault();
+    if (!quickTicker.trim()) return;
+    const mkt = preferences?.preferred_market || 'NASDAQ';
+    navigate(`/explorer?ticker=${encodeURIComponent(quickTicker.trim().toUpperCase())}&market=${encodeURIComponent(mkt)}`);
+  };
+
   if (loading) {
     return (
       <div className="space-y-6 animate-pulse">
-        <div className="h-24 bg-slate-200/60 rounded-3xl" />
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-28 bg-slate-200/60 rounded-2xl" />
-          ))}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-8 h-64 rounded-3xl bg-[#EDEAE0]" />
+          <div className="lg:col-span-4 h-64 rounded-3xl bg-[#EDEAE0]" />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 h-72 bg-slate-200/60 rounded-3xl" />
-          <div className="h-72 bg-slate-200/60 rounded-3xl" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-28 rounded-2xl bg-[#EDEAE0]" />
+          ))}
         </div>
       </div>
     );
   }
 
+  const total = overview?.total_research || 0;
+  const completed = overview?.completed_research || 0;
+  const pending = overview?.pending_research || 0;
+  const failed = overview?.failed_research || 0;
+  const savedCount = overview?.total_saved_stocks || 0;
+  const completionPct = total > 0 ? Math.round((completed / total) * 100) : 100;
+
+  const radius = 44;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (completionPct / 100) * circumference;
+
+  const pipelineNodes = [
+    { step: '01', name: 'OHLCV Collector', desc: 'Validation & Provenance', icon: Database, color: 'text-emerald-700 border-emerald-200 bg-emerald-50' },
+    { step: '02', name: 'Fundamental Agent', desc: 'P/E, P/B, ROE & Peers', icon: PieChart, color: 'text-sky-700 border-sky-200 bg-sky-50' },
+    { step: '03', name: 'Technical Agent', desc: 'SMA, EMA, RSI, MACD', icon: Activity, color: 'text-amber-700 border-amber-200 bg-amber-50' },
+    { step: '04', name: 'Dossier Compiler', desc: 'PostgreSQL + Markdown', icon: FileCheck2, color: 'text-indigo-700 border-indigo-200 bg-indigo-50' },
+  ];
+
   return (
-    <div className="space-y-8 animate-fade-in pb-12">
-      {/* Welcome Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 p-6 sm:p-8 text-white shadow-xl shadow-slate-950/20 border border-slate-800">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold mb-3">
-              <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping" />
-              QuantAgent Active Workspace
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              Welcome back, {user?.full_name || 'Stock Analyst'}
-            </h1>
-            <p className="mt-1.5 text-sm text-slate-300 max-w-xl leading-relaxed">
-              Real-time multi-agent quantitative analytics and autonomous company intelligence.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => fetchOverview(true)}
-              className="p-3 bg-white/10 hover:bg-white/20 active:bg-white/30 text-white rounded-xl transition-colors border border-white/10"
-              title="Refresh Dashboard Data"
-            >
-              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-            </button>
-            <button
-              onClick={() => openResearchModal(null)}
-              className="px-5 py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl font-semibold text-sm shadow-lg shadow-blue-600/30 transition-all flex items-center gap-2 hover:scale-[1.02]"
-            >
-              <Plus className="w-4 h-4 stroke-[2.5]" />
-              Start New Research
-            </button>
-          </div>
-        </div>
-      </div>
-
+    <div className="space-y-6 pb-12">
       {error && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-medium flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-mono flex items-center justify-between">
           <span>{error}</span>
-          <button onClick={() => fetchOverview(true)} className="underline hover:text-rose-900 font-bold">
-            Retry
+          <button onClick={() => fetchOverview(true)} className="underline font-bold hover:text-rose-950">
+            RETRY
           </button>
         </div>
       )}
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        {/* Total Tasks */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Total Tasks</span>
-            <div className="p-2 rounded-xl bg-slate-100 text-slate-700">
-              <FileText className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-extrabold text-slate-900">{overview?.total_research || 0}</div>
-          <p className="text-[11px] text-slate-600 mt-1">Research executions</p>
-        </div>
+      {/* HERO BENTO DECK */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        {/* Left: Executive Studio Console */}
+        <div className="lg:col-span-8 glass-panel rounded-3xl p-6 sm:p-7 relative overflow-hidden flex flex-col justify-between gap-6">
+          <div className="absolute -right-24 -top-24 w-72 h-72 rounded-full bg-emerald-100/60 blur-3xl pointer-events-none" />
 
-        {/* Completed */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Completed</span>
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
-              <CheckCircle2 className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-extrabold text-emerald-600">
-            {overview?.completed_research || 0}
-          </div>
-          <p className="text-[11px] text-slate-600 mt-1">Ready for inspection</p>
-        </div>
-
-        {/* Pending / In-flight */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Pending</span>
-            <div className="p-2 rounded-xl bg-amber-50 text-amber-600">
-              <Clock className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-extrabold text-amber-600">
-            {overview?.pending_research || 0}
-          </div>
-          <p className="text-[11px] text-slate-600 mt-1">Agent pipeline working</p>
-        </div>
-
-        {/* Failed */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Failed</span>
-            <div className="p-2 rounded-xl bg-rose-50 text-rose-600">
-              <AlertCircle className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-extrabold text-rose-600">{overview?.failed_research || 0}</div>
-          <p className="text-[11px] text-slate-600 mt-1">Validation/network errors</p>
-        </div>
-
-        {/* Saved Stocks */}
-        <div className="col-span-2 lg:col-span-1 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Watchlist</span>
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
-              <Bookmark className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-extrabold text-blue-600">
-            {overview?.total_saved_stocks || 0}
-          </div>
-          <p className="text-[11px] text-slate-600 mt-1">Monitored securities</p>
-        </div>
-      </div>
-
-      {/* Quick Actions Bar */}
-      <div>
-        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3">Quick Actions</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <button
-            onClick={() => openResearchModal(null)}
-            className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:border-blue-500/50 hover:shadow-md transition-all text-left group"
-          >
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-              <Plus className="w-4 h-4 stroke-[2.5]" />
-            </div>
-            <p className="text-sm font-bold text-slate-900">Start New Research</p>
-            <p className="text-xs text-slate-500 mt-0.5">Execute analysis task</p>
-          </button>
-
-          <Link
-            to="/history"
-            className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:border-blue-500/50 hover:shadow-md transition-all text-left group block"
-          >
-            <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-              <History className="w-4 h-4" />
-            </div>
-            <p className="text-sm font-bold text-slate-900">Research History</p>
-            <p className="text-xs text-slate-500 mt-0.5">Inspect dossiers & reports</p>
-          </Link>
-
-          <Link
-            to="/explorer"
-            className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:border-blue-500/50 hover:shadow-md transition-all text-left group block"
-          >
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-              <TrendingUp className="w-4 h-4" />
-            </div>
-            <p className="text-sm font-bold text-slate-900">Stock Explorer</p>
-            <p className="text-xs text-slate-500 mt-0.5">Live fundamental & technical charts</p>
-          </Link>
-
-          <Link
-            to="/preferences"
-            className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:border-blue-500/50 hover:shadow-md transition-all text-left group block"
-          >
-            <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-              <Sliders className="w-4 h-4" />
-            </div>
-            <p className="text-sm font-bold text-slate-900">Preferences</p>
-            <p className="text-xs text-slate-500 mt-0.5">Market & horizon defaults</p>
-          </Link>
-        </div>
-      </div>
-
-      {/* Main Grid: Recent Activities & Watchlist Preview */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Activities Table */}
-        <div className="lg:col-span-2 bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col">
-          <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 relative z-10">
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Recent Research Activities</h2>
-              <p className="text-xs text-slate-500 mt-0.5">Live status from multi-agent pipeline</p>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[#0A624C] text-[11px] font-mono font-bold mb-3">
+                <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+                QUANTITATIVE RESEARCH DESK
+              </div>
+              <h1 className="font-display text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                Good evening, <span className="text-[#0A624C]">{user?.full_name || 'Analyst'}</span>
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-xl">
+                Orchestrate validated market data collection, fundamental ratio synthesis, and interactive technical charting.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => fetchOverview(true)}
+                className="p-2.5 rounded-xl bg-[#F6F5F0] hover:bg-[#EDEAE0] border border-[#E4E1D8] text-slate-600 hover:text-[#0A624C] transition-colors"
+                title="Refresh Telemetry"
+              >
+                <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+              </button>
+              <button
+                onClick={() => openResearchModal(null)}
+                className="px-4 py-2.5 rounded-xl bg-[#0A624C] hover:bg-[#084C3B] text-white font-bold text-xs shadow-sm shadow-emerald-900/15 flex items-center gap-1.5 transition-all"
+              >
+                <Zap className="w-4 h-4 text-amber-300 fill-amber-300" />
+                Run Full Pipeline
+              </button>
+            </div>
+          </div>
+
+          {/* Instant Ticker Jump Bar */}
+          <form onSubmit={handleQuickExplore} className="relative z-10 flex flex-col sm:flex-row gap-2.5">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+              <input
+                type="text"
+                value={quickTicker}
+                onChange={(e) => setQuickTicker(e.target.value)}
+                placeholder={`Quick launch ticker on ${preferences?.preferred_market || 'NASDAQ'} (AAPL, NVDA, INFY, RELIANCE)...`}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#FAF9F5] border border-[#DCD8CD] text-xs font-mono text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-[#0A624C] focus:ring-2 focus:ring-emerald-600/15"
+              />
+            </div>
+            <button
+              type="submit"
+              className="px-4 py-2.5 rounded-xl bg-[#1E3A5F] hover:bg-[#162C49] text-white text-xs font-mono font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm"
+            >
+              <Compass className="w-3.5 h-3.5" />
+              INSPECT CHARTS
+            </button>
+          </form>
+
+          {/* Multi-Agent Constellation Nodes */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 relative z-10">
+            {pipelineNodes.map((node) => {
+              const Icon = node.icon;
+              return (
+                <div
+                  key={node.step}
+                  className="p-3 rounded-2xl bg-[#FAF9F5] border border-[#E4E1D8] flex flex-col gap-2"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className={`p-1.5 rounded-lg border ${node.color}`}>
+                      <Icon className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="text-[10px] font-mono text-slate-400">NODE {node.step}</span>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-900">{node.name}</p>
+                    <p className="text-[10px] text-slate-500 mt-0.5">{node.desc}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Right: Radial Pipeline Reliability Gauge */}
+        <div className="lg:col-span-4 glass-panel rounded-3xl p-6 flex flex-col justify-between gap-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400">
+                Pipeline Reliability
+              </span>
+              <h2 className="font-display text-base font-bold text-slate-900">Execution Telemetry</h2>
+            </div>
+            <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#0A624C] border border-emerald-200">
+              LIVE DB
+            </span>
+          </div>
+
+          <div className="flex items-center gap-5 py-2">
+            <div className="relative w-28 h-28 flex-shrink-0">
+              <svg className="w-28 h-28 -rotate-90" viewBox="0 0 110 110">
+                <circle
+                  cx="55"
+                  cy="55"
+                  r={radius}
+                  stroke="#EDEAE0"
+                  strokeWidth="10"
+                  fill="transparent"
+                />
+                <circle
+                  cx="55"
+                  cy="55"
+                  r={radius}
+                  stroke="#0A624C"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                  fill="transparent"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={strokeDashoffset}
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="font-mono text-xl font-bold text-slate-900">{completionPct}%</span>
+                <span className="text-[9px] font-mono text-slate-500 uppercase">Success</span>
+              </div>
+            </div>
+
+            <div className="flex-1 space-y-2 text-xs font-mono">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Total Runs</span>
+                <span className="font-bold text-slate-900">{total}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-emerald-700">Completed</span>
+                <span className="font-bold text-emerald-700">{completed}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-amber-700">In-Flight</span>
+                <span className="font-bold text-amber-700">{pending}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-rose-700">Failed</span>
+                <span className="font-bold text-rose-700">{failed}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-3 border-t border-[#E4E1D8] grid grid-cols-2 gap-2 text-center">
+            <Link
+              to="/watchlist"
+              className="p-2.5 rounded-xl bg-[#FAF9F5] hover:bg-[#EFECE4] border border-[#E4E1D8] transition-colors"
+            >
+              <span className="block font-mono text-lg font-bold text-[#1E3A5F]">{savedCount}</span>
+              <span className="text-[10px] font-mono text-slate-500 uppercase">Watchlist Radar</span>
+            </Link>
+            <Link
+              to="/preferences"
+              className="p-2.5 rounded-xl bg-[#FAF9F5] hover:bg-[#EFECE4] border border-[#E4E1D8] transition-colors"
+            >
+              <span className="block font-mono text-sm font-bold text-amber-700 mt-0.5">
+                {preferences?.preferred_market || 'NASDAQ'}
+              </span>
+              <span className="text-[10px] font-mono text-slate-500 uppercase block mt-1">
+                {preferences?.analysis_period || '1 Year'}
+              </span>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* MAIN ASYMMETRIC WORKSPACE */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        {/* Left: Chronological Agent Dossier Timeline */}
+        <div className="lg:col-span-7 glass-panel rounded-3xl p-6 flex flex-col">
+          <div className="flex items-center justify-between pb-4 border-b border-[#E4E1D8]">
+            <div>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#0A624C] font-semibold">
+                Execution Stream
+              </span>
+              <h2 className="font-display text-lg font-bold text-slate-900">Recent Research Dossiers</h2>
             </div>
             <Link
               to="/history"
-              className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+              className="text-xs font-mono font-bold text-[#0A624C] hover:text-emerald-800 flex items-center gap-1"
             >
-              View All <ArrowUpRight className="w-3.5 h-3.5" />
+              FULL ARCHIVE <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          <div className="flex-1 overflow-x-auto">
+          <div className="flex-1 pt-5">
             {overview?.recent_research?.length === 0 ? (
-              <div className="p-12 text-center">
-                <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
-                  <FileText className="w-6 h-6" />
+              <div className="py-12 text-center space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#F6F5F0] border border-[#E4E1D8] text-slate-400 flex items-center justify-center mx-auto">
+                  <Layers className="w-6 h-6" />
                 </div>
-                <p className="text-sm font-bold text-slate-700">No research activities found</p>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
-                  You haven't initiated any stock analysis tasks yet. Launch your first research task to view agent analysis here.
+                <p className="text-sm font-bold text-slate-900">No agent dossiers generated yet</p>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                  Launch your first research pipeline to collect OHLCV data, compute fundamental multiples, and render technical charts.
                 </p>
                 <button
                   onClick={() => openResearchModal(null)}
-                  className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold transition-colors"
+                  className="px-4 py-2 rounded-xl bg-[#0A624C] hover:bg-[#084C3B] text-white text-xs font-bold transition-colors"
                 >
-                  Start Research
+                  Launch First Run
                 </button>
               </div>
             ) : (
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-slate-100 text-xs font-semibold text-slate-400 bg-slate-50/50">
-                    <th className="py-3 px-6">Company / Ticker</th>
-                    <th className="py-3 px-4">Market</th>
-                    <th className="py-3 px-4">Period</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-6 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium">
-                  {overview?.recent_research?.map((task) => (
-                    <tr key={task.task_id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-4 px-6">
-                        <div className="font-bold text-slate-900">{task.ticker}</div>
-                        <div className="text-xs text-slate-500 truncate max-w-[200px]">
-                          {task.company_name}
+              <div className="relative pl-6 space-y-4 before:content-[''] before:absolute before:left-2 before:top-2 before:bottom-2 before:w-px before:bg-[#E4E1D8]">
+                {overview?.recent_research?.map((task) => {
+                  const dotColor =
+                    task.status === 'Completed'
+                      ? 'bg-emerald-600 ring-emerald-100'
+                      : task.status === 'Failed'
+                      ? 'bg-rose-600 ring-rose-100'
+                      : 'bg-amber-500 ring-amber-100';
+                  return (
+                    <div
+                      key={task.task_id}
+                      className="relative p-4 rounded-2xl bg-[#FAF9F5] border border-[#E4E1D8] hover:border-emerald-600/35 hover:bg-white transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                    >
+                      <span className={`absolute -left-[22px] top-6 w-3 h-3 rounded-full ring-4 ${dotColor}`} />
+                      <div className="min-w-0 space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-mono text-sm font-bold text-slate-900">{task.ticker}</span>
+                          <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-white text-[#1E3A5F] border border-[#DCD8CD]">
+                            {task.market}
+                          </span>
+                          <span className="text-[10px] font-mono text-slate-500 flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {task.analysis_period}
+                          </span>
+                          <StatusBadge status={task.status} />
                         </div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
-                          {task.market}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-xs text-slate-600">{task.analysis_period}</td>
-                      <td className="py-4 px-4">
-                        <StatusBadge status={task.status} />
-                      </td>
-                      <td className="py-4 px-6 text-right">
-                        {task.status === 'Completed' ? (
+                        <p className="text-xs text-slate-600 truncate">{task.company_name}</p>
+                      </div>
+
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/explorer?ticker=${task.ticker}&market=${task.market}`)}
+                          className="px-3 py-1.5 rounded-xl text-[11px] font-mono font-semibold bg-white hover:bg-[#EFECE4] text-slate-700 border border-[#DCD8CD] transition-colors"
+                        >
+                          CHARTS
+                        </button>
+                        {task.status === 'Completed' && (
                           <Link
                             to={`/history/${task.task_id}/report`}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-600 hover:text-white transition-all"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold bg-[#0A624C] hover:bg-[#084C3B] text-white transition-all"
                           >
-                            <span>Report</span>
-                            <ExternalLink className="w-3 h-3" />
+                            DOSSIER <ArrowUpRight className="w-3 h-3" />
                           </Link>
-                        ) : (
-                          <span className="text-xs text-slate-400">—</span>
                         )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </div>
         </div>
 
-        {/* Watchlist Preview */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col">
-          <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-bold text-slate-900">Watchlist Preview</h2>
-              <p className="text-xs text-slate-500 mt-0.5">Quick access to monitored stocks</p>
+        {/* Right: Exchange Coverage Donut + Watchlist Radar */}
+        <div className="lg:col-span-5 space-y-5">
+          <div className="glass-panel rounded-3xl p-6">
+            <div className="flex items-center justify-between mb-1">
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#1E3A5F] font-semibold">
+                  Exchange Allocation
+                </span>
+                <h3 className="font-display text-base font-bold text-slate-900">Market Coverage Mix</h3>
+              </div>
+              <span className="text-[10px] font-mono text-slate-400">NSE • BSE • US</span>
             </div>
-            <Link
-              to="/watchlist"
-              className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
-            >
-              Manage <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
+            <MarketMixChart
+              recentResearch={overview?.recent_research || []}
+              watchlistPreview={overview?.watchlist_preview || []}
+            />
           </div>
 
-          <div className="p-6 flex-1 flex flex-col justify-between">
+          <div className="glass-panel rounded-3xl p-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E4E1D8]">
+              <div>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-amber-700 font-semibold">
+                  Tracked Equities
+                </span>
+                <h3 className="font-display text-base font-bold text-slate-900">Watchlist Radar</h3>
+              </div>
+              <Link
+                to="/watchlist"
+                className="text-xs font-mono font-bold text-[#0A624C] hover:text-emerald-800 flex items-center gap-1"
+              >
+                MANAGE <ArrowUpRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
             {overview?.watchlist_preview?.length === 0 ? (
-              <div className="py-8 text-center">
-                <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
-                  <Bookmark className="w-6 h-6" />
-                </div>
-                <p className="text-sm font-bold text-slate-700">Your watchlist is empty</p>
-                <p className="text-xs text-slate-500 max-w-xs mx-auto mt-1">
-                  Save US and Indian equities to your watchlist to launch one-click research tasks.
-                </p>
+              <div className="py-6 text-center space-y-3">
+                <Bookmark className="w-7 h-7 text-slate-400 mx-auto" />
+                <p className="text-xs text-slate-500">No securities pinned to your radar yet.</p>
                 <Link
                   to="/watchlist"
-                  className="mt-4 inline-block px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold transition-colors"
+                  className="inline-block px-4 py-2 rounded-xl bg-[#FAF9F5] hover:bg-[#EFECE4] text-xs font-mono font-semibold text-[#0A624C] border border-[#DCD8CD]"
                 >
-                  Explore Stocks
+                  + ADD SECURITIES
                 </Link>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5">
                 {overview?.watchlist_preview?.map((stock) => (
                   <div
                     key={stock.saved_stock_id}
-                    className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between hover:bg-blue-50/40 hover:border-blue-200 transition-all"
+                    className="p-3.5 rounded-2xl glass-card flex items-center justify-between gap-2"
                   >
-                    <div className="min-w-0 flex-1">
+                    <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-extrabold text-slate-900 text-sm">{stock.ticker}</span>
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white text-slate-600 border border-slate-200">
+                        <span className="font-mono text-sm font-bold text-slate-900">{stock.ticker}</span>
+                        <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-[#0A624C] border border-emerald-200">
                           {stock.market}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-500 truncate mt-0.5 font-medium">
-                        {stock.company_name}
-                      </p>
+                      <p className="text-[11px] text-slate-500 truncate mt-0.5">{stock.company_name}</p>
                     </div>
 
-                    <button
-                      onClick={() => openResearchModal(stock)}
-                      className="ml-2 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white hover:bg-blue-600 text-slate-700 hover:text-white border border-slate-200 hover:border-transparent transition-all shadow-sm"
-                    >
-                      Research
-                    </button>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/explorer?ticker=${stock.ticker}&market=${stock.market}`)}
+                        className="px-2.5 py-1.5 rounded-lg text-[10px] font-mono font-semibold bg-[#FAF9F5] hover:bg-[#EFECE4] text-[#1E3A5F] border border-[#DCD8CD]"
+                      >
+                        CHARTS
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openResearchModal(stock)}
+                        className="p-1.5 rounded-lg bg-emerald-50 hover:bg-[#0A624C] text-[#0A624C] hover:text-white border border-emerald-200 transition-colors"
+                        title="Launch Research Pipeline"
+                      >
+                        <Play className="w-3.5 h-3.5 fill-current" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
             )}
-
-            <div className="mt-6 pt-4 border-t border-slate-100 text-center">
-              <Link
-                to="/watchlist"
-                className="text-xs font-semibold text-slate-600 hover:text-blue-600 transition-colors"
-              >
-                + Search & Save More Companies
-              </Link>
-            </div>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
