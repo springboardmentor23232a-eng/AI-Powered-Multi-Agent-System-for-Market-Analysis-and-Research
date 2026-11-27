@@ -13,6 +13,7 @@ from app.routes.stocks import router as stocks_router
 from app.routes.research import router as research_router
 from app.routes.watchlist import router as watchlist_router
 from app.routes.preference import router as preference_router
+from app.routes.dataset import router as dataset_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -117,6 +118,7 @@ app.include_router(stocks_router, prefix="/api")
 app.include_router(research_router, prefix="/api")
 app.include_router(watchlist_router, prefix="/api")
 app.include_router(preference_router, prefix="/api")
+app.include_router(dataset_router, prefix="/api")
 
 
 # ── Diagnostics & Root Endpoints ─────────────────────────────────────────────

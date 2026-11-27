@@ -10,6 +10,7 @@ from app.schemas.research import ResearchTaskCreate
 from app.services.stock_service import (
     get_company_overview,
     get_historical_ohlcv,
+    get_financial_statements,
 )
 
 logger = logging.getLogger("uvicorn.error")
@@ -17,12 +18,24 @@ logger = logging.getLogger("uvicorn.error")
 VALID_MARKETS = {"NSE", "BSE", "NASDAQ", "NYSE"}
 VALID_PERIODS = {"1mo", "3mo", "6mo", "1y", "5y", "2y", "max"}
 
+KNOWN_NYSE_TICKERS = {
+    "IBM", "JPM", "DIS", "KO", "WMT", "GE", "BRK.A", "BRK.B",
+    "V", "UNH", "XOM", "CVX", "PG", "MA", "HD", "BAC", "PFE", "ABBV"
+}
+KNOWN_US_TICKERS = {
+    "AAPL", "MSFT", "NVDA", "TSLA", "GOOGL", "AMZN", "META",
+    "IBM", "JPM", "DIS", "KO", "WMT", "GE", "BRK.A", "BRK.B",
+    "V", "UNH", "XOM", "CVX", "PG", "MA", "HD", "BAC", "PFE", "ABBV"
+}
+
 
 def determine_market_from_ticker(ticker: str, explicit_market: Optional[str] = None) -> str:
     """
     Infers exchange market name from ticker symbol unless explicitly provided.
     Preserves canonical market names: NSE, BSE, NASDAQ, NYSE.
     """
+    upper = ticker.strip().upper()
+
     if explicit_market:
         clean_market = explicit_market.strip().upper()
         if clean_market in VALID_MARKETS:
@@ -32,13 +45,12 @@ def determine_market_from_ticker(ticker: str, explicit_market: Optional[str] = N
             detail=f"Unsupported market '{explicit_market}'. Supported markets are: {', '.join(sorted(VALID_MARKETS))}.",
         )
 
-    upper = ticker.upper()
     if upper.endswith(".NS"):
         return "NSE"
-    elif upper.endswith(".BO"):
+    if upper.endswith(".BO"):
         return "BSE"
-    elif upper.endswith(".L"):
-        return "LSE"
+    if upper in KNOWN_NYSE_TICKERS:
+        return "NYSE"
     return "NASDAQ"
 
 
@@ -56,7 +68,7 @@ def validate_market_and_ticker(market: str, ticker: str) -> str:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Ticker '{clean_ticker}' has a BSE suffix (.BO) which is incompatible with selected market 'NSE'.",
             )
-        if clean_ticker in {"AAPL", "MSFT", "NVDA", "TSLA", "GOOGL", "AMZN", "META"}:
+        if clean_ticker in KNOWN_US_TICKERS:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Ticker '{clean_ticker}' is a US equity and cannot be researched under market 'NSE'.",
@@ -72,7 +84,7 @@ def validate_market_and_ticker(market: str, ticker: str) -> str:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Ticker '{clean_ticker}' has an NSE suffix (.NS) which is incompatible with selected market 'BSE'.",
             )
-        if clean_ticker in {"AAPL", "MSFT", "NVDA", "TSLA", "GOOGL", "AMZN", "META"}:
+        if clean_ticker in KNOWN_US_TICKERS:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Ticker '{clean_ticker}' is a US equity and cannot be researched under market 'BSE'.",
@@ -140,7 +152,29 @@ def execute_research_workflow(
         overview = get_company_overview(ticker=lookup_ticker)
         history = get_historical_ohlcv(ticker=lookup_ticker, period=clean_period)
 
-        # 4. Populate real company name and preserve standard market (do not overwrite with NSI/NMS)
+        # 4. Fetch financial statements (resilient: financial statement failure does not abort research task)
+        financials = None
+        financials_dict = None
+        try:
+            financials = get_financial_statements(ticker=lookup_ticker)
+            financials_dict = financials.model_dump()
+        except Exception as fin_exc:
+            logger.warning(f"Could not load financial statements for {lookup_ticker}: {fin_exc}")
+
+        # Module 3: Fundamental Analysis Agent (resilient: failures do not abort research task)
+        fundamental_dict = None
+        try:
+            from app.services.fundamental_service import run_fundamental_analysis
+            fundamental_analysis = run_fundamental_analysis(
+                ticker=lookup_ticker,
+                financials=financials,
+                overview=overview,
+            )
+            fundamental_dict = fundamental_analysis.model_dump()
+        except Exception as fund_exc:
+            logger.warning(f"Could not execute fundamental analysis for {lookup_ticker}: {fund_exc}")
+
+        # 5. Populate real company name and preserve standard market (do not overwrite with NSI/NMS)
         task.company_name = overview.company_name or clean_ticker
         task.market = market
         task.status = "Completed"
@@ -155,6 +189,8 @@ def execute_research_workflow(
         report_content = {
             "overview": overview_dict,
             "history": history_dict,
+            "financial_statements": financials_dict,
+            "fundamental_analysis": fundamental_dict,
             "summary": summary_text,
             "metadata": {
                 "task_id": task.task_id,
@@ -237,6 +273,8 @@ def get_user_research_task_and_report(
     """
     Retrieves a research task and its report for the authenticated user.
     Returns HTTP 404 if the task doesn't exist or belongs to another user.
+    Automatically enriches legacy reports with multi-period data integrity audits
+    if stored data lacks Task 7 enhancements.
     """
     task = db.query(ResearchTask).filter(ResearchTask.task_id == task_id).first()
 
@@ -248,4 +286,29 @@ def get_user_research_task_and_report(
         )
 
     report = db.query(ResearchReport).filter(ResearchReport.task_id == task_id).first()
+    if report and report.report_content:
+        try:
+            rc = report.report_content
+            fa = rc.get("fundamental_analysis")
+            fin_data = rc.get("financial_statements")
+            ov_data = rc.get("overview")
+            if isinstance(fa, dict) and fin_data and ov_data:
+                audit_dict = fa.get("data_integrity_audit")
+                # Auto-enrich if legacy audit lacks multi-period balance audits or currency detection
+                if not audit_dict or not audit_dict.get("multi_period_balance_audits") or not audit_dict.get("periods_audited") or not audit_dict.get("trading_currency"):
+                    from sqlalchemy.orm.attributes import flag_modified
+                    from app.services.fundamental_service import audit_data_integrity
+                    from app.schemas.stock import FinancialStatementsResponse, StockOverviewResponse
+                    fin_obj = FinancialStatementsResponse.model_validate(fin_data)
+                    ov_obj = StockOverviewResponse.model_validate(ov_data)
+                    fresh_audit = audit_data_integrity(fin_obj, ov_obj)
+                    fa["data_integrity_audit"] = fresh_audit.model_dump()
+                    rc["fundamental_analysis"] = fa
+                    report.report_content = dict(rc)
+                    flag_modified(report, "report_content")
+                    db.commit()
+                    db.refresh(report)
+        except Exception as enrich_exc:
+            logger.warning(f"Failed to auto-enrich legacy research report #{task_id}: {enrich_exc}")
+
     return task, report

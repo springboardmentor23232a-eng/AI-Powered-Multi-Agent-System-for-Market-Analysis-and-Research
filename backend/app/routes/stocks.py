@@ -5,12 +5,16 @@ from app.schemas.stock import (
     StockSearchResponse,
     StockOverviewResponse,
     HistoricalDataResponse,
+    FinancialStatementsResponse,
 )
+from app.schemas.fundamental import FundamentalAnalysisResponse
 from app.services.stock_service import (
     search_stocks,
     get_company_overview,
     get_historical_ohlcv,
+    get_financial_statements,
 )
+from app.services.fundamental_service import run_fundamental_analysis
 
 router = APIRouter(
     prefix="/stocks",
@@ -52,3 +56,29 @@ def get_stock_history(
     """
     return get_historical_ohlcv(ticker=ticker, period=period)
 
+
+@router.get("/{ticker}/financials", response_model=FinancialStatementsResponse)
+def get_stock_financials(
+    ticker: str,
+    current_user: User = Depends(get_current_user),
+) -> FinancialStatementsResponse:
+    """
+    Retrieve financial statements (Income Statement, Balance Sheet, Cash Flow)
+    with annual and quarterly breakdown (Requires authenticated user).
+    """
+    return get_financial_statements(ticker=ticker)
+
+
+@router.get("/{ticker}/fundamental", response_model=FundamentalAnalysisResponse)
+def get_stock_fundamental(
+    ticker: str,
+    current_user: User = Depends(get_current_user),
+) -> FundamentalAnalysisResponse:
+    """
+    Execute comprehensive fundamental analysis (Module 3) for the given ticker.
+    Analyzes revenue/earnings, profitability, debt/stability, valuation ratios,
+    historical trends, peer comparison, and data integrity.
+    """
+    overview = get_company_overview(ticker=ticker)
+    financials = get_financial_statements(ticker=ticker)
+    return run_fundamental_analysis(ticker=ticker, financials=financials, overview=overview)

@@ -18,7 +18,7 @@ def validate_ticker_symbol(ticker: str) -> str:
         )
 
     clean_ticker = ticker.strip().upper()
-    pattern = r"^[A-Z0-9]{1,10}(\.[A-Z]{2,4}|-[A-Z]{1,2})?$"
+    pattern = r"^[A-Z0-9]{1,10}(\.[A-Z]{1,4}|-[A-Z]{1,2})?$"
     if not re.match(pattern, clean_ticker):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -57,31 +57,46 @@ def check_duplicate_dates(df: pd.DataFrame) -> Tuple[pd.DataFrame, int]:
     return cleaned_df, duplicates_removed
 
 
-def check_invalid_prices(df: pd.DataFrame) -> Tuple[pd.DataFrame, int]:
+def check_invalid_prices(df: pd.DataFrame) -> Tuple[pd.DataFrame, int, int]:
+    """
+    Validates price positivity, non-negative volume, and OHLC geometric consistency:
+    - Open, High, Low, Close must be strictly positive (> 0).
+    - Volume must be non-negative (>= 0).
+    - High must be >= Low, Open, Close.
+    - Low must be <= High, Open, Close.
+    Returns (cleaned_df, invalid_price_count, invalid_ohlc_count).
+    """
     initial_count = len(df)
     price_cols = [c for c in ["Open", "High", "Low", "Close"] if c in df.columns]
     
-    valid_mask = pd.Series(True, index=df.index)
+    # 1. Price positivity and non-negative volume
+    positive_price_mask = pd.Series(True, index=df.index)
     for col in price_cols:
-        valid_mask = valid_mask & (df[col] > 0)
-
-    if "High" in df.columns and "Low" in df.columns:
-        valid_mask = valid_mask & (df["High"] >= df["Low"] - 1e-4)
-    if "High" in df.columns and "Open" in df.columns:
-        valid_mask = valid_mask & (df["High"] >= df["Open"] - 1e-4)
-    if "High" in df.columns and "Close" in df.columns:
-        valid_mask = valid_mask & (df["High"] >= df["Close"] - 1e-4)
-    if "Low" in df.columns and "Open" in df.columns:
-        valid_mask = valid_mask & (df["Low"] <= df["Open"] + 1e-4)
-    if "Low" in df.columns and "Close" in df.columns:
-        valid_mask = valid_mask & (df["Low"] <= df["Close"] + 1e-4)
-        
+        positive_price_mask = positive_price_mask & (df[col] > 0)
     if "Volume" in df.columns:
-        valid_mask = valid_mask & (df["Volume"] >= 0)
+        positive_price_mask = positive_price_mask & (df["Volume"] >= 0)
 
+    invalid_price_count = int((~positive_price_mask).sum())
+
+    # 2. OHLC consistency (High >= Low/Open/Close and Low <= High/Open/Close)
+    ohlc_mask = pd.Series(True, index=df.index)
+    if "High" in df.columns and "Low" in df.columns:
+        ohlc_mask = ohlc_mask & (df["High"] >= df["Low"] - 1e-4)
+    if "High" in df.columns and "Open" in df.columns:
+        ohlc_mask = ohlc_mask & (df["High"] >= df["Open"] - 1e-4)
+    if "High" in df.columns and "Close" in df.columns:
+        ohlc_mask = ohlc_mask & (df["High"] >= df["Close"] - 1e-4)
+    if "Low" in df.columns and "Open" in df.columns:
+        ohlc_mask = ohlc_mask & (df["Low"] <= df["Open"] + 1e-4)
+    if "Low" in df.columns and "Close" in df.columns:
+        ohlc_mask = ohlc_mask & (df["Low"] <= df["Close"] + 1e-4)
+
+    # Inconsistent OHLC among rows with positive prices
+    invalid_ohlc_count = int((positive_price_mask & (~ohlc_mask)).sum())
+
+    valid_mask = positive_price_mask & ohlc_mask
     cleaned_df = df[valid_mask].copy()
-    invalid_rows_removed = initial_count - len(cleaned_df)
-    return cleaned_df, invalid_rows_removed
+    return cleaned_df, invalid_price_count, invalid_ohlc_count
 
 
 def check_chronological_order(df: pd.DataFrame) -> Tuple[pd.DataFrame, bool]:
@@ -89,11 +104,11 @@ def check_chronological_order(df: pd.DataFrame) -> Tuple[pd.DataFrame, bool]:
         return df, True
 
     if isinstance(df.index, pd.DatetimeIndex):
-        is_ordered = df.index.is_monotonic_increasing
+        is_ordered = bool(df.index.is_monotonic_increasing)
         if not is_ordered:
             df = df.sort_index(ascending=True)
     elif "Date" in df.columns:
-        is_ordered = df["Date"].is_monotonic_increasing
+        is_ordered = bool(df["Date"].is_monotonic_increasing)
         if not is_ordered:
             df = df.sort_values(by="Date", ascending=True)
     else:
@@ -108,7 +123,7 @@ def validate_and_clean_market_data(raw_df: pd.DataFrame, ticker: str) -> Tuple[p
     
     df_missing_cleaned, missing_dropped = check_missing_values(raw_df)
     df_deduped, duplicates_removed = check_duplicate_dates(df_missing_cleaned)
-    df_price_validated, invalid_prices_removed = check_invalid_prices(df_deduped)
+    df_price_validated, invalid_prices, invalid_ohlc = check_invalid_prices(df_deduped)
     df_final, is_chronological = check_chronological_order(df_price_validated)
     
     if df_final.empty:
@@ -117,13 +132,40 @@ def validate_and_clean_market_data(raw_df: pd.DataFrame, ticker: str) -> Tuple[p
             detail=f"All historical records for {ticker} failed data validation integrity checks."
         )
 
+    removed_total = total_raw - len(df_final)
+    warnings = []
+    if missing_dropped > 0:
+        warnings.append(f"Dropped {missing_dropped} rows with missing (NaN/Inf) values.")
+    if duplicates_removed > 0:
+        warnings.append(f"Deduplicated {duplicates_removed} duplicate date records.")
+    if invalid_prices > 0:
+        warnings.append(f"Removed {invalid_prices} rows with non-positive price or negative volume.")
+    if invalid_ohlc > 0:
+        warnings.append(f"Removed {invalid_ohlc} rows with inconsistent OHLC relationships (e.g. High < Low).")
+    if not is_chronological:
+        warnings.append("Historical series was out of chronological order; automatically reordered ascending.")
+
+    val_status = "PASSED" if removed_total == 0 else "WARNING"
+
     telemetry = {
+        "ticker": ticker,
+        # Original keys for backward compatibility
         "total_raw_records": total_raw,
         "cleaned_records": len(df_final),
         "missing_values_handled": missing_dropped,
         "duplicates_removed": duplicates_removed,
-        "invalid_rows_removed": invalid_prices_removed,
+        "invalid_rows_removed": invalid_prices + invalid_ohlc,
         "is_chronological": bool(is_chronological),
+        # Extended Module 2 compliance fields
+        "total_input_rows": total_raw,
+        "valid_rows": len(df_final),
+        "removed_rows": removed_total,
+        "missing_value_count": missing_dropped,
+        "duplicate_date_count": duplicates_removed,
+        "invalid_price_count": invalid_prices,
+        "invalid_ohlc_count": invalid_ohlc,
+        "warnings": warnings,
+        "validation_status": val_status,
     }
 
     return df_final, telemetry

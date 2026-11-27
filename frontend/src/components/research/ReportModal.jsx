@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import Spinner from '../ui/Spinner';
 import AlertBanner from '../ui/AlertBanner';
+import FinancialStatementsView from './FinancialStatementsView';
+import FundamentalAnalysisView from './FundamentalAnalysisView';
 
 export default function ReportModal({ taskId, onClose, onLoadStock }) {
   const [loading, setLoading] = useState(true);
@@ -20,6 +22,7 @@ export default function ReportModal({ taskId, onClose, onLoadStock }) {
   useEffect(() => {
     if (!taskId) return;
     let isMounted = true;
+    const controller = new AbortController();
 
     const fetchDetail = async () => {
       setLoading(true);
@@ -27,6 +30,7 @@ export default function ReportModal({ taskId, onClose, onLoadStock }) {
       try {
         const res = await fetch(`/api/research/tasks/${taskId}`, {
           credentials: 'include',
+          signal: controller.signal,
         });
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
@@ -37,7 +41,7 @@ export default function ReportModal({ taskId, onClose, onLoadStock }) {
           setData(json);
         }
       } catch (err) {
-        if (isMounted) {
+        if (err.name !== 'AbortError' && isMounted) {
           setError(err.message || 'An error occurred while loading report details.');
         }
       } finally {
@@ -51,6 +55,7 @@ export default function ReportModal({ taskId, onClose, onLoadStock }) {
 
     return () => {
       isMounted = false;
+      controller.abort();
     };
   }, [taskId]);
 
@@ -58,6 +63,8 @@ export default function ReportModal({ taskId, onClose, onLoadStock }) {
   const report = data?.report;
   const overview = report?.overview_data;
   const history = report?.history_data;
+  const financials = report?.report_content?.financial_statements;
+  const fundamental = report?.report_content?.fundamental_analysis;
 
   const isPriceUp = overview?.current_price >= overview?.previous_close;
 
@@ -233,16 +240,31 @@ export default function ReportModal({ taskId, onClose, onLoadStock }) {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/[0.04] bg-[#0c0c12]/80 text-zinc-200">
-                        {history.candles.slice(-10).reverse().map((c) => (
-                          <tr key={c.date} className="hover:bg-white/[0.03] transition-colors">
-                            <td className="py-2 px-3 font-semibold text-zinc-300">{c.date}</td>
-                            <td className="py-2 px-3">{c.open.toFixed(2)}</td>
-                            <td className="py-2 px-3 text-emerald-400">{c.high.toFixed(2)}</td>
-                            <td className="py-2 px-3 text-rose-400">{c.low.toFixed(2)}</td>
-                            <td className="py-2 px-3 font-bold text-white">{c.close.toFixed(2)}</td>
-                            <td className="py-2 px-3 text-zinc-400">{c.volume.toLocaleString()}</td>
-                          </tr>
-                        ))}
+                        {history.candles.slice(-10).reverse().map((c, idx) => {
+                          const openNum = typeof (c.open ?? c.Open) === 'number' ? (c.open ?? c.Open) : Number(c.open ?? c.Open);
+                          const highNum = typeof (c.high ?? c.High) === 'number' ? (c.high ?? c.High) : Number(c.high ?? c.High);
+                          const lowNum = typeof (c.low ?? c.Low) === 'number' ? (c.low ?? c.Low) : Number(c.low ?? c.Low);
+                          const closeNum = typeof (c.close ?? c.Close) === 'number' ? (c.close ?? c.Close) : Number(c.close ?? c.Close);
+                          const volNum = typeof (c.volume ?? c.Volume) === 'number' ? (c.volume ?? c.Volume) : Number(c.volume ?? c.Volume);
+
+                          const dateStr = c.date ?? c.Date ?? 'N/A';
+                          const openStr = !Number.isNaN(openNum) && Number.isFinite(openNum) ? openNum.toFixed(2) : 'N/A';
+                          const highStr = !Number.isNaN(highNum) && Number.isFinite(highNum) ? highNum.toFixed(2) : 'N/A';
+                          const lowStr = !Number.isNaN(lowNum) && Number.isFinite(lowNum) ? lowNum.toFixed(2) : 'N/A';
+                          const closeStr = !Number.isNaN(closeNum) && Number.isFinite(closeNum) ? closeNum.toFixed(2) : 'N/A';
+                          const volStr = !Number.isNaN(volNum) && Number.isFinite(volNum) ? Math.round(volNum).toLocaleString() : 'N/A';
+
+                          return (
+                            <tr key={c.date ?? c.Date ?? idx} className="hover:bg-white/[0.03] transition-colors">
+                              <td className="py-2 px-3 font-semibold text-zinc-300">{dateStr}</td>
+                              <td className="py-2 px-3">{openStr}</td>
+                              <td className="py-2 px-3 text-emerald-400">{highStr}</td>
+                              <td className="py-2 px-3 text-rose-400">{lowStr}</td>
+                              <td className="py-2 px-3 font-bold text-white">{closeStr}</td>
+                              <td className="py-2 px-3 text-zinc-400">{volStr}</td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -259,6 +281,24 @@ export default function ReportModal({ taskId, onClose, onLoadStock }) {
                     {overview.business_summary}
                   </p>
                 </div>
+              )}
+
+              {/* Financial Statements (if archived in report) */}
+              {financials && (
+                <FinancialStatementsView
+                  financials={financials}
+                  currency={overview?.currency || financials?.currency || 'USD'}
+                  ticker={task?.ticker}
+                />
+              )}
+
+              {/* Fundamental Analysis (Module 3 - if archived in report) */}
+              {fundamental && (
+                <FundamentalAnalysisView
+                  fundamental={fundamental}
+                  currency={overview?.currency || fundamental?.currency || 'USD'}
+                  ticker={task?.ticker}
+                />
               )}
 
               {/* Data Limitations & Disclaimers (Task 4 Compliance) */}

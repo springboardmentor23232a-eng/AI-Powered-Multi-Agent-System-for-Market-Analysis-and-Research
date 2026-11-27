@@ -104,7 +104,7 @@ export default function WatchlistSection({
                 const isBusy = removingId === item.saved_stock_id || actionLoadingId === item.ticker;
 
                 return (
-                  <tr key={item.saved_stock_id} className="hover:bg-white/[0.03] transition-colors group">
+                  <tr key={item.saved_stock_id || item.ticker} className="hover:bg-white/[0.03] transition-colors group">
                     <td className="py-2.5 px-3">
                       <span className="font-mono text-xs font-bold text-white bg-white/[0.06] px-2 py-0.5 rounded border border-white/[0.1] group-hover:border-rose-500/40">
                         {item.ticker}
