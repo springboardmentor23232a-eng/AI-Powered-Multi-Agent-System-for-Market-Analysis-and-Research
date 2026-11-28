@@ -19,6 +19,8 @@ from company import router as company_router
 app.include_router(company_router)
 from markets import router as markets_router
 app.include_router(markets_router)
+from fundamental import router as fundamental_router
+app.include_router(fundamental_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],

@@ -1,3 +1,4 @@
+import FundamentalAnalysis from "./FundamentalAnalysis";
 import { useEffect, useState } from "react";
 import api, { errorMessage } from "../api";
 
@@ -6,6 +7,7 @@ const TABS = [
   { key: "income_statement", label: "Income statement" },
   { key: "balance_sheet", label: "Balance sheet" },
   { key: "cash_flow", label: "Cash flow" },
+  { key: "fundamental", label: "Fundamental Analysis" },
 ];
 
 // Lines shown first in each statement ("Show all" reveals the rest)
@@ -55,7 +57,11 @@ export default function CompanyDetails({ ticker, onClose }) {
   }, [ticker]);
 
   // Financial statements load when a statement tab is opened (or Annual/Quarterly changes)
-  const needFin = tab !== "profile";
+  const needFin = [
+  "income_statement",
+  "balance_sheet",
+  "cash_flow",
+  ].includes(tab);
   useEffect(() => {
     if (!needFin) return;
     let cancelled = false;
@@ -101,7 +107,7 @@ export default function CompanyDetails({ ticker, onClose }) {
             {t.label}
           </button>
         ))}
-        {tab !== "profile" && (
+        {needFin && (
           <div className="ml-auto flex gap-2">
             {["annual", "quarterly"].map((f) => (
               <button
@@ -153,9 +159,12 @@ export default function CompanyDetails({ ticker, onClose }) {
           )}
         </div>
       )}
-
+      {/* ---------- Fundamental Analysis tab ---------- */}
+      {tab === "fundamental" && (
+        <FundamentalAnalysis key={ticker} ticker={ticker} />
+      )}
       {/* ---------- Statement tabs ---------- */}
-      {tab !== "profile" && (
+      {needFin && (
         <div className="mt-5">
           {finLoading && <p className="text-sm text-gray-500">Loading {frequency} {STATEMENT_LABEL[tab]} from Yahoo Finance...</p>}
           {finError && <p className="text-sm text-red-600">{finError}</p>}

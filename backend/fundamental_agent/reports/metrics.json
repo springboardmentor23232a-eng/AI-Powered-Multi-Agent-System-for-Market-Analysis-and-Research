@@ -1,0 +1,137 @@
+{
+  "dataset": {
+    "rows_clean": 161,
+    "rows_used": 149,
+    "companies": 12,
+    "class_counts": {
+      "Strong": 93,
+      "Moderate": 28,
+      "Weak": 28
+    },
+    "majority_baseline_accuracy": 0.6241610738255033
+  },
+  "chosen_hyperparameters": {
+    "k": 7,
+    "weights": "distance",
+    "scaling": "StandardScaler"
+  },
+  "holdout_20_percent": {
+    "accuracy": 0.9,
+    "precision_macro": 0.8492063492063493,
+    "recall_macro": 0.9093567251461989,
+    "f1_macro": 0.8742553742553744,
+    "report": {
+      "Weak": {
+        "precision": 0.8333333333333334,
+        "recall": 1.0,
+        "f1-score": 0.9090909090909091,
+        "support": 5.0
+      },
+      "Moderate": {
+        "precision": 0.7142857142857143,
+        "recall": 0.8333333333333334,
+        "f1-score": 0.7692307692307693,
+        "support": 6.0
+      },
+      "Strong": {
+        "precision": 1.0,
+        "recall": 0.8947368421052632,
+        "f1-score": 0.9444444444444444,
+        "support": 19.0
+      },
+      "accuracy": 0.9,
+      "macro avg": {
+        "precision": 0.8492063492063492,
+        "recall": 0.9093567251461989,
+        "f1-score": 0.8742553742553744,
+        "support": 30.0
+      },
+      "weighted avg": {
+        "precision": 0.915079365079365,
+        "recall": 0.9,
+        "f1-score": 0.9035094535094534,
+        "support": 30.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        5,
+        0,
+        0
+      ],
+      [
+        1,
+        5,
+        0
+      ],
+      [
+        0,
+        2,
+        17
+      ]
+    ],
+    "n_train": 119,
+    "n_test": 30
+  },
+  "repeated_5x5_cv": {
+    "accuracy": {
+      "mean": 0.8363678160919541,
+      "std": 0.04525277867787167
+    },
+    "precision_macro": {
+      "mean": 0.7811364388392252,
+      "std": 0.06912495362225515
+    },
+    "recall_macro": {
+      "mean": 0.7648966861598442,
+      "std": 0.07045844860211066
+    },
+    "f1_macro": {
+      "mean": 0.7612997556650807,
+      "std": 0.06633661883190925
+    }
+  },
+  "leave_one_company_out": {
+    "accuracy": 0.7919463087248322,
+    "precision_macro": 0.7194271194271193,
+    "recall_macro": 0.6475934459805428,
+    "f1_macro": 0.66277908617044,
+    "confusion_matrix": [
+      [
+        20,
+        4,
+        4
+      ],
+      [
+        5,
+        7,
+        16
+      ],
+      [
+        0,
+        2,
+        91
+      ]
+    ],
+    "per_company_accuracy": {
+      "AAPL": 1.0,
+      "AIG": 0.46153846153846156,
+      "AMZN": 0.46153846153846156,
+      "BCS": 0.6153846153846154,
+      "GOOG": 1.0,
+      "INTC": 1.0,
+      "MCD": 1.0,
+      "MSFT": 1.0,
+      "NVDA": 1.0,
+      "PCG": 0.15384615384615385,
+      "PYPL": 0.875,
+      "SHLDQ": 1.0
+    }
+  },
+  "distance_gate": {
+    "percentile": 99,
+    "threshold": 5.147888746933647,
+    "training_rows_rejected": 0.013422818791946308,
+    "unseen_company_rows_rejected": 0.06040268456375839
+  }
+}
